@@ -3,7 +3,7 @@ import * as React from "react";
 import "./styles/ComputerInProcess.css";
 import Navbar from "../components/Navbar/Navbar";
 
-import DonutChart from "../components/charts/ComputerInProcessDonutChart";
+// import DonutChart from "../components/charts/ComputerInProcessDonutChart";
 import BarChart from "../components/charts/ComputerInProcessBarCharts";
 
 import { useState, useEffect } from "react";
@@ -16,7 +16,6 @@ import { styled } from "@mui/material/styles";
 
 import {
   Container,
-  Typography,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -113,6 +112,8 @@ export default function ComputerInProcess() {
         )
         .then((res) => {
           setRows(res.data);
+          const pcNames = res.data.map((item) => item.pc_name);
+          setPcName(pcNames);
         });
       return response;
     };
@@ -172,6 +173,9 @@ export default function ComputerInProcess() {
     quickFilterValues: [""],
   });
 
+  //*Edit *//
+  const [pcName, setPcName] = useState([]);
+
   return (
     <>
       <Container maxWidth="lg">
@@ -198,7 +202,12 @@ export default function ComputerInProcess() {
                 <p className="subtitle">190</p>
               </div>
             </div>
-            <BarChart />
+
+            <div className="column is-half">
+              <div className="box is">
+                <BarChart />
+              </div>
+            </div>
           </div>
 
           {/* Autocomplete for Division, Department, Cost Center */}
@@ -253,7 +262,7 @@ export default function ComputerInProcess() {
           {/* Autocomplete for Division, Department, Cost Center */}
 
           {/* Table for Computer in Process */}
-          <div style={{ height: 600, width: "90vw", marginTop: 16 }}>
+          <div style={{ height: 540, width: "90vw", marginTop: 16 }}>
             <StyledDataGrid
               rows={rows}
               columns={columns}
@@ -267,27 +276,97 @@ export default function ComputerInProcess() {
 
           {selectedData && (
             <Dialog open={open} onClose={handleClose}>
-              <DialogTitle>Edit User</DialogTitle>
+              <DialogTitle>Edit</DialogTitle>
               <DialogContent>
-                <TextField
-                  margin="dense"
-                  label="Name"
-                  fullWidth
-                  value={selectedData.name}
+                <Autocomplete
+                  disablePortal
+                  id="pc-name-autocomplete"
+                  options={pcName}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField {...params} label="PC Name" />
+                  )}
                 />
-                <TextField
-                  margin="dense"
-                  label="Age"
-                  type="number"
-                  fullWidth
-                  value={selectedData.age}
+                <Autocomplete
+                  disablePortal
+                  id="pc-type-autocomplete"
+                  options={pcName}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField {...params} label="PC Type" />
+                  )}
                 />
-                <TextField
-                  margin="dense"
-                  label="Occupation"
-                  fullWidth
-                  value={selectedData.occupation}
+                <Autocomplete
+                  disablePortal
+                  id="os-autocomplete"
+                  options={pcName}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => <TextField {...params} label="OS" />}
                 />
+                <Autocomplete
+                  disablePortal
+                  id="os-version-autocomplete"
+                  options={pcName}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField {...params} label="OS Version" />
+                  )}
+                />
+                <Autocomplete
+                  disablePortal
+                  id="start-date-autocomplete"
+                  options={pcName}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Start Date" />
+                  )}
+                />
+                <Autocomplete
+                  disablePortal
+                  id="mac-address-autocomplete"
+                  options={pcName}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Mac Address" />
+                  )}
+                />
+                <Autocomplete
+                  disablePortal
+                  id="ip-address-autocomplete"
+                  options={pcName}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField {...params} label="IP Address" />
+                  )}
+                />
+                <Autocomplete
+                  disablePortal
+                  id="connect-type-autocomplete"
+                  options={pcName}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Connect Type" />
+                  )}
+                />
+                <Autocomplete
+                  disablePortal
+                  id="join-domain-autocomplete"
+                  options={pcName}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Join Domain" />
+                  )}
+                />
+                <Autocomplete
+                  disablePortal
+                  id="join-domain-date-autocomplete"
+                  options={pcName}
+                  getOptionLabel={(option) => option}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Join Domain Date" />
+                  )}
+                />
+
                 {/* Add more fields as required */}
               </DialogContent>
               <DialogActions>

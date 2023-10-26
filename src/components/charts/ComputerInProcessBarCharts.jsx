@@ -15,7 +15,7 @@ const BarChart = () => {
     options: {
       chart: {
         type: "bar",
-        height: 350,
+        height: 240,
       },
       plotOptions: {
         bar: {
@@ -38,7 +38,7 @@ const BarChart = () => {
       options={state.options}
       series={state.series}
       type="bar"
-      height={350}
+      height={240}
     />
   );
 };
