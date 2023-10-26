@@ -10,7 +10,9 @@ import { useState, useEffect } from "react";
 //*mui imports //
 
 import Box from "@mui/material/Box";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { styled } from "@mui/material/styles";
+
 import {
   Container,
   Typography,
@@ -23,6 +25,13 @@ import {
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
+
+const StyledDataGrid = styled(DataGrid)({
+  "& .MuiDataGrid-columnHeaderTitle": {
+    fontWeight: "bold",
+    color: " #3371ff",
+  },
+});
 
 export default function ComputerInProcess() {
   //*Get data from API for Division, Department, Cost Center *//
@@ -91,47 +100,99 @@ export default function ComputerInProcess() {
     getCostCenters();
   }, []);
 
+  //TODO : Get data from API to display in the table
   //*Table *//
-  const rows = [
-    { id: 1, name: "John Doe", age: 25, occupation: "Engineer" },
-    { id: 2, name: "Jane Smith", age: 30, occupation: "Doctor" },
-    // ... add more rows as needed
-  ];
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const getRows = async () => {
+      const response = await axios
+        .get(
+          `http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=Division&department=Department&cost_center=Cost%20Center`
+        )
+        .then((res) => {
+          setRows(res.data);
+        });
+      return response;
+    };
+    getRows();
+  }, []);
 
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "name", headerName: "Name", width: 150 },
-    { field: "age", headerName: "Age", width: 100 },
-    { field: "occupation", headerName: "Occupation", width: 150 },
-    // ... add more columns as needed
+    { field: "id", headerName: "No", width: 70 },
+    { field: "factory_emp", headerName: "Factory", width: 70 },
+    { field: "pc_name", headerName: "PC Name", width: 120 },
+    { field: "pc_type", headerName: "PC Type", width: 100 },
+    { field: "os", headerName: "OS", width: 70 },
+    { field: "pc_use_for", headerName: "PC Use For", width: 120 },
+    { field: "building", headerName: "Building", width: 70 },
+    { field: "process", headerName: "Process", width: 100 },
+    { field: "area", headerName: "Area", width: 100 },
+    { field: "employee_id", headerName: "User ID Code", width: 120 },
+    { field: "emp_name_eng", headerName: "Name - Surname", width: 300 },
+    { field: "job_level", headerName: "Job Level", width: 100 },
+    { field: "connect_status", headerName: "Status Connect", width: 150 },
+    { field: "cost_center_code", headerName: "Cost Center", width: 100 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 100,
+      renderCell: (params) => (
+        <Button variant="outlined" onClick={() => handleOpen(params.row)}>
+          Edit
+        </Button>
+      ),
+    },
   ];
+
+  //*Dialog *//
+  const [open, setOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
+
+  const handleOpen = (data) => {
+    setSelectedData(data);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSave = () => {
+    //TODO : Save data to database
+
+    handleClose();
+  };
+
+  //* Option for DataGrid *//
 
   return (
     <>
       <Container maxWidth="lg">
         <Navbar />
-        <Box>
+        <Box sx={{ ml: 4, mt: 8 }}>
           <div className="columns is-desktop">
             <div className="column is-one-quarter">
               <div className="box has-background-info">
-                <p className="title">Total PC</p>
+                <p className="title is-4">Total PC</p>
                 <p className="subtitle">240</p>
               </div>
             </div>
 
             <div className="column is-one-quarter">
               <div className="box has-background-success">
-                <p className="title">PC Connect</p>
+                <p className="title is-4">PC Connect</p>
                 <p className="subtitle">150</p>
               </div>
             </div>
 
             <div className="column is-one-quarter">
               <div className="box has-background-warning">
-                <p className="title">Wait Connect</p>
+                <p className="title is-4">Wait Connect</p>
                 <p className="subtitle">190</p>
               </div>
             </div>
+            <BarChart />
           </div>
 
           {/* Autocomplete for Division, Department, Cost Center */}
@@ -186,9 +247,50 @@ export default function ComputerInProcess() {
           {/* Autocomplete for Division, Department, Cost Center */}
 
           {/* Table for Computer in Process */}
-          <div style={{ height: 680, width: "100%", marginTop: 16 }}>
-            <DataGrid rows={rows} columns={columns} pageSize={5} />
+          <div style={{ height: 600, width: "90vw", marginTop: 16 }}>
+            <StyledDataGrid
+              rows={rows}
+              columns={columns}
+              pageSize={5}
+              slots={{ toolbar: GridToolbar }}
+            />
           </div>
+
+          {selectedData && (
+            <Dialog open={open} onClose={handleClose}>
+              <DialogTitle>Edit User</DialogTitle>
+              <DialogContent>
+                <TextField
+                  margin="dense"
+                  label="Name"
+                  fullWidth
+                  value={selectedData.name}
+                />
+                <TextField
+                  margin="dense"
+                  label="Age"
+                  type="number"
+                  fullWidth
+                  value={selectedData.age}
+                />
+                <TextField
+                  margin="dense"
+                  label="Occupation"
+                  fullWidth
+                  value={selectedData.occupation}
+                />
+                {/* Add more fields as required */}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleSave} color="primary">
+                  Save
+                </Button>
+              </DialogActions>
+            </Dialog>
+          )}
         </Box>
       </Container>
     </>
