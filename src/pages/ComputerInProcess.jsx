@@ -1,4 +1,5 @@
 //* Computer in process page component *//
+import * as React from "react";
 import "./styles/ComputerInProcess.css";
 import Navbar from "../components/Navbar/Navbar";
 
@@ -164,7 +165,12 @@ export default function ComputerInProcess() {
     handleClose();
   };
 
-  //* Option for DataGrid *//
+  //*Filter *//
+  const [filterModel, setFilterModel] = React.useState({
+    items: [],
+    quickFilterExcludeHiddenColumns: true,
+    quickFilterValues: [""],
+  });
 
   return (
     <>
@@ -253,6 +259,9 @@ export default function ComputerInProcess() {
               columns={columns}
               pageSize={5}
               slots={{ toolbar: GridToolbar }}
+              onFilterModelChange={(newModel) => setFilterModel(newModel)}
+              filterModel={filterModel}
+              slotProps={{ toolbar: { showQuickFilter: true } }}
             />
           </div>
 
