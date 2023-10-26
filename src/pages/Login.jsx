@@ -82,7 +82,7 @@ function Login() {
 
   return (
     <>
-      <div className="container">
+      <div className="login-container">
         <p className="login-title">System Recovery</p>
         <img
           src={Fuji}
