@@ -1,6 +1,10 @@
-/* .login-container {
+.login-container {
   text-align: center;
-} */
+  /* position: absolute; */
+  width: 100vw;
+
+  transform: translate(-5%, 20%);
+}
 
 .login-logo {
   transform: translate(4.5rem, -8px);

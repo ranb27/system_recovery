@@ -1,10 +1,13 @@
 #root {
-  max-width: 1920px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
 }
 
-/* body {
-  background-color: #f5f5f5;
-} */
+body {
+  position: absolute;
+  margin: 3rem;
+  box-sizing: border-box;
+  /* width: 100%; */
+}

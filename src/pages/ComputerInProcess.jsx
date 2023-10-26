@@ -11,12 +11,18 @@ import { useState, useEffect } from "react";
 
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
-
-import TextField from "@mui/material/TextField";
+import {
+  Container,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+} from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import Button from "@mui/material/Button";
 import axios from "axios";
-import Container from "@mui/material/Container";
 
 export default function ComputerInProcess() {
   //*Get data from API for Division, Department, Cost Center *//
@@ -84,6 +90,21 @@ export default function ComputerInProcess() {
     getDepartments();
     getCostCenters();
   }, []);
+
+  //*Table *//
+  const rows = [
+    { id: 1, name: "John Doe", age: 25, occupation: "Engineer" },
+    { id: 2, name: "Jane Smith", age: 30, occupation: "Doctor" },
+    // ... add more rows as needed
+  ];
+
+  const columns = [
+    { field: "id", headerName: "ID", width: 70 },
+    { field: "name", headerName: "Name", width: 150 },
+    { field: "age", headerName: "Age", width: 100 },
+    { field: "occupation", headerName: "Occupation", width: 150 },
+    // ... add more columns as needed
+  ];
 
   return (
     <>
@@ -165,6 +186,9 @@ export default function ComputerInProcess() {
           {/* Autocomplete for Division, Department, Cost Center */}
 
           {/* Table for Computer in Process */}
+          <div style={{ height: 680, width: "100%", marginTop: 16 }}>
+            <DataGrid rows={rows} columns={columns} pageSize={5} />
+          </div>
         </Box>
       </Container>
     </>
