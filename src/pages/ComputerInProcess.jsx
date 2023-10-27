@@ -1,4 +1,5 @@
 //* Computer in process page component *//
+
 import * as React from "react";
 import "./styles/ComputerInProcess.css";
 import Navbar from "../components/Navbar/Navbar";
@@ -13,11 +14,12 @@ import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
+import Computer_In_Process_Search_Group from "../components/SearchGroup/computer_in_process_search";
 
 import {
   Container,
   Dialog,
-  DialogTitle,
+  // DialogTitle,
   DialogContent,
   DialogActions,
   Button,
@@ -25,13 +27,21 @@ import {
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
+// import Swal from "sweetalert2";
+
+//*Set style for table *//
 
 const StyledDataGrid = styled(DataGrid)({
   "& .MuiDataGrid-columnHeaderTitle": {
     fontWeight: "bold",
     color: " #3371ff",
+    fontSize: "15px",
+    textAlign: "center",
   },
 });
+
+//Todo : Add filter about division, department, cost center to display in the table //from p'Keem
+//Todo : Add edit function to save data to database with update API
 
 export default function ComputerInProcess() {
   //*Get data from API for Division, Department, Cost Center *//
@@ -90,9 +100,19 @@ export default function ComputerInProcess() {
     setCostCenters(response.data);
   };
 
-  console.log(divisions);
-  console.log(departments);
-  console.log(costCenters);
+  const [selecteddivision, setSelecteddivision] = useState({
+    division: "Division",
+  });
+  const [selectedDepartment, setSelectedDepartment] = useState({
+    dep_unit: "Department",
+  });
+  const [selectedCostCenter, setSelectedCostCenter] = useState({
+    cost_center_name: "Cost Center",
+  });
+
+  // console.log(divisions);
+  // console.log(departments);
+  // console.log(costCenters);
 
   useEffect(() => {
     getDivisions();
@@ -108,17 +128,39 @@ export default function ComputerInProcess() {
     const getRows = async () => {
       const response = await axios
         .get(
-          `http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=Division&department=Department&cost_center=Cost%20Center`
+          `http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
         )
         .then((res) => {
           setRows(res.data);
           const pcNames = res.data.map((item) => item.pc_name);
           setPcName(pcNames);
+          const macAddresses = res.data.map((item) => item.mac_address);
+          setMacAddress(macAddresses);
+          const ipAddresses = res.data.map((item) => item.new_ip);
+          setIpAddress(ipAddresses);
+          const idCodes = res.data.map((item) => item.employee_id);
+          setIdCode(idCodes);
+          const nameSurnames = res.data.map((item) => item.emp_name_eng);
+          setNameSurname(nameSurnames);
+          const emails = res.data.map((item) => item.user_email);
+          setEmail(emails);
+          const jobLevels = res.data.map((item) => item.job_level);
+          setJobLevel(jobLevels);
+          const divisions = res.data.map((item) => item.division);
+          setDivision(divisions);
+          const departments = res.data.map((item) => item.department_unit);
+          setDepartment(departments);
+          const managers = res.data.map((item) => item.supervision_name);
+          setManager(managers);
+          const costCenters = res.data.map((item) => item.cost_center_code);
+          setCostCenter(costCenters);
+          const areas = res.data.map((item) => item.area);
+          setArea(areas);
         });
       return response;
     };
     getRows();
-  }, []);
+  }, [selecteddivision, selectedDepartment, selectedCostCenter]);
 
   const columns = [
     { field: "id", headerName: "No", width: 70 },
@@ -127,7 +169,7 @@ export default function ComputerInProcess() {
     { field: "pc_type", headerName: "PC Type", width: 100 },
     { field: "os", headerName: "OS", width: 70 },
     { field: "pc_use_for", headerName: "PC Use For", width: 120 },
-    { field: "building", headerName: "Building", width: 70 },
+    { field: "building", headerName: "Building", width: 90 },
     { field: "process", headerName: "Process", width: 100 },
     { field: "area", headerName: "Area", width: 100 },
     { field: "employee_id", headerName: "User ID Code", width: 120 },
@@ -162,7 +204,12 @@ export default function ComputerInProcess() {
 
   const handleSave = () => {
     //TODO : Save data to database
+    console.log(formData);
+    if (formData === null) {
+      setFormData(selectedData);
+    }
 
+    setFormData({});
     handleClose();
   };
 
@@ -174,7 +221,46 @@ export default function ComputerInProcess() {
   });
 
   //*Edit *//
+  const [formData, setFormData] = useState({});
+
   const [pcName, setPcName] = useState([]);
+  const pcType = ["Desktop", "Laptop"];
+  const os = [
+    "Windows 10",
+    "Windows 7",
+    "Windows 8",
+    "Windows XP",
+    "Embleded",
+    "MAC OS",
+  ];
+  const osVersion = ["64 bit", "32 bit"];
+  const startDate = ["2021-10-01", "2021-10-02"];
+  const [macAddress, setMacAddress] = useState([]);
+  const [ipAddress, setIpAddress] = useState([]);
+  const connectType = ["LAN (WAN)", "WIFI (PRD_SCAN)", "WIFI (PRD_OFFICE)"];
+  const joinDomain = ["Yes", "No"];
+  const joinDomainDate = ["2021-10-01", "2021-10-02"];
+  const pcUseFor = ["Personal"];
+  const [idCode, setIdCode] = useState([]);
+  const [nameSurname, setNameSurname] = useState([]);
+  const [email, setEmail] = useState([]);
+  const [jobLevel, setJobLevel] = useState([]);
+  const [division, setDivision] = useState([]);
+  const [department, setDepartment] = useState([]);
+  const [manager, setManager] = useState([]);
+  const [costCenter, setCostCenter] = useState([]);
+  const building = ["A", "B", "C1", "C2", "C3", "D"];
+  const [area, setArea] = useState([]);
+  const [mfgPro, setMfgPro] = useState([]);
+  const [btp, setBtp] = useState([]);
+  const [fpc, setFpc] = useState([]);
+  const [humatrix, setHumatrix] = useState([]);
+  const [zwcad, setZwcad] = useState([]);
+  const [a1Server, setA1Server] = useState([]);
+  const [outsystem, setOutsystem] = useState([]);
+  const antivirus = ["Kastersky", "Symantec", "Trend Micro", "McAfee"];
+  const antivirusStatus = ["Normal", "Abnormal"];
+  const edrStatus = ["Normal", "Abnormal"];
 
   return (
     <>
@@ -185,84 +271,131 @@ export default function ComputerInProcess() {
             <div className="column is-one-quarter">
               <div className="box has-background-info">
                 <p className="title is-4">Total PC</p>
-                <p className="subtitle">240</p>
+                <div className="card">
+                  <p className="subtitle">240</p>
+                </div>
               </div>
             </div>
 
             <div className="column is-one-quarter">
               <div className="box has-background-success">
                 <p className="title is-4">PC Connect</p>
-                <p className="subtitle">150</p>
+                <div className="card">
+                  <p className="subtitle">150</p>
+                </div>
               </div>
             </div>
 
             <div className="column is-one-quarter">
               <div className="box has-background-warning">
                 <p className="title is-4">Wait Connect</p>
-                <p className="subtitle">190</p>
+                <div className="card">
+                  <p className="subtitle">190</p>
+                </div>
               </div>
             </div>
 
             <div className="column is-half">
-              <div className="box is">
+              <div className="card">
                 <BarChart />
               </div>
             </div>
           </div>
 
           {/* Autocomplete for Division, Department, Cost Center */}
+          {/* <div className="columns is-desktop">
+            <div className="autocomplete">
+              <div className="column is-one-quarter">
+                <Autocomplete
+                  disablePortal
+                  id="division-autocomplete"
+                  options={divisions} // use the divisions state here
+                  getOptionLabel={(option) => option.division} // assuming the object has a 'division' property
+                  sx={{ width: 300 }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Division" />
+                  )}
+                />
+              </div>
+              <div className="column is-one-quarter">
+                <Autocomplete
+                  disablePortal
+                  id="department-autocomplete"
+                  options={departments} // use the departments state here
+                  getOptionLabel={(option) => option.department} // assuming the object has a 'department' property
+                  sx={{ width: 300 }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Department" />
+                  )}
+                />
+              </div>
+              <div className="column is-one-quarter">
+                <Autocomplete
+                  disablePortal
+                  id="costcenter-autocomplete"
+                  options={costCenters} // use the costCenters state here
+                  getOptionLabel={(option) => option.costcenter} // assuming the object has a 'costcenter' property
+                  sx={{ width: 300 }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Cost Center" />
+                  )}
+                />
+              </div>
+              <div className="column">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    borderRadius: 2,
+                    height: 50,
+                    width: 100,
+                    ml: 2,
+                    fontSize: 16,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Search
+                </Button>
+              </div>
+              <div className="column">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    borderRadius: 2,
+                    height: 50,
+                    width: 150,
+                    fontSize: 16,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Request SE
+                </Button>
+              </div>
+            </div>
+          </div> */}
 
-          <div className="autocomplete">
-            <Autocomplete
-              disablePortal
-              id="division-autocomplete"
-              options={divisions} // use the divisions state here
-              getOptionLabel={(option) => option.division} // assuming the object has a 'division' property
-              sx={{ width: 300 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Division" />
-              )}
+          <div>
+            {/* <Computer_In_Process_Search_Group onSearch={onSearch} /> */}
+            <Computer_In_Process_Search_Group
+              onSearch={(queryParams) => {
+                setSelecteddivision(queryParams.division);
+                setSelectedDepartment(queryParams.Department);
+                setSelectedCostCenter(queryParams.Cost_center);
+              }}
             />
-            <Autocomplete
-              disablePortal
-              id="department-autocomplete"
-              options={departments} // use the departments state here
-              getOptionLabel={(option) => option.department} // assuming the object has a 'department' property
-              sx={{ width: 300, ml: 2 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Department" />
-              )}
-            />
-            <Autocomplete
-              disablePortal
-              id="costcenter-autocomplete"
-              options={costCenters} // use the costCenters state here
-              getOptionLabel={(option) => option.costcenter} // assuming the object has a 'costcenter' property
-              sx={{ width: 300, ml: 2 }}
-              renderInput={(params) => (
-                <TextField {...params} label="Cost Center" />
-              )}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ borderRadius: 2, ml: 2, height: 50, width: 100 }}
-            >
-              Search
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ borderRadius: 2, ml: 2, height: 50, width: 150 }}
-            >
-              Request SE
-            </Button>
           </div>
 
           {/* Autocomplete for Division, Department, Cost Center */}
 
           {/* Table for Computer in Process */}
-          <div style={{ height: 540, width: "90vw", marginTop: 16 }}>
+          <div
+            style={{
+              height: 500,
+              width: "90vw",
+              marginTop: 16,
+            }}
+          >
             <StyledDataGrid
               rows={rows}
               columns={columns}
@@ -275,106 +408,519 @@ export default function ComputerInProcess() {
           </div>
 
           {selectedData && (
-            <Dialog open={open} onClose={handleClose}>
-              <DialogTitle>Edit</DialogTitle>
-              <DialogContent>
-                <Autocomplete
-                  disablePortal
-                  id="pc-name-autocomplete"
-                  options={pcName}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <TextField {...params} label="PC Name" />
-                  )}
-                />
-                <Autocomplete
-                  disablePortal
-                  id="pc-type-autocomplete"
-                  options={pcName}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <TextField {...params} label="PC Type" />
-                  )}
-                />
-                <Autocomplete
-                  disablePortal
-                  id="os-autocomplete"
-                  options={pcName}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => <TextField {...params} label="OS" />}
-                />
-                <Autocomplete
-                  disablePortal
-                  id="os-version-autocomplete"
-                  options={pcName}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <TextField {...params} label="OS Version" />
-                  )}
-                />
-                <Autocomplete
-                  disablePortal
-                  id="start-date-autocomplete"
-                  options={pcName}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Start Date" />
-                  )}
-                />
-                <Autocomplete
-                  disablePortal
-                  id="mac-address-autocomplete"
-                  options={pcName}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Mac Address" />
-                  )}
-                />
-                <Autocomplete
-                  disablePortal
-                  id="ip-address-autocomplete"
-                  options={pcName}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <TextField {...params} label="IP Address" />
-                  )}
-                />
-                <Autocomplete
-                  disablePortal
-                  id="connect-type-autocomplete"
-                  options={pcName}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Connect Type" />
-                  )}
-                />
-                <Autocomplete
-                  disablePortal
-                  id="join-domain-autocomplete"
-                  options={pcName}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Join Domain" />
-                  )}
-                />
-                <Autocomplete
-                  disablePortal
-                  id="join-domain-date-autocomplete"
-                  options={pcName}
-                  getOptionLabel={(option) => option}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Join Domain Date" />
-                  )}
-                />
+            <Dialog open={open} onClose={handleClose} maxWidth="100vw">
+              <DialogContent sx={{ background: "#e3e3e3" }}>
+                <div className="dialog-content">
+                  <div className="computer-data">
+                    <div className="card">
+                      <p className="dialog-head">Computer Data</p>
+                      <label className="label-autocomplete">
+                        PC Name
+                        <Autocomplete
+                          disablePortal
+                          id="pc-name-autocomplete"
+                          options={pcName}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="PC Name" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                          onChange={(event, newValue) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              pcName: newValue,
+                            }));
+                          }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        PC Type
+                        <Autocomplete
+                          disablePortal
+                          id="pc-type-autocomplete"
+                          options={pcType}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="PC Type" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                          onChange={(event, newValue) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              pcType: newValue,
+                            }));
+                          }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        OS
+                        <Autocomplete
+                          disablePortal
+                          id="os-autocomplete"
+                          options={os}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="OS" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                          onChange={(event, newValue) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              os: newValue,
+                            }));
+                          }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        OS Version
+                        <Autocomplete
+                          disablePortal
+                          id="os-version-autocomplete"
+                          options={osVersion}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="OS Version" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                          onChange={(event, newValue) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              osVersion: newValue,
+                            }));
+                          }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Start Date
+                        <Autocomplete
+                          disablePortal
+                          id="start-date-autocomplete"
+                          options={startDate}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Start Date" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                          onChange={(event, newValue) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              startDate: newValue,
+                            }));
+                          }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        MAC Address
+                        <Autocomplete
+                          disablePortal
+                          id="mac-address-autocomplete"
+                          options={macAddress}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Mac Address" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                          onChange={(event, newValue) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              macAddress: newValue,
+                            }));
+                          }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        IP Address
+                        <Autocomplete
+                          disablePortal
+                          id="ip-address-autocomplete"
+                          options={ipAddress}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="IP Address" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                          onChange={(event, newValue) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              ipAddress: newValue,
+                            }));
+                          }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Connect Type
+                        <Autocomplete
+                          disablePortal
+                          id="connect-type-autocomplete"
+                          options={connectType}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Connect Type" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                          onChange={(event, newValue) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              connectType: newValue,
+                            }));
+                          }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Join Domain
+                        <Autocomplete
+                          disablePortal
+                          id="join-domain-autocomplete"
+                          options={joinDomain}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Join Domain" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                          onChange={(event, newValue) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              joinDomain: newValue,
+                            }));
+                          }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Join Domain Date
+                        <Autocomplete
+                          type="date"
+                          disablePortal
+                          id="join-domain-date-autocomplete"
+                          options={joinDomainDate}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Join Domain Date" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                          onChange={(event, newValue) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              joinDomainDate: newValue,
+                            }));
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </div>
 
-                {/* Add more fields as required */}
+                  {/* //*User Data  */}
+
+                  <div className="user-data">
+                    <div className="card">
+                      <p className="dialog-head">User Data</p>
+                      <label className="label-autocomplete">
+                        PC Use For
+                        <Autocomplete
+                          disablePortal
+                          id="pc-use-for-autocomplete"
+                          options={pcUseFor}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="PC Use For" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        ID Code
+                        <Autocomplete
+                          disablePortal
+                          id="id-code-autocomplete"
+                          options={idCode}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="ID Code" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Name - Surname
+                        <Autocomplete
+                          disablePortal
+                          id="name-surname-autocomplete"
+                          options={nameSurname}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Name - Surname" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Email
+                        <Autocomplete
+                          disablePortal
+                          id="email-autocomplete"
+                          options={email}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Email" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Job Level
+                        <Autocomplete
+                          disablePortal
+                          id="job-level-autocomplete"
+                          options={jobLevel}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Job Level" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Division
+                        <Autocomplete
+                          disablePortal
+                          id="division-autocomplete"
+                          options={division}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Division" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Department
+                        <Autocomplete
+                          disablePortal
+                          id="department-autocomplete"
+                          options={department}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Department" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Manager
+                        <Autocomplete
+                          disablePortal
+                          id="manager-autocomplete"
+                          options={manager}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Manager" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Cost Cente
+                        <Autocomplete
+                          disablePortal
+                          id="cost-center-autocomplete"
+                          options={costCenter}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Cost Center" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Building
+                        <Autocomplete
+                          disablePortal
+                          id="building-autocomplete"
+                          options={building}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Building" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Area
+                        <Autocomplete
+                          disablePortal
+                          id="area-autocomplete"
+                          options={area}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Area" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* //*permission Data */}
+
+                  <div className="permission-data">
+                    <div className="card">
+                      <p className="dialog-head">Permission Data</p>
+                      <label className="label-autocomplete">
+                        MFG Pro
+                        <Autocomplete
+                          disablePortal
+                          id="mfg-pro-autocomplete"
+                          options={mfgPro}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="MFG Pro" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        BTP
+                        <Autocomplete
+                          disablePortal
+                          id="btp-autocomplete"
+                          options={btp}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="BTP" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        FPC
+                        <Autocomplete
+                          disablePortal
+                          id="fpc-autocomplete"
+                          options={fpc}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="FPC" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Humatrix
+                        <Autocomplete
+                          disablePortal
+                          id="humatrix-autocomplete"
+                          options={humatrix}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Humatrix" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        ZWCAD
+                        <Autocomplete
+                          disablePortal
+                          id="zwcad-autocomplete"
+                          options={zwcad}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="ZWCAD" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        A1 Server
+                        <Autocomplete
+                          disablePortal
+                          id="a1-server-autocomplete"
+                          options={a1Server}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="A1 Server" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        Outsystem
+                        <Autocomplete
+                          disablePortal
+                          id="outsystem-autocomplete"
+                          options={outsystem}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Outsystem" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* //*Security Data */}
+
+                  <div className="security-data">
+                    <div className="card">
+                      <p className="dialog-head">Security Data</p>
+                      <label className="label-autocomplete">
+                        Antivirus
+                        <Autocomplete
+                          disablePortal
+                          id="antivirus-autocomplete"
+                          options={antivirus}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Antivirus" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+
+                      <label className="label-autocomplete">
+                        Antivirus Status
+                        <Autocomplete
+                          disablePortal
+                          id="antivirus-status-autocomplete"
+                          options={antivirusStatus}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="Antivirus Status" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                      <label className="label-autocomplete">
+                        EDR Status
+                        <Autocomplete
+                          disablePortal
+                          id="edr-status-autocomplete"
+                          options={edrStatus}
+                          getOptionLabel={(option) => option}
+                          renderInput={(params) => (
+                            <TextField {...params} label="EDR Status" />
+                          )}
+                          sx={{ width: 300, mt: 1, mb: 1 }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
               </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClose} color="primary">
-                  Cancel
-                </Button>
-                <Button onClick={handleSave} color="primary">
+              <DialogActions sx={{ background: "#e3e3e3" }}>
+                <Button
+                  onClick={handleSave}
+                  color="secondary"
+                  sx={{ fontWeight: "bold", fontSize: 20 }}
+                >
                   Save
+                </Button>
+                <Button
+                  onClick={handleClose}
+                  color="error"
+                  sx={{ fontWeight: "bold", fontSize: 20 }}
+                >
+                  Cancel
                 </Button>
               </DialogActions>
             </Dialog>

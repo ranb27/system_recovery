@@ -4,11 +4,12 @@ import "./styles/Login.css";
 import { useState } from "react";
 import { Button, TextField } from "@mui/material";
 import { Link } from "react-router-dom";
-import Fuji from "/Fuji.png";
+import FujiLogo from "../assets/FujiLogo.png";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { Translate } from "@mui/icons-material";
 
 function Login() {
   //*State for user login and password*//
@@ -82,48 +83,54 @@ function Login() {
 
   return (
     <>
-      <div className="login-container">
-        <p className="login-title">Smart IT Management</p>
-        <img
-          src={Fuji}
-          alt="fuji"
-          className="login-logo"
-          style={{
-            width: 90,
-            margin: 10,
-          }}
-        />
-        <form onSubmit={handleLogin}>
-          <TextField
-            label="Username"
-            variant="standard"
-            margin="normal"
-            value={userLogin}
-            onChange={(event) => setUserLogin(event.target.value)}
-          />
-          <br />
-          <TextField
-            label="Password"
-            variant="standard"
-            margin="normal"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-          <br />
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            sx={{ m: 4 }}
-          >
-            Login <LockOpenOutlinedIcon sx={{ ml: 1 }} />
-          </Button>
-          <br />
-          <Link to="/home" onClick={handleGuest}>
-            Go to dashboard with guest
-          </Link>
-        </form>
+      <div className="section">
+        <div className="login-container">
+          <div className="title-container">
+            <img
+              src={FujiLogo}
+              alt="fuji"
+              className="login-logo"
+              style={{
+                width: 45,
+                margin: 10,
+              }}
+            />
+            <p className="login-title">Smart IT Management</p>
+            <p className="login-subtitle">System Recovery</p>
+          </div>
+
+          <form onSubmit={handleLogin}>
+            <TextField
+              label="Username"
+              variant="standard"
+              margin="normal"
+              value={userLogin}
+              onChange={(event) => setUserLogin(event.target.value)}
+            />
+            <br />
+            <TextField
+              label="Password"
+              variant="standard"
+              margin="normal"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+            <br />
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              sx={{ m: 4 }}
+            >
+              Login <LockOpenOutlinedIcon sx={{ ml: 1 }} />
+            </Button>
+            <br />
+            <Link to="/home" onClick={handleGuest}>
+              Go to dashboard with guest
+            </Link>
+          </form>
+        </div>
       </div>
     </>
   );

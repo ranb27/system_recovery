@@ -2,6 +2,10 @@
   border-radius: 1rem;
 }
 
+.box {
+  border-radius: 1rem;
+}
+
 .box:hover {
   box-shadow: 0 0 11px rgba(33, 33, 33, 0.2);
   cursor: pointer;
@@ -14,7 +18,47 @@
   font-weight: bold;
 }
 
+.subtitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
 .autocomplete {
   display: flex;
   margin-top: 2rem;
+}
+
+.dialog-content {
+  display: flex;
+}
+
+.user-data {
+  margin: 0 3rem;
+}
+
+.security-data {
+  margin-left: 3rem;
+}
+
+.label-autocomplete {
+  font-weight: bold;
+  color: #77c4ff;
+}
+
+.dialog-head {
+  font-size: large;
+  font-weight: bolder;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #3371ff;
+}
+
+.card {
+  padding: 1rem;
+}
+
+@media screen and (max-width: 900px) {
+  .autocomplete {
+    flex-direction: column;
+  }
 }

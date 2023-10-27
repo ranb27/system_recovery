@@ -30,6 +30,9 @@ const BarChart = () => {
       xaxis: {
         categories: ["Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
       },
+      legend: {
+        position: "right",
+      },
     },
   };
 

@@ -170,7 +170,7 @@ export default function Navbar() {
         setMenuName("Join Domain");
         break;
       default:
-        setMenuName("System Recovery");
+        setMenuName("IT Management System Recovery");
     }
   }, [location.pathname]);
 
