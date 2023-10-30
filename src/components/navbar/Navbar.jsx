@@ -12,7 +12,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Fuji from "/Fuji.png";
 import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import CssBaseline from "@mui/material/CssBaseline";
 
 //*mui icon ******************************************************
 import ComputerIcon from "@mui/icons-material/Computer";
@@ -30,67 +30,42 @@ import {
 } from "@mui/material";
 
 import AccountMenu from "./AccountMenu";
+//*---------------------------------------------------------------
+const drawerWidth = 240;
 
-const drawerWidth = 240; // กำหนดค่าความกว้างของ Drawer เป็น 240
-
-// สร้าง mixin สำหรับสไตล์ของ Drawer เมื่อถูกเปิด
 const openedMixin = (theme) => ({
-  // กำหนดความกว้างของ Drawer ให้เท่ากับ drawerWidth ที่กำหนดไว้
   width: drawerWidth,
-
-  // กำหนด transition ของความกว้างของ Drawer เมื่อมันถูกเปิด
-  // โดยใช้ฟังก์ชันสร้าง transition ของ theme ที่ได้รับจาก Material-UI
-  // และกำหนดค่า easing และ duration ตามที่กำหนดใน theme
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
   }),
-
-  // กำหนด overflowX เป็น "hidden" เพื่อป้องกันการเลื่อนแนวนอน
-  // ที่อาจเกิดขึ้นเมื่อความกว้างของ Drawer มากกว่า viewport
   overflowX: "hidden",
 });
 
 // สร้าง mixin สำหรับสไตล์ของ Drawer เมื่อถูกปิด
 const closedMixin = (theme) => ({
-  // ฟังก์ชันที่รับ theme และคืนค่าสไตล์เมื่อ Drawer ปิด
-  // กำหนด transition ของความกว้างของ Drawer เมื่อมันถูกปิด
-  // โดยใช้ฟังก์ชันสร้าง transition ของ theme ที่ได้รับจาก Material-UI
-  // และกำหนดค่า easing และ duration ตามที่กำหนดใน theme
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  // กำหนด overflowX เป็น "hidden" เพื่อป้องกันการเลื่อนแนวนอน
-  // ที่อาจเกิดขึ้นเมื่อความกว้างของ Drawer น้อยกว่า viewport
   overflowX: "hidden",
-  // กำหนดความกว้างของ Drawer ให้เท่ากับ 7 หน่วยของ theme spacing + 1px
   width: `calc(${theme.spacing(7)} + 1px)`,
-  // กำหนดความกว้างของ Drawer ให้เท่ากับ 8 หน่วยของ theme spacing + 1px เมื่อขนาดหน้าจอมากกว่าหรือเท่ากับ sm
   [theme.breakpoints.up("sm")]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
 });
 
-// สร้างคอมโพเนนต์ styled ชื่อ DrawerHeader
 const DrawerHeader = styled("div")(({ theme }) => ({
-  // กำหนดให้ DrawerHeader เป็น flex container ที่จัดเรียง item แบบแนวนอน
   display: "flex",
-  // กำหนดให้ item ใน DrawerHeader มีการจัดให้อยู่ตรงกลางแนวตั้ง
   alignItems: "center",
-  // กำหนดให้ item ใน DrawerHeader มีการจัดให้อยู่ทางด้านขวาแนวนอน
   justifyContent: "flex-end",
-  // กำหนด padding ของ DrawerHeader ด้วยฟังก์ชัน spacing ของ theme
   padding: theme.spacing(0, 1),
-  // ใช้ mixin toolbar ของ theme เพื่อกำหนดสไตล์ของ DrawerHeader ให้เหมือนกับ toolbar ทั่วไป
   ...theme.mixins.toolbar,
 }));
 
-// สร้างคอมโพเนนต์เพื่อ AppBar
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
-  // สร้างคอมโพเนนต์ styled ชื่อ AppBar ที่มี props เป็น open สำหรับการกำหนดสถานะเปิดปิดของ Drawer
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
@@ -123,17 +98,18 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function Navbar() {
+export default function Navbar({ onToggle }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const location = useLocation();
 
   const handleDrawerOpen = () => {
     setOpen(true);
+    onToggle(true); // Notify parent component
   };
 
   const handleDrawerClose = () => {
     setOpen(false);
+    onToggle(false); // Notify parent component
   };
 
   //bind value user from localstorage
@@ -177,7 +153,7 @@ export default function Navbar() {
   return (
     <>
       <Box sx={{ display: "flex" }}>
-        {/* <CssBaseline /> */}
+        <CssBaseline />
 
         {/* HEADER MUI APPBAR */}
 

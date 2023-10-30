@@ -5,7 +5,18 @@ function ConnectNetwork() {
   return (
     <>
       <Navbar />
-      <h1>Project PC Connect Network Page</h1>
+      <h1 className="w-screen font-bold mt-96">
+        Project PC Connect Network Page is not available
+      </h1>
+      <h1 className="w-screen font-bold">
+        Project PC Connect Network Page is not available
+      </h1>
+      <h1 className="w-screen font-bold">
+        Project PC Connect Network Page is not available
+      </h1>
+      <h1 className="w-screen font-bold">
+        Project PC Connect Network Page is not available
+      </h1>
     </>
   );
 }

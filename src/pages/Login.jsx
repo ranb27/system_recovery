@@ -83,20 +83,22 @@ function Login() {
 
   return (
     <>
-      <div className="section">
-        <div className="login-container">
-          <div className="title-container">
+      <div className="container">
+        <div className="login-container h-screen -ml-8">
+          <div className="title-container flex justify-center">
             <img
               src={FujiLogo}
               alt="fuji"
               className="login-logo"
               style={{
-                width: 45,
+                width: 60,
                 margin: 10,
               }}
             />
-            <p className="login-title">Smart IT Management</p>
-            <p className="login-subtitle">System Recovery</p>
+            <div>
+              <p className="login-title">Smart IT Management</p>
+              <p className="login-subtitle">System Recovery</p>
+            </div>
           </div>
 
           <form onSubmit={handleLogin}>

@@ -74,18 +74,18 @@ function Computer_In_Process_Search_Group({ onSearch }) {
 
   //สร้าง Function selection change
   const handledivisionChange = (event, newValue) => {
-    setSelecteddivision(newValue);
+    setSelecteddivision(newValue || { division: "Division" });
     setSelectedDepartment({ dep_unit: "Department" });
     setSelectedCostCenter({ cost_center_name: "Cost Center" });
   };
 
   const handleDepartmentChange = (event, newValue) => {
-    setSelectedDepartment(newValue);
+    setSelectedDepartment(newValue || { dep_unit: "Department" });
     setSelectedCostCenter({ cost_center_name: "Cost Center" });
   };
 
   const handleCostcenterChange = (event, newValue) => {
-    setSelectedCostCenter(newValue);
+    setSelectedCostCenter(newValue || { cost_center_name: "Cost Center" });
   };
 
   const handleSearch = () => {
@@ -112,24 +112,19 @@ function Computer_In_Process_Search_Group({ onSearch }) {
   }, [selecteddivision, selectedDepartment, selectedCostCenter]);
 
   return (
-    <React.Fragment>
-      <Box maxWidth="xl" sx={{ width: "100%", height: 50 }}>
-        <Grid container spacing={0} style={{ width: 1350 }}>
-          <Grid item xs={2} md={2}>
-            <div style={{ display: "grid", placeItems: "center" }}>
+    <>
+      <Box maxWidth="xl" sx={{ width: "100%", height: 50, mb: 1 }}>
+        <Grid container spacing={0} className="w-1350">
+          <div className="flex flex-row gap-4">
+            <div className="flex items-center">
               <Autocomplete
                 disablePortal
-                id="combo-box-demo-series"
-                // size="small"
+                id="division"
                 options={distinctdivision}
                 getOptionLabel={(option) => option && option.division}
                 value={selecteddivision}
                 onChange={handledivisionChange}
-                sx={{
-                  width: 250,
-                  height: "60px",
-                  marginTop: "8px",
-                }}
+                className="w-72 h-auto"
                 renderInput={(params) => (
                   <TextField {...params} label="Division" />
                 )}
@@ -138,24 +133,16 @@ function Computer_In_Process_Search_Group({ onSearch }) {
                 }
               />
             </div>
-          </Grid>
-          <Grid item xs={2} md={2}>
-            <div style={{ display: "grid", placeItems: "center" }}>
+
+            <div className="flex items-center">
               <Autocomplete
                 disablePortal
-                // freeSolo
-                id="combo-box-demo-product"
-                // size="small"
+                id="department"
                 options={distinctDepartment}
                 getOptionLabel={(option) => option && option.dep_unit}
                 value={selectedDepartment}
                 onChange={handleDepartmentChange}
-                sx={{
-                  width: 250,
-                  height: "60px",
-                  marginTop: "8px",
-                  marginLeft: "40px",
-                }}
+                className="w-72 h-auto"
                 renderInput={(params) => (
                   <TextField {...params} label="Department" />
                 )}
@@ -164,24 +151,16 @@ function Computer_In_Process_Search_Group({ onSearch }) {
                 }
               />
             </div>
-          </Grid>
-          <Grid item xs={2} md={2}>
-            <div style={{ display: "grid", placeItems: "center" }}>
+
+            <div className="flex items-center">
               <Autocomplete
                 disablePortal
-                // freeSolo
-                id="combo-box-demo-product"
-                // size="small"
+                id="costcenter"
                 options={distinctCostCenter}
                 getOptionLabel={(option) => option && option.cost_center_name}
                 value={selectedCostCenter}
                 onChange={handleCostcenterChange}
-                sx={{
-                  width: 250,
-                  height: "60px",
-                  marginTop: "8px",
-                  marginLeft: "80px",
-                }}
+                className="w-72 h-auto"
                 renderInput={(params) => (
                   <TextField {...params} label="Cost Center" />
                 )}
@@ -192,41 +171,35 @@ function Computer_In_Process_Search_Group({ onSearch }) {
                 }
               />
             </div>
-          </Grid>
-          <Grid item xs={2} md={2}>
+
             <Button
               variant="contained"
               // size="small"
               style={{
-                width: 150,
+                width: 100,
                 height: "50px",
-                marginTop: "10px",
-                marginLeft: "130px",
                 borderRadius: 10,
               }}
               onClick={handleSearch}
             >
               Search
             </Button>
-          </Grid>
-          <Grid item xs={2} md={2}>
+
             <Button
               variant="contained"
               // size="small"
               style={{
                 width: 150,
                 height: "50px",
-                marginTop: "10px",
-                marginLeft: "60px",
                 borderRadius: 10,
               }}
             >
               Request SE
             </Button>
-          </Grid>
+          </div>
         </Grid>
       </Box>
-    </React.Fragment>
+    </>
   );
 }
 

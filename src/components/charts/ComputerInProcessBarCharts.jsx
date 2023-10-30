@@ -4,12 +4,24 @@ const BarChart = () => {
   const state = {
     series: [
       {
-        name: "Sales",
-        data: [44, 55, 41, 37, 22, 43, 21],
+        name: "Machine",
+        data: [44],
       },
       {
-        name: "Net Profit",
-        data: [13, 23, 20, 8, 13, 27, 33],
+        name: "Scan",
+        data: [13],
+      },
+      {
+        name: "Personal",
+        data: [11],
+      },
+      {
+        name: "CCTV",
+        data: [21],
+      },
+      {
+        name: "Scrap",
+        data: [13],
       },
     ],
     options: {
@@ -20,7 +32,7 @@ const BarChart = () => {
       plotOptions: {
         bar: {
           horizontal: false,
-          columnWidth: "55%",
+          columnWidth: "50%",
           endingShape: "rounded",
         },
       },
@@ -28,7 +40,7 @@ const BarChart = () => {
         enabled: false,
       },
       xaxis: {
-        categories: ["Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
+        categories: [""],
       },
       legend: {
         position: "right",

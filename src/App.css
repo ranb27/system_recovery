@@ -1,15 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
 #root {
-  max-width: 1600px;
+  height: 100vh;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  font-family: "Poppins", sans-serif;
 }
 
 body {
   position: absolute;
   /* margin: 3rem; */
   box-sizing: border-box;
+
   /* width: 100%; */
 }
