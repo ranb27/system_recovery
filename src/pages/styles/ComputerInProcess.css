@@ -3,21 +3,19 @@
   margin-top: 2rem;
 }
 
-.dialog-content {
-  display: flex;
-}
-
 .user-data {
-  margin: 0 3rem;
+  margin: 0 1rem;
 }
 
 .security-data {
-  margin-left: 3rem;
+  margin-left: 1rem;
 }
 
 .label-autocomplete {
   font-weight: bold;
   color: #77c4ff;
+  display: flex;
+  align-items: center;
 }
 
 .dialog-head {

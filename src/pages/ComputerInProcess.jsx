@@ -7,6 +7,7 @@ import Computer_In_Process_Search_Group from "../components/SearchGroup/computer
 
 // import DonutChart from "../components/charts/ComputerInProcessDonutChart";
 import BarChart from "../components/charts/ComputerInProcessBarCharts";
+import DonutChart from "../components/charts/ComputerInProcessDonutChart";
 
 import { useState, useEffect } from "react";
 
@@ -30,6 +31,7 @@ import {
 import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
 import Swal from "sweetalert2";
+
 // import Swal from "sweetalert2";
 
 //*Set style for page *//
@@ -75,37 +77,6 @@ const StyledDataGrid = styled(DataGrid)({
 //Todo : Add edit function to save data to database with update API
 
 export default function ComputerInProcess() {
-  //*Get data from API for Division, Department, Cost Center *//
-
-  //   API : filter-division-list
-  // http://10.17.66.242:3001/api/smart_recovery/filter-division-list
-
-  // API : filter-department-list
-  // http://10.17.66.242:3001/api/smart_recovery/filter-department-list?division=Division
-  // http://10.17.66.242:3001/api/smart_recovery/filter-department-list?division=Business%20Operation%20Div.
-
-  // API : filter-costcenter-list
-  // http://10.17.66.242:3001/api/smart_recovery/filter-costcenter-list?division=Division&department=Department
-
-  // http://10.17.66.242:3001/api/smart_recovery/filter-costcenter-list?division=Business%20Operation%20Div.&department=Department
-
-  // http://10.17.66.242:3001/api/smart_recovery/filter-costcenter-list?division=Division&department=PLN
-
-  // http://10.17.66.242:3001/api/smart_recovery/filter-costcenter-list?division=Business%20Operation%20Div.&department=LOG
-
-  //* Get data to display in the table *//
-  // http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=Division&department=Department&cost_center=Cost%20Center
-
-  // http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=Business%20Operation%20Div.&department=Department&cost_center=Cost%20Center
-
-  // http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=Business%20Operation%20Div.&department=PLN&cost_center=Cost%20Center
-
-  // http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=Business%20Operation%20Div.&department=PLN&cost_center=R310-1C/PLN
-
-  // http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=Division&department=PLN&cost_center=Cost%20Center
-
-  // http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=Division&department=Department&cost_center=R310-1C/PLN
-
   //*Division *//
   const [divisions, setDivisions] = useState([]);
   const divURL = `http://10.17.66.242:3001/api/smart_recovery/filter-division-list`;
@@ -193,6 +164,18 @@ export default function ComputerInProcess() {
     getRows();
   }, [selecteddivision, selectedDepartment, selectedCostCenter]);
 
+  const fetchData = () => {
+    // Fetch data from your API
+    axios
+      .get(
+        `http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
+      )
+      .then((res) => {
+        // Update your component's state with the new data
+        setRows(res.data);
+      });
+  };
+
   const columns = [
     // { field: "id", headerName: "No", width: 70 },
     { field: "factory_emp", headerName: "Factory", width: 70 },
@@ -218,6 +201,7 @@ export default function ComputerInProcess() {
         </Button>
       ),
     },
+    // { field: "user_email", headerName: "Email", width: 120 },
   ];
 
   //*Filter *//
@@ -234,6 +218,39 @@ export default function ComputerInProcess() {
 
   const handleOpen = (data) => {
     setSelectedData(data);
+
+    setFormData(
+      { ...formData, pcName: data["pc_name"] },
+      { ...formData, pcType: data["pc_type"] },
+      { ...formData, os: data["os"] },
+      { ...formData, osVersion: data["os_version"] },
+      { ...formData, startDate: data["start_date"] },
+      { ...formData, macAddress: data["mac_address"] },
+      { ...formData, pcUseFor: data["pc_use_for"] },
+      { ...formData, idCode: data["employee_id"] },
+      { ...formData, costCenter: data["cost_center_code"] },
+      { ...formData, area: data["area"] },
+
+      { ...formData, antivirus: data["antivirus"] },
+      { ...formData, antivirusStatus: data["antivirus_status"] },
+      { ...formData, edrStatus: data["edr_status"] },
+      //disabling binding to the database
+      { ...formData, nameSurname: data["emp_name_eng"] },
+      { ...formData, ipAddress: data["new_ip"] },
+      { ...formData, connectType: data["connect_type"] },
+      { ...formData, joinDomain: data["join_domain"] },
+      { ...formData, joinDomainDate: data["join_domain_date"] },
+      { ...formData, email: data["user_email"] },
+      { ...formData, jobLevel: data["job_level"] },
+      { ...formData, division: data["division"] },
+      { ...formData, department: data["department_unit"] },
+      { ...formData, manager: data["supervision_name"] },
+      { ...formData, building: data["building"] }
+    );
+
+    console.log("Selected ID:", data.id);
+    console.log("State of form", formData);
+
     setOpen(true);
   };
 
@@ -242,23 +259,39 @@ export default function ComputerInProcess() {
   };
 
   const handleSave = () => {
-    //TODO : Save data to database
-    console.log(formData);
+    console.log("Edited ID:", selectedData.id);
+    console.log("Updated", formData);
+
+    if (formData !== null) {
+      axios
+        .get(
+          `http://10.17.66.242:3001/api/smart_recovery/update-data-computer-master?row_id=${selectedData.id}&pc_name=${formData.pcName}&pc_type=${formData.pcType}&os=${formData.os}&os_version=${formData.osVersion}&mac_address=${formData.macAddress}&pc_use_for=${formData.pcUseFor}&employee_id=${formData.idCode}&cost_center_code=${formData.costCenter}&building=${formData.building}&area=${formData.area}`
+        )
+        .then((res) => {
+          console.log(res.data);
+        });
+
+      fetchData(); // Fetch the updated data
+    }
+
     if (formData === null) {
       setFormData(selectedData);
     }
 
-    setFormData({});
     Swal.fire({
       icon: "success",
       title: "Save Success",
-      text: "Save data to database successfully",
+      text: "Save data to the database successfully",
       confirmButtonText: "OK",
     });
+
+    // Re initialize the form data
+    setFormData({});
     handleClose();
   };
 
   //*Edit *//
+  //Computer Data
   const [pcName, setPcName] = useState([]);
   const pcType = [
     "Desktop",
@@ -269,20 +302,24 @@ export default function ComputerInProcess() {
     "Rasberry PI",
   ];
   const os = [
-    "Windows 10",
-    "Windows 7",
-    "Windows 8",
-    "Windows XP",
+    "Win 11",
+    "Win 10",
+    "Win 8",
+    "Win 7",
+    "Win XP",
     "Embleded",
-    "MAC OS",
+    "MAC",
+    "WIN 10-TEST",
   ];
-  const osVersion = ["64 bit", "32 bit"];
+  const osVersion = ["64 bit", "32 bit", "21H2-TEST"];
   const startDate = ["2021-10-01", "2021-10-02"];
   const [macAddress, setMacAddress] = useState([]);
   const [ipAddress, setIpAddress] = useState([]);
   const connectType = ["LAN (WAN)", "WIFI (PRD_SCAN)", "WIFI (PRD_OFFICE)"];
   const joinDomain = ["Yes", "No"];
   const joinDomainDate = ["2021-10-01", "2021-10-02"];
+
+  //User Data
   const pcUseFor = [
     "Personal",
     "Machine",
@@ -300,15 +337,19 @@ export default function ComputerInProcess() {
   const [department, setDepartment] = useState([]);
   const [manager, setManager] = useState([]);
   const [costCenter, setCostCenter] = useState([]);
-  const building = ["A", "B", "C1", "C2", "C3", "D"];
+  const building = ["A", "B", "C", "C1", "C2", "C2 2F", "C3", "D"];
   const [area, setArea] = useState([]);
-  const [mfgPro, setMfgPro] = useState([]);
-  const [btp, setBtp] = useState([]);
-  const [fpc, setFpc] = useState([]);
-  const [humatrix, setHumatrix] = useState([]);
-  const [zwcad, setZwcad] = useState([]);
-  const [a1Server, setA1Server] = useState([]);
-  const [outsystem, setOutsystem] = useState([]);
+
+  //Permission Data
+  const mfgPro = ["Yes", "No"];
+  const btp = ["Yes", "No"];
+  const fpc = ["Yes", "No"];
+  const humatrix = ["Yes", "No"];
+  const zwcad = ["Yes", "No"];
+  const a1Server = ["Yes", "No"];
+  const outsystem = ["Yes", "No"];
+
+  //Security Data
   const antivirus = ["Kastersky", "Symantec", "Trend Micro", "McAfee"];
   const antivirusStatus = ["Normal", "Abnormal"];
   const edrStatus = ["Normal", "Abnormal"];
@@ -331,39 +372,35 @@ export default function ComputerInProcess() {
             <div className="flex flex-col sm:flex-row gap-4 w-screen">
               <div className="col-span-1 w-72 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
                 <div className="bg-blue-500 rounded-lg p-4">
-                  <p className="text-white text-lg font-bold">Total PC</p>
+                  <p className="text-white text-xl font-bold">Total PC</p>
                   <div className="bg-white rounded-lg p-4 mt-4">
-                    <p className="text-gray-700 text-xl font-bold">240</p>
+                    <p className="text-gray-700 text-2xl font-bold">240</p>
                   </div>
                 </div>
               </div>
 
               <div className="col-span-1 w-72 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
                 <div className="bg-green-500 rounded-lg p-4">
-                  <p className="text-white text-lg font-bold">PC Connect</p>
+                  <p className="text-white text-xl font-bold">PC Connect</p>
                   <div className="bg-white rounded-lg p-4 mt-4">
-                    <p className="text-gray-700 text-xl font-bold">150</p>
+                    <p className="text-gray-700 text-2xl font-bold">150</p>
                   </div>
                 </div>
               </div>
 
               <div className="col-span-1 w-72 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
                 <div className="bg-yellow-500 rounded-lg p-4">
-                  <p className="text-white text-lg font-bold">Wait Connect</p>
+                  <p className="text-white text-xl font-bold">Wait Connect</p>
                   <div className="bg-white rounded-lg p-4 mt-4">
-                    <p className="text-gray-700 text-xl font-bold">190</p>
+                    <p className="text-gray-700 text-2xl font-bold">90</p>
                   </div>
                 </div>
               </div>
 
-              <div className="col-span-2 w-full sm:w-1/3">
+              <div className="flex flex-row w-screen sm:w-1/3">
                 <BarChart />
-              </div>
-              <div className="col-span-2 w-full sm:w-1/3">
                 <BarChart />
-              </div>
-              <div className="col-span-2 w-full sm:w-1/3">
-                <BarChart />
+                <DonutChart />
               </div>
             </div>
 
@@ -383,7 +420,7 @@ export default function ComputerInProcess() {
             {/* Table for Computer in Process */}
             <div
               style={{
-                height: "55vh",
+                height: "60vh",
                 width: isNavbarOpen ? "calc(90vw - 10vw)" : "90vw",
                 marginTop: "16px",
               }}
@@ -402,21 +439,27 @@ export default function ComputerInProcess() {
             {selectedData && (
               <Dialog open={open} onClose={handleClose} maxWidth="100vw">
                 <DialogContent sx={{ background: "#e3e3e3" }}>
-                  <div className="dialog-content">
+                  <div className="flex flex-row">
                     <div className="computer-data">
                       <div className="bg-white p-4 rounded-2xl">
                         <p className="dialog-head">Computer Data</p>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           PC Name
                           <Autocomplete
                             disablePortal
                             id="pc-name-autocomplete"
                             options={pcName}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.pc_name}
                             renderInput={(params) => (
                               <TextField {...params} label="PC Name" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                             onChange={(event, newValue) => {
                               setFormData((prev) => ({
                                 ...prev,
@@ -425,17 +468,23 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           PC Type
                           <Autocomplete
                             disablePortal
                             id="pc-type-autocomplete"
                             options={pcType}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.pc_type}
                             renderInput={(params) => (
                               <TextField {...params} label="PC Type" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                             onChange={(event, newValue) => {
                               setFormData((prev) => ({
                                 ...prev,
@@ -444,17 +493,23 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           OS
                           <Autocomplete
                             disablePortal
                             id="os-autocomplete"
                             options={os}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.os}
                             renderInput={(params) => (
                               <TextField {...params} label="OS" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                             onChange={(event, newValue) => {
                               setFormData((prev) => ({
                                 ...prev,
@@ -463,17 +518,23 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           OS Version
                           <Autocomplete
                             disablePortal
                             id="os-version-autocomplete"
                             options={osVersion}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.os_version}
                             renderInput={(params) => (
                               <TextField {...params} label="OS Version" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                             onChange={(event, newValue) => {
                               setFormData((prev) => ({
                                 ...prev,
@@ -482,36 +543,37 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Start Date
-                          <Autocomplete
-                            disablePortal
-                            id="start-date-autocomplete"
-                            options={startDate}
-                            getOptionLabel={(option) => option}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Start Date" />
-                            )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                startDate: newValue,
-                              }));
+                          <TextField
+                            disabled
+                            id="outlined-disabled"
+                            defaultValue="2021-10-01"
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
                             }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           MAC Address
                           <Autocomplete
                             disablePortal
                             id="mac-address-autocomplete"
                             options={macAddress}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.mac_address}
                             renderInput={(params) => (
                               <TextField {...params} label="Mac Address" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                             onChange={(event, newValue) => {
                               setFormData((prev) => ({
                                 ...prev,
@@ -520,80 +582,59 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           IP Address
-                          <Autocomplete
-                            disablePortal
-                            id="ip-address-autocomplete"
-                            options={ipAddress}
-                            getOptionLabel={(option) => option}
-                            renderInput={(params) => (
-                              <TextField {...params} label="IP Address" />
-                            )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                ipAddress: newValue,
-                              }));
+                          <TextField
+                            disabled
+                            id="outlined-disabled"
+                            defaultValue={selectedData.new_ip}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
                             }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Connect Type
-                          <Autocomplete
-                            disablePortal
-                            id="connect-type-autocomplete"
-                            options={connectType}
-                            getOptionLabel={(option) => option}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Connect Type" />
-                            )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                connectType: newValue,
-                              }));
+                          <TextField
+                            disabled
+                            id="outlined-disabled"
+                            defaultValue={selectedData.connect_type}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
                             }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Join Domain
-                          <Autocomplete
-                            disablePortal
-                            id="join-domain-autocomplete"
-                            options={joinDomain}
-                            getOptionLabel={(option) => option}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Join Domain" />
-                            )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                joinDomain: newValue,
-                              }));
+                          <TextField
+                            disabled
+                            id="outlined-disabled"
+                            defaultValue={selectedData.join_domain}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
                             }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Join Domain Date
-                          <Autocomplete
-                            type="date"
-                            disablePortal
-                            id="join-domain-date-autocomplete"
-                            options={joinDomainDate}
-                            getOptionLabel={(option) => option}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Join Domain Date" />
-                            )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                joinDomainDate: newValue,
-                              }));
+                          <TextField
+                            disabled
+                            id="outlined-disabled"
+                            defaultValue={selectedData.join_domain_date}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
                             }}
                           />
                         </label>
@@ -605,147 +646,214 @@ export default function ComputerInProcess() {
                     <div className="user-data">
                       <div className="bg-white p-4 rounded-2xl">
                         <p className="dialog-head">User Data</p>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           PC Use For
                           <Autocomplete
                             disablePortal
                             id="pc-use-for-autocomplete"
                             options={pcUseFor}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.pc_use_for}
                             renderInput={(params) => (
                               <TextField {...params} label="PC Use For" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
+                            onChange={(event, newValue) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                pcUseFor: newValue,
+                              }));
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           ID Code
                           <Autocomplete
                             disablePortal
                             id="id-code-autocomplete"
                             options={idCode}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.employee_id}
                             renderInput={(params) => (
                               <TextField {...params} label="ID Code" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
+                            onChange={(event, newValue) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                idCode: newValue,
+                              }));
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Name - Surname
-                          <Autocomplete
-                            disablePortal
-                            id="name-surname-autocomplete"
-                            options={nameSurname}
-                            getOptionLabel={(option) => option}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Name - Surname" />
-                            )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                          <TextField
+                            disabled
+                            id="outlined-disabled"
+                            defaultValue={selectedData.emp_name_eng}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+
+                        <label className="font-bold text-blue-300 flex items-center">
                           Email
-                          <Autocomplete
-                            disablePortal
-                            id="email-autocomplete"
-                            options={email}
-                            getOptionLabel={(option) => option}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Email" />
-                            )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                          <TextField
+                            disabled
+                            id="outlined-disabled"
+                            defaultValue={selectedData.user_email}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Job Level
-                          <Autocomplete
-                            disablePortal
-                            id="job-level-autocomplete"
-                            options={jobLevel}
-                            getOptionLabel={(option) => option}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Job Level" />
-                            )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                          <TextField
+                            disabled
+                            id="outlined-disabled"
+                            defaultValue={selectedData.job_level}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Division
-                          <Autocomplete
-                            disablePortal
-                            id="division-autocomplete"
-                            options={division}
-                            getOptionLabel={(option) => option}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Division" />
-                            )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                          <TextField
+                            disabled
+                            id="outlined-disabled"
+                            defaultValue={selectedData.division}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Department
-                          <Autocomplete
-                            disablePortal
-                            id="department-autocomplete"
-                            options={department}
-                            getOptionLabel={(option) => option}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Department" />
-                            )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                          <TextField
+                            disabled
+                            id="outlined-disabled"
+                            defaultValue={selectedData.department_unit}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Manager
-                          <Autocomplete
-                            disablePortal
-                            id="manager-autocomplete"
-                            options={manager}
-                            getOptionLabel={(option) => option}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Manager" />
-                            )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                          <TextField
+                            disabled
+                            id="outlined-disabled"
+                            defaultValue={selectedData.supervision_name}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
-                          Cost Cente
+                        <label className="font-bold text-blue-300 flex items-center">
+                          Cost Center
                           <Autocomplete
                             disablePortal
                             id="cost-center-autocomplete"
                             options={costCenter}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.cost_center_code}
                             renderInput={(params) => (
                               <TextField {...params} label="Cost Center" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
+                            onChange={(event, newValue) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                costCenter: newValue,
+                              }));
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Building
                           <Autocomplete
                             disablePortal
                             id="building-autocomplete"
                             options={building}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.building}
                             renderInput={(params) => (
                               <TextField {...params} label="Building" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
+                            onChange={(event, newValue) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                building: newValue,
+                              }));
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Area
                           <Autocomplete
                             disablePortal
                             id="area-autocomplete"
                             options={area}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.area}
                             renderInput={(params) => (
                               <TextField {...params} label="Area" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
+                            onChange={(event, newValue) => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                area: newValue,
+                              }));
+                            }}
                           />
                         </label>
                       </div>
@@ -756,95 +864,137 @@ export default function ComputerInProcess() {
                     <div className="permission-data">
                       <div className="bg-white p-4 rounded-2xl">
                         <p className="dialog-head">Permission Data</p>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           MFG Pro
                           <Autocomplete
                             disablePortal
                             id="mfg-pro-autocomplete"
                             options={mfgPro}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.mfg_pro}
                             renderInput={(params) => (
                               <TextField {...params} label="MFG Pro" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           BTP
                           <Autocomplete
                             disablePortal
                             id="btp-autocomplete"
                             options={btp}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.btp}
                             renderInput={(params) => (
                               <TextField {...params} label="BTP" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           FPC
                           <Autocomplete
                             disablePortal
                             id="fpc-autocomplete"
                             options={fpc}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.fpc}
                             renderInput={(params) => (
                               <TextField {...params} label="FPC" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Humatrix
                           <Autocomplete
                             disablePortal
                             id="humatrix-autocomplete"
                             options={humatrix}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.humatrix}
                             renderInput={(params) => (
                               <TextField {...params} label="Humatrix" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           ZWCAD
                           <Autocomplete
                             disablePortal
                             id="zwcad-autocomplete"
                             options={zwcad}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.zwcad}
                             renderInput={(params) => (
                               <TextField {...params} label="ZWCAD" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           A1 Server
                           <Autocomplete
                             disablePortal
                             id="a1-server-autocomplete"
                             options={a1Server}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.a1_server}
                             renderInput={(params) => (
                               <TextField {...params} label="A1 Server" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Outsystem
                           <Autocomplete
                             disablePortal
                             id="outsystem-autocomplete"
                             options={outsystem}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.outsystem}
                             renderInput={(params) => (
                               <TextField {...params} label="Outsystem" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
                       </div>
@@ -855,44 +1005,62 @@ export default function ComputerInProcess() {
                     <div className="security-data">
                       <div className="bg-white p-4 rounded-2xl">
                         <p className="dialog-head">Security Data</p>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Antivirus
                           <Autocomplete
                             disablePortal
                             id="antivirus-autocomplete"
                             options={antivirus}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.antivirus}
                             renderInput={(params) => (
                               <TextField {...params} label="Antivirus" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
 
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           Antivirus Status
                           <Autocomplete
                             disablePortal
                             id="antivirus-status-autocomplete"
                             options={antivirusStatus}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.antivirus_status}
                             renderInput={(params) => (
                               <TextField {...params} label="Antivirus Status" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
-                        <label className="label-autocomplete">
+                        <label className="font-bold text-blue-300 flex items-center">
                           EDR Status
                           <Autocomplete
                             disablePortal
                             id="edr-status-autocomplete"
                             options={edrStatus}
                             getOptionLabel={(option) => option}
+                            defaultValue={selectedData.edr_status}
                             renderInput={(params) => (
                               <TextField {...params} label="EDR Status" />
                             )}
-                            sx={{ width: 300, mt: 1, mb: 1 }}
+                            sx={{
+                              width: 240,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
                           />
                         </label>
                       </div>

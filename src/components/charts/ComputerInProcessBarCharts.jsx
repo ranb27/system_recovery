@@ -27,12 +27,12 @@ const BarChart = () => {
     options: {
       chart: {
         type: "bar",
-        height: 240,
+        height: 160,
       },
       plotOptions: {
         bar: {
           horizontal: false,
-          columnWidth: "50%",
+          columnWidth: "75%",
           endingShape: "rounded",
         },
       },
@@ -44,6 +44,7 @@ const BarChart = () => {
       },
       legend: {
         position: "right",
+        offsetY: -10,
       },
     },
   };
@@ -53,7 +54,8 @@ const BarChart = () => {
       options={state.options}
       series={state.series}
       type="bar"
-      height={240}
+      height={160}
+      width={300}
     />
   );
 };

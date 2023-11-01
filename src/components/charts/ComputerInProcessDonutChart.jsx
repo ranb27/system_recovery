@@ -11,7 +11,7 @@ class DonutChart extends React.Component {
           width: 380,
           type: "donut",
         },
-        labels: ["Team A", "Team B", "Team C", "Team D", "Team E"],
+        labels: ["Join Domain", "Wait Join"],
         responsive: [
           {
             breakpoint: 480,
@@ -20,13 +20,13 @@ class DonutChart extends React.Component {
                 width: 200,
               },
               legend: {
-                position: "bottom",
+                position: "right",
               },
             },
           },
         ],
       },
-      series: [44, 55, 13, 43, 22],
+      series: [150, 90],
     };
   }
 
@@ -37,7 +37,7 @@ class DonutChart extends React.Component {
           options={this.state.options}
           series={this.state.series}
           type="donut"
-          width={380}
+          width={300}
         />
       </div>
     );

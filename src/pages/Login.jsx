@@ -50,7 +50,7 @@ function Login() {
           Swal.fire({
             icon: "error",
             title: "Login Failed",
-            text: "Please check your email or password",
+            text: "Please check your username or password",
           });
         }
       })
@@ -59,7 +59,7 @@ function Login() {
         Swal.fire({
           icon: "error",
           title: "User does not exist",
-          text: "Please check your email or password",
+          text: "Please check your username or password",
         });
       });
   };

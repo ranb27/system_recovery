@@ -73,19 +73,28 @@ function Computer_In_Process_Search_Group({ onSearch }) {
   }
 
   //สร้าง Function selection change
-  const handledivisionChange = (event, newValue) => {
-    setSelecteddivision(newValue || { division: "Division" });
-    setSelectedDepartment({ dep_unit: "Department" });
-    setSelectedCostCenter({ cost_center_name: "Cost Center" });
+  const handleDivisionChange = (event, newValue) => {
+    if (newValue !== null && newValue.length !== 0) {
+      setSelecteddivision(newValue);
+    } else {
+      setSelecteddivision({ division: "Division" });
+    }
   };
 
   const handleDepartmentChange = (event, newValue) => {
-    setSelectedDepartment(newValue || { dep_unit: "Department" });
-    setSelectedCostCenter({ cost_center_name: "Cost Center" });
+    if (newValue !== null && newValue.length !== 0) {
+      setSelectedDepartment(newValue);
+    } else {
+      setSelectedDepartment({ dep_unit: "Department" });
+    }
   };
 
   const handleCostcenterChange = (event, newValue) => {
-    setSelectedCostCenter(newValue || { cost_center_name: "Cost Center" });
+    if (newValue !== null && newValue.length !== 0) {
+      setSelectedCostCenter(newValue);
+    } else {
+      setSelectedCostCenter({ cost_center_name: "Cost Center" });
+    }
   };
 
   const handleSearch = () => {
@@ -123,8 +132,8 @@ function Computer_In_Process_Search_Group({ onSearch }) {
                 options={distinctdivision}
                 getOptionLabel={(option) => option && option.division}
                 value={selecteddivision}
-                onChange={handledivisionChange}
-                className="w-72 h-auto"
+                onChange={handleDivisionChange}
+                className="w-96 h-auto"
                 renderInput={(params) => (
                   <TextField {...params} label="Division" />
                 )}
@@ -142,7 +151,7 @@ function Computer_In_Process_Search_Group({ onSearch }) {
                 getOptionLabel={(option) => option && option.dep_unit}
                 value={selectedDepartment}
                 onChange={handleDepartmentChange}
-                className="w-72 h-auto"
+                className="w-96 h-auto"
                 renderInput={(params) => (
                   <TextField {...params} label="Department" />
                 )}
@@ -160,7 +169,7 @@ function Computer_In_Process_Search_Group({ onSearch }) {
                 getOptionLabel={(option) => option && option.cost_center_name}
                 value={selectedCostCenter}
                 onChange={handleCostcenterChange}
-                className="w-72 h-auto"
+                className="w-96 h-auto"
                 renderInput={(params) => (
                   <TextField {...params} label="Cost Center" />
                 )}
