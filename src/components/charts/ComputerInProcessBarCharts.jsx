@@ -5,7 +5,7 @@ const BarChart = () => {
     series: [
       {
         name: "Machine",
-        data: [44],
+        data: [25],
       },
       {
         name: "Scan",
@@ -13,11 +13,11 @@ const BarChart = () => {
       },
       {
         name: "Personal",
-        data: [11],
+        data: [83],
       },
       {
         name: "CCTV",
-        data: [21],
+        data: [32],
       },
       {
         name: "Scrap",

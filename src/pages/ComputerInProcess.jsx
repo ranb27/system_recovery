@@ -1,15 +1,16 @@
+import axios from "axios";
+import Swal from "sweetalert2";
+import * as React from "react";
+import { useState, useEffect } from "react";
+import "./styles/ComputerInProcess.css";
+import ReactApexChart from "react-apexcharts";
+
 //* Computer in process page component *//
 
-import * as React from "react";
-import "./styles/ComputerInProcess.css";
 import Navbar from "../components/Navbar/Navbar";
 import Computer_In_Process_Search_Group from "../components/SearchGroup/computer_in_process_search";
-
-// import DonutChart from "../components/charts/ComputerInProcessDonutChart";
 import BarChart from "../components/charts/ComputerInProcessBarCharts";
 import DonutChart from "../components/charts/ComputerInProcessDonutChart";
-
-import { useState, useEffect } from "react";
 
 //*mui imports //
 
@@ -18,21 +19,15 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
-
 import {
   Container,
   Dialog,
-  // DialogTitle,
   DialogContent,
   DialogActions,
   Button,
   TextField,
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import axios from "axios";
-import Swal from "sweetalert2";
-
-// import Swal from "sweetalert2";
 
 //*Set style for page *//
 const theme = createTheme({
@@ -72,9 +67,6 @@ const StyledDataGrid = styled(DataGrid)({
     FontFace: "Poppins",
   },
 });
-
-//Todo : Add filter about division, department, cost center to display in the table //from p'Keem
-//Todo : Add edit function to save data to database with update API
 
 export default function ComputerInProcess() {
   //*Division *//
@@ -116,13 +108,13 @@ export default function ComputerInProcess() {
   // console.log(departments);
   // console.log(costCenters);
 
+  //*Get search data from API *//
   useEffect(() => {
     getDivisions();
     getDepartments();
     getCostCenters();
   }, []);
 
-  //TODO : Get data from API to display in the table
   //*Table *//
   const [rows, setRows] = useState([]);
 
@@ -134,36 +126,90 @@ export default function ComputerInProcess() {
         )
         .then((res) => {
           setRows(res.data);
-          const pcNames = res.data.map((item) => item.pc_name);
-          setPcName(pcNames);
-          const macAddresses = res.data.map((item) => item.mac_address);
-          setMacAddress(macAddresses);
-          const ipAddresses = res.data.map((item) => item.new_ip);
-          setIpAddress(ipAddresses);
-          const idCodes = res.data.map((item) => item.employee_id);
-          setIdCode(idCodes);
-          const nameSurnames = res.data.map((item) => item.emp_name_eng);
-          setNameSurname(nameSurnames);
-          const emails = res.data.map((item) => item.user_email);
-          setEmail(emails);
-          const jobLevels = res.data.map((item) => item.job_level);
-          setJobLevel(jobLevels);
-          const divisions = res.data.map((item) => item.division);
-          setDivision(divisions);
-          const departments = res.data.map((item) => item.department_unit);
-          setDepartment(departments);
-          const managers = res.data.map((item) => item.supervision_name);
-          setManager(managers);
-          const costCenters = res.data.map((item) => item.cost_center_code);
-          setCostCenter(costCenters);
-          const areas = res.data.map((item) => item.area);
-          setArea(areas);
+
+          // Filter and remove duplicate values using Set
+          const pcNames = Array.from(
+            new Set(res.data.map((item) => item.pc_name))
+          );
+          setPcNameOption(pcNames);
+
+          const osVersions = Array.from(
+            new Set(res.data.map((item) => item.os_version))
+          );
+          setOsVersionOption(osVersions);
+
+          const macAddresses = Array.from(
+            new Set(res.data.map((item) => item.mac_address))
+          );
+          setMacAddressOption(macAddresses);
+
+          const ipAddresses = Array.from(
+            new Set(res.data.map((item) => item.new_ip))
+          );
+          setIpAddressOption(ipAddresses);
+
+          const idCodes = Array.from(
+            new Set(res.data.map((item) => item.employee_id))
+          );
+          setIdCodeOption(idCodes);
+
+          const nameSurnames = Array.from(
+            new Set(res.data.map((item) => item.emp_name_eng))
+          );
+          setNameSurnameOption(nameSurnames);
+
+          const emails = Array.from(
+            new Set(res.data.map((item) => item.user_email))
+          );
+          setEmailOption(emails);
+
+          const jobLevels = Array.from(
+            new Set(res.data.map((item) => item.job_level))
+          );
+          setJobLevelOption(jobLevels);
+
+          const divisions = Array.from(
+            new Set(res.data.map((item) => item.division))
+          );
+          setDivisionOption(divisions);
+
+          const departments = Array.from(
+            new Set(res.data.map((item) => item.department_unit))
+          );
+          setDepartmentOption(departments);
+
+          const managers = Array.from(
+            new Set(res.data.map((item) => item.supervision_name))
+          );
+          setManagerOption(managers);
+
+          const costCenters = Array.from(
+            new Set(res.data.map((item) => item.cost_center_code))
+          );
+          setCostCenterOption(costCenters);
         });
+
       return response;
     };
     getRows();
   }, [selecteddivision, selectedDepartment, selectedCostCenter]);
 
+  //*Filter option for building and area *//
+  const handleBuildingChange = (event, newValue) => {
+    setBuilding(newValue);
+
+    // Fetch the areas for the selected building
+    axios
+      .get(
+        `http://10.17.66.242:3001/api/smart_recovery/filter-building-area-list?building=${newValue}`
+      )
+      .then((res) => {
+        setAreaOption(res.data.map((item) => item.area));
+        setArea(""); // Clear the selected Area when Building changes
+      });
+  };
+
+  //*Fetch data for refresh *//
   const fetchData = () => {
     // Fetch data from your API
     axios
@@ -217,66 +263,98 @@ export default function ComputerInProcess() {
   const [formData, setFormData] = useState({});
 
   const handleOpen = (data) => {
+    const selectedID = data.id;
+    localStorage.setItem("selectedID", selectedID);
     setSelectedData(data);
 
-    setFormData(
-      { ...formData, pcName: data["pc_name"] },
-      { ...formData, pcType: data["pc_type"] },
-      { ...formData, os: data["os"] },
-      { ...formData, osVersion: data["os_version"] },
-      { ...formData, startDate: data["start_date"] },
-      { ...formData, macAddress: data["mac_address"] },
-      { ...formData, pcUseFor: data["pc_use_for"] },
-      { ...formData, idCode: data["employee_id"] },
-      { ...formData, costCenter: data["cost_center_code"] },
-      { ...formData, area: data["area"] },
+    setPcName(data["pc_name"]);
+    setPcType(data["pc_type"]);
+    setOs(data["os"]);
+    setOsVersion(data["os_version"]);
+    setStartDate(data["start_date"]);
+    setMacAddress(data["mac_address"]);
+    setPcUseFor(data["pc_use_for"]);
+    setIdCode(data["employee_id"]);
+    setNameSurname(data["emp_name_eng"]);
+    setEmail(data["user_email"]);
+    setJobLevel(data["job_level"]);
+    setDivision(data["division"]);
+    setDepartment(data["department_unit"]);
+    setManager(data["supervision_name"]);
+    setCostCenter(data["cost_center_code"]);
+    setBuilding(data["building"]);
+    setArea(data["area"]);
+    setAntivirus(data["antivirus"]);
+    setAntivirusStatus(data["antivirus_status"]);
+    setEdrStatus(data["edr_status"]);
+    setIpAddress(data["new_ip"]);
+    setConnectType(data["connect_type"]);
+    setJoinDomain(data["join_domain"]);
+    setJoinDomainDate(data["join_domain_date"]);
 
-      { ...formData, antivirus: data["antivirus"] },
-      { ...formData, antivirusStatus: data["antivirus_status"] },
-      { ...formData, edrStatus: data["edr_status"] },
-      //disabling binding to the database
-      { ...formData, nameSurname: data["emp_name_eng"] },
-      { ...formData, ipAddress: data["new_ip"] },
-      { ...formData, connectType: data["connect_type"] },
-      { ...formData, joinDomain: data["join_domain"] },
-      { ...formData, joinDomainDate: data["join_domain_date"] },
-      { ...formData, email: data["user_email"] },
-      { ...formData, jobLevel: data["job_level"] },
-      { ...formData, division: data["division"] },
-      { ...formData, department: data["department_unit"] },
-      { ...formData, manager: data["supervision_name"] },
-      { ...formData, building: data["building"] }
-    );
-
-    console.log("Selected ID:", data.id);
     console.log("State of form", formData);
 
     setOpen(true);
   };
+
+  //*Monitor selected ID after handleOpen *//
+  let selectedID = localStorage.getItem("selectedID");
+  const selectedComputerName = rows.find(
+    (row) => row.id === selectedID
+  )?.pc_name;
+
+  console.log("Local ID:", selectedID);
+  console.log("Selected Computer Name:", selectedComputerName);
 
   const handleClose = () => {
     setOpen(false);
   };
 
   const handleSave = () => {
-    console.log("Edited ID:", selectedData.id);
-    console.log("Updated", formData);
+    const editedData = {
+      id: selectedData.id,
+      selectedComputerName,
+      pcName,
+      pcType,
+      os,
+      osVersion,
+      startDate,
+      macAddress,
+      pcUseFor,
+      idCode,
+      nameSurname,
+      email,
+      jobLevel,
+      division,
+      department,
+      manager,
+      costCenter,
+      building,
+      area,
+      antivirus,
+      antivirusStatus,
+      edrStatus,
+      ipAddress,
+      connectType,
+      joinDomain,
+      joinDomainDate,
+    };
 
-    if (formData !== null) {
-      axios
-        .get(
-          `http://10.17.66.242:3001/api/smart_recovery/update-data-computer-master?row_id=${selectedData.id}&pc_name=${formData.pcName}&pc_type=${formData.pcType}&os=${formData.os}&os_version=${formData.osVersion}&mac_address=${formData.macAddress}&pc_use_for=${formData.pcUseFor}&employee_id=${formData.idCode}&cost_center_code=${formData.costCenter}&building=${formData.building}&area=${formData.area}`
-        )
-        .then((res) => {
-          console.log(res.data);
-        });
+    console.log("Edited Data:", editedData);
 
-      fetchData(); // Fetch the updated data
-    }
+    axios
+      .get(
+        `http://10.17.66.242:3001/api/smart_recovery/update-data-computer-master?row_id=${selectedData.id}&pc_name=${pcName}&pc_type=${pcType}&os=${os}&os_version=${osVersion}&mac_address=${macAddress}&pc_use_for=${pcUseFor}&employee_id=${idCode}&cost_center_code=${costCenter}&building=${building}&area=${area}`
+      )
+      .then((res) => {
+        console.log("Success:", res.data);
+        // console.log(res.data);
+        // localStorage.setItem("data", JSON.stringify(res.data));
+      });
 
-    if (formData === null) {
-      setFormData(selectedData);
-    }
+    // if (formData === null) {
+    //   setFormData(selectedData);
+    // }
 
     Swal.fire({
       icon: "success",
@@ -285,15 +363,41 @@ export default function ComputerInProcess() {
       confirmButtonText: "OK",
     });
 
-    // Re initialize the form data
-    setFormData({});
+    fetchData();
     handleClose();
   };
 
   //*Edit *//
-  //Computer Data
-  const [pcName, setPcName] = useState([]);
-  const pcType = [
+
+  //state for edit data
+  const [pcName, setPcName] = useState("");
+  const [pcType, setPcType] = useState("");
+  const [os, setOs] = useState("");
+  const [osVersion, setOsVersion] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [macAddress, setMacAddress] = useState("");
+  const [pcUseFor, setPcUseFor] = useState("");
+  const [idCode, setIdCode] = useState("");
+  const [nameSurname, setNameSurname] = useState("");
+  const [email, setEmail] = useState("");
+  const [jobLevel, setJobLevel] = useState("");
+  const [division, setDivision] = useState("");
+  const [department, setDepartment] = useState("");
+  const [manager, setManager] = useState("");
+  const [costCenter, setCostCenter] = useState("");
+  const [building, setBuilding] = useState("");
+  const [area, setArea] = useState("");
+  const [antivirus, setAntivirus] = useState("");
+  const [antivirusStatus, setAntivirusStatus] = useState("");
+  const [edrStatus, setEdrStatus] = useState("");
+  const [ipAddress, setIpAddress] = useState("");
+  const [connectType, setConnectType] = useState("");
+  const [joinDomain, setJoinDomain] = useState("");
+  const [joinDomainDate, setJoinDomainDate] = useState("");
+
+  //*option *//
+  const [pcNameOption, setPcNameOption] = useState([]);
+  const pcTypeOption = [
     "Desktop",
     "Laptop",
     "Server",
@@ -301,26 +405,30 @@ export default function ComputerInProcess() {
     "Tablet",
     "Rasberry PI",
   ];
-  const os = [
+  const osOption = [
     "Win 11",
     "Win 10",
     "Win 8",
     "Win 7",
     "Win XP",
     "Embleded",
-    "MAC",
-    "WIN 10-TEST",
+    "Mac",
   ];
-  const osVersion = ["64 bit", "32 bit", "21H2-TEST"];
-  const startDate = ["2021-10-01", "2021-10-02"];
-  const [macAddress, setMacAddress] = useState([]);
-  const [ipAddress, setIpAddress] = useState([]);
-  const connectType = ["LAN (WAN)", "WIFI (PRD_SCAN)", "WIFI (PRD_OFFICE)"];
-  const joinDomain = ["Yes", "No"];
-  const joinDomainDate = ["2021-10-01", "2021-10-02"];
+  const [osVersionOption, setOsVersionOption] = useState([]);
+
+  const startDateOption = ["2021-10-01", "2021-10-02"];
+  const [macAddressOption, setMacAddressOption] = useState([]);
+  const [ipAddressOption, setIpAddressOption] = useState([]);
+  const connectTypeOption = [
+    "LAN (WAN)",
+    "WIFI (PRD_SCAN)",
+    "WIFI (PRD_OFFICE)",
+  ];
+  const joinDomainOption = ["Yes", "No"];
+  const joinDomainDateOption = ["2021-10-01", "2021-10-02"];
 
   //User Data
-  const pcUseFor = [
+  const pcUseForOption = [
     "Personal",
     "Machine",
     "Scan WIP",
@@ -329,36 +437,116 @@ export default function ComputerInProcess() {
     "Center",
     "Server",
   ];
-  const [idCode, setIdCode] = useState([]);
-  const [nameSurname, setNameSurname] = useState([]);
-  const [email, setEmail] = useState([]);
-  const [jobLevel, setJobLevel] = useState([]);
-  const [division, setDivision] = useState([]);
-  const [department, setDepartment] = useState([]);
-  const [manager, setManager] = useState([]);
-  const [costCenter, setCostCenter] = useState([]);
-  const building = ["A", "B", "C", "C1", "C2", "C2 2F", "C3", "D"];
-  const [area, setArea] = useState([]);
+  const [idCodeOption, setIdCodeOption] = useState([]);
+  const [nameSurnameOption, setNameSurnameOption] = useState([]);
+  const [emailOption, setEmailOption] = useState([]);
+  const [jobLevelOption, setJobLevelOption] = useState([]);
+  const [divisionOption, setDivisionOption] = useState([]);
+  const [departmentOption, setDepartmentOption] = useState([]);
+  const [managerOption, setManagerOption] = useState([]);
+  const [costCenterOption, setCostCenterOption] = useState([]);
+  const buildingOption = ["A", "B", "C", "C1", "C2", "C2 2F", "C3", "D"];
+  const [areaOption, setAreaOption] = useState([]);
 
   //Permission Data
-  const mfgPro = ["Yes", "No"];
-  const btp = ["Yes", "No"];
-  const fpc = ["Yes", "No"];
-  const humatrix = ["Yes", "No"];
-  const zwcad = ["Yes", "No"];
-  const a1Server = ["Yes", "No"];
-  const outsystem = ["Yes", "No"];
+  const mfgProOption = ["Yes", "No"];
+  const btpOption = ["Yes", "No"];
+  const fpcOption = ["Yes", "No"];
+  const humatrixOption = ["Yes", "No"];
+  const zwcadOption = ["Yes", "No"];
+  const a1ServerOption = ["Yes", "No"];
+  const outsystemOption = ["Yes", "No"];
 
   //Security Data
-  const antivirus = ["Kastersky", "Symantec", "Trend Micro", "McAfee"];
-  const antivirusStatus = ["Normal", "Abnormal"];
-  const edrStatus = ["Normal", "Abnormal"];
+  const antivirusOption = ["Kastersky", "Symantec", "Trend Micro", "McAfee"];
+  const antivirusStatusOption = ["Normal", "Abnormal"];
+  const edrStatusOption = ["Normal", "Abnormal"];
 
   //*Responsive for Navbar *//
   const [isNavbarOpen, setIsNavbarOpen] = React.useState(false);
 
   const handleNavbarToggle = (openStatus) => {
     setIsNavbarOpen(openStatus);
+  };
+
+  //*Total PC *//
+  const [totalPC, setTotalPC] = useState(0);
+  const [PCconnect, setPCconnect] = useState(0);
+  const [waitConnect, setWaitConnect] = useState(0);
+
+  useEffect(() => {
+    const getTotalPC = async () => {
+      const response = await axios.get(
+        `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-status?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
+      );
+      setTotalPC(response.data[0].total_pc);
+      setPCconnect(response.data[0].pc_connect);
+      setWaitConnect(response.data[0].wait_connect);
+    };
+    getTotalPC();
+  });
+
+  //*Charts *//
+  const BarChartTest = () => {
+    const pcUseForValue = 83;
+
+    const state = {
+      series: [
+        {
+          name: "Machine",
+          data: [25],
+        },
+        {
+          name: "Scan",
+          data: [13],
+        },
+        {
+          name: "Personal",
+          data: [pcUseForValue],
+        },
+        {
+          name: "CCTV",
+          data: [32],
+        },
+        {
+          name: "Scrap",
+          data: [13],
+        },
+      ],
+      options: {
+        chart: {
+          type: "bar",
+          height: 160,
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: "75%",
+            endingShape: "rounded",
+          },
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        xaxis: {
+          categories: [""],
+        },
+        legend: {
+          position: "right",
+          offsetY: -10,
+        },
+      },
+    };
+
+    return (
+      <ReactApexChart
+        options={state.options}
+        series={state.series}
+        type="bar"
+        height={160}
+        width={300}
+      />
+    );
   };
 
   return (
@@ -370,43 +558,55 @@ export default function ComputerInProcess() {
             {/* //Chart Group */}
 
             <div className="flex flex-col sm:flex-row gap-4 w-screen">
-              <div className="col-span-1 w-72 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                <div className="bg-blue-500 rounded-lg p-4">
+              <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
+                <div className="bg-blue-500 rounded-lg p-4 shadow-lg h-40">
                   <p className="text-white text-xl font-bold">Total PC</p>
-                  <div className="bg-white rounded-lg p-4 mt-4">
-                    <p className="text-gray-700 text-2xl font-bold">240</p>
+                  <div className="bg-white rounded-lg p-4 mt-8 h-16">
+                    <p className="text-gray-700 text-2xl font-bold">
+                      {totalPC}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="col-span-1 w-72 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                <div className="bg-green-500 rounded-lg p-4">
+              <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
+                <div className="bg-green-500 rounded-lg p-4 shadow-lg h-40">
                   <p className="text-white text-xl font-bold">PC Connect</p>
-                  <div className="bg-white rounded-lg p-4 mt-4">
-                    <p className="text-gray-700 text-2xl font-bold">150</p>
+                  <div className="bg-white rounded-lg p-4 mt-8 h-16">
+                    <p className="text-gray-700 text-2xl font-bold">
+                      {PCconnect}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="col-span-1 w-72 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                <div className="bg-yellow-500 rounded-lg p-4">
+              <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
+                <div className="bg-yellow-500 rounded-lg p-4 shadow-lg h-40">
                   <p className="text-white text-xl font-bold">Wait Connect</p>
-                  <div className="bg-white rounded-lg p-4 mt-4">
-                    <p className="text-gray-700 text-2xl font-bold">90</p>
+                  <div className="bg-white rounded-lg p-4 mt-8 h-16">
+                    <p className="text-gray-700 text-2xl font-bold">
+                      {waitConnect}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-row w-screen sm:w-1/3">
-                <BarChart />
-                <BarChart />
-                <DonutChart />
+              <div className="flex flex-col w-screen lg:w-1/3 sm:flex-row">
+                <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg">
+                  <BarChartTest />
+                </div>
+                <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg">
+                  <BarChart />
+                </div>
+                <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg pt-6">
+                  <DonutChart />
+                </div>
               </div>
             </div>
 
             {/* //Search Group */}
 
-            <div>
+            <div className="mb-6">
               {/* <Computer_In_Process_Search_Group onSearch={onSearch} /> */}
               <Computer_In_Process_Search_Group
                 onSearch={(queryParams) => {
@@ -419,10 +619,12 @@ export default function ComputerInProcess() {
 
             {/* Table for Computer in Process */}
             <div
+              className="shadow-xl"
               style={{
-                height: "60vh",
+                height: "55vh",
                 width: isNavbarOpen ? "calc(90vw - 10vw)" : "90vw",
                 marginTop: "16px",
+                marginBottom: "16px",
               }}
             >
               <StyledDataGrid
@@ -447,8 +649,9 @@ export default function ComputerInProcess() {
                           PC Name
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="pc-name-autocomplete"
-                            options={pcName}
+                            options={pcNameOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.pc_name}
                             renderInput={(params) => (
@@ -460,20 +663,16 @@ export default function ComputerInProcess() {
                               mb: 1,
                               marginLeft: "auto",
                             }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                pcName: newValue,
-                              }));
-                            }}
+                            onChange={(event, newValue) => setPcName(newValue)}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           PC Type
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="pc-type-autocomplete"
-                            options={pcType}
+                            options={pcTypeOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.pc_type}
                             renderInput={(params) => (
@@ -485,20 +684,16 @@ export default function ComputerInProcess() {
                               mb: 1,
                               marginLeft: "auto",
                             }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                pcType: newValue,
-                              }));
-                            }}
+                            onChange={(event, newValue) => setPcType(newValue)}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           OS
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="os-autocomplete"
-                            options={os}
+                            options={osOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.os}
                             renderInput={(params) => (
@@ -510,20 +705,16 @@ export default function ComputerInProcess() {
                               mb: 1,
                               marginLeft: "auto",
                             }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                os: newValue,
-                              }));
-                            }}
+                            onChange={(event, newValue) => setOs(newValue)}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           OS Version
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="os-version-autocomplete"
-                            options={osVersion}
+                            options={osVersionOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.os_version}
                             renderInput={(params) => (
@@ -535,18 +726,16 @@ export default function ComputerInProcess() {
                               mb: 1,
                               marginLeft: "auto",
                             }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                osVersion: newValue,
-                              }));
-                            }}
+                            onChange={(event, newValue) =>
+                              setOsVersion(newValue)
+                            }
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           Start Date
                           <TextField
                             disabled
+                            size="small"
                             id="outlined-disabled"
                             defaultValue="2021-10-01"
                             sx={{
@@ -561,8 +750,9 @@ export default function ComputerInProcess() {
                           MAC Address
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="mac-address-autocomplete"
-                            options={macAddress}
+                            options={macAddressOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.mac_address}
                             renderInput={(params) => (
@@ -574,18 +764,16 @@ export default function ComputerInProcess() {
                               mb: 1,
                               marginLeft: "auto",
                             }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                macAddress: newValue,
-                              }));
-                            }}
+                            onChange={(event, newValue) =>
+                              setMacAddress(newValue)
+                            }
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           IP Address
                           <TextField
                             disabled
+                            size="small"
                             id="outlined-disabled"
                             defaultValue={selectedData.new_ip}
                             sx={{
@@ -600,6 +788,7 @@ export default function ComputerInProcess() {
                           Connect Type
                           <TextField
                             disabled
+                            size="small"
                             id="outlined-disabled"
                             defaultValue={selectedData.connect_type}
                             sx={{
@@ -614,6 +803,7 @@ export default function ComputerInProcess() {
                           Join Domain
                           <TextField
                             disabled
+                            size="small"
                             id="outlined-disabled"
                             defaultValue={selectedData.join_domain}
                             sx={{
@@ -628,6 +818,7 @@ export default function ComputerInProcess() {
                           Join Domain Date
                           <TextField
                             disabled
+                            size="small"
                             id="outlined-disabled"
                             defaultValue={selectedData.join_domain_date}
                             sx={{
@@ -650,8 +841,9 @@ export default function ComputerInProcess() {
                           PC Use For
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="pc-use-for-autocomplete"
-                            options={pcUseFor}
+                            options={pcUseForOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.pc_use_for}
                             renderInput={(params) => (
@@ -663,20 +855,18 @@ export default function ComputerInProcess() {
                               mb: 1,
                               marginLeft: "auto",
                             }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                pcUseFor: newValue,
-                              }));
-                            }}
+                            onChange={(event, newValue) =>
+                              setPcUseFor(newValue)
+                            }
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           ID Code
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="id-code-autocomplete"
-                            options={idCode}
+                            options={idCodeOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.employee_id}
                             renderInput={(params) => (
@@ -688,18 +878,14 @@ export default function ComputerInProcess() {
                               mb: 1,
                               marginLeft: "auto",
                             }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                idCode: newValue,
-                              }));
-                            }}
+                            onChange={(event, newValue) => setIdCode(newValue)}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           Name - Surname
                           <TextField
                             disabled
+                            size="small"
                             id="outlined-disabled"
                             defaultValue={selectedData.emp_name_eng}
                             sx={{
@@ -715,6 +901,7 @@ export default function ComputerInProcess() {
                           Email
                           <TextField
                             disabled
+                            size="small"
                             id="outlined-disabled"
                             defaultValue={selectedData.user_email}
                             sx={{
@@ -729,6 +916,7 @@ export default function ComputerInProcess() {
                           Job Level
                           <TextField
                             disabled
+                            size="small"
                             id="outlined-disabled"
                             defaultValue={selectedData.job_level}
                             sx={{
@@ -743,6 +931,7 @@ export default function ComputerInProcess() {
                           Division
                           <TextField
                             disabled
+                            size="small"
                             id="outlined-disabled"
                             defaultValue={selectedData.division}
                             sx={{
@@ -757,6 +946,7 @@ export default function ComputerInProcess() {
                           Department
                           <TextField
                             disabled
+                            size="small"
                             id="outlined-disabled"
                             defaultValue={selectedData.department_unit}
                             sx={{
@@ -771,6 +961,7 @@ export default function ComputerInProcess() {
                           Manager
                           <TextField
                             disabled
+                            size="small"
                             id="outlined-disabled"
                             defaultValue={selectedData.supervision_name}
                             sx={{
@@ -785,8 +976,9 @@ export default function ComputerInProcess() {
                           Cost Center
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="cost-center-autocomplete"
-                            options={costCenter}
+                            options={costCenterOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.cost_center_code}
                             renderInput={(params) => (
@@ -798,20 +990,18 @@ export default function ComputerInProcess() {
                               mb: 1,
                               marginLeft: "auto",
                             }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                costCenter: newValue,
-                              }));
-                            }}
+                            onChange={(event, newValue) =>
+                              setCostCenter(newValue)
+                            }
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           Building
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="building-autocomplete"
-                            options={building}
+                            options={buildingOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.building}
                             renderInput={(params) => (
@@ -823,20 +1013,16 @@ export default function ComputerInProcess() {
                               mb: 1,
                               marginLeft: "auto",
                             }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                building: newValue,
-                              }));
-                            }}
+                            onChange={handleBuildingChange}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           Area
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="area-autocomplete"
-                            options={area}
+                            options={areaOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.area}
                             renderInput={(params) => (
@@ -848,12 +1034,7 @@ export default function ComputerInProcess() {
                               mb: 1,
                               marginLeft: "auto",
                             }}
-                            onChange={(event, newValue) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                area: newValue,
-                              }));
-                            }}
+                            onChange={(event, newValue) => setArea(newValue)}
                           />
                         </label>
                       </div>
@@ -868,8 +1049,9 @@ export default function ComputerInProcess() {
                           MFG Pro
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="mfg-pro-autocomplete"
-                            options={mfgPro}
+                            options={mfgProOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.mfg_pro}
                             renderInput={(params) => (
@@ -887,8 +1069,9 @@ export default function ComputerInProcess() {
                           BTP
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="btp-autocomplete"
-                            options={btp}
+                            options={btpOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.btp}
                             renderInput={(params) => (
@@ -906,8 +1089,9 @@ export default function ComputerInProcess() {
                           FPC
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="fpc-autocomplete"
-                            options={fpc}
+                            options={fpcOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.fpc}
                             renderInput={(params) => (
@@ -925,8 +1109,9 @@ export default function ComputerInProcess() {
                           Humatrix
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="humatrix-autocomplete"
-                            options={humatrix}
+                            options={humatrixOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.humatrix}
                             renderInput={(params) => (
@@ -944,8 +1129,9 @@ export default function ComputerInProcess() {
                           ZWCAD
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="zwcad-autocomplete"
-                            options={zwcad}
+                            options={zwcadOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.zwcad}
                             renderInput={(params) => (
@@ -963,8 +1149,9 @@ export default function ComputerInProcess() {
                           A1 Server
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="a1-server-autocomplete"
-                            options={a1Server}
+                            options={a1ServerOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.a1_server}
                             renderInput={(params) => (
@@ -982,8 +1169,9 @@ export default function ComputerInProcess() {
                           Outsystem
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="outsystem-autocomplete"
-                            options={outsystem}
+                            options={outsystemOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.outsystem}
                             renderInput={(params) => (
@@ -1009,8 +1197,9 @@ export default function ComputerInProcess() {
                           Antivirus
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="antivirus-autocomplete"
-                            options={antivirus}
+                            options={antivirusOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.antivirus}
                             renderInput={(params) => (
@@ -1029,8 +1218,9 @@ export default function ComputerInProcess() {
                           Antivirus Status
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="antivirus-status-autocomplete"
-                            options={antivirusStatus}
+                            options={antivirusStatusOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.antivirus_status}
                             renderInput={(params) => (
@@ -1048,8 +1238,9 @@ export default function ComputerInProcess() {
                           EDR Status
                           <Autocomplete
                             disablePortal
+                            size="small"
                             id="edr-status-autocomplete"
-                            options={edrStatus}
+                            options={edrStatusOption}
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.edr_status}
                             renderInput={(params) => (

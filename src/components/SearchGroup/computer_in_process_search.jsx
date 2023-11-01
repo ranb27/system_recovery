@@ -125,7 +125,7 @@ function Computer_In_Process_Search_Group({ onSearch }) {
       <Box maxWidth="xl" sx={{ width: "100%", height: 50, mb: 1 }}>
         <Grid container spacing={0} className="w-1350">
           <div className="flex flex-row gap-4">
-            <div className="flex items-center">
+            <div className="flex items-center shadow-md">
               <Autocomplete
                 disablePortal
                 id="division"
@@ -143,7 +143,7 @@ function Computer_In_Process_Search_Group({ onSearch }) {
               />
             </div>
 
-            <div className="flex items-center">
+            <div className="flex items-center shadow-md">
               <Autocomplete
                 disablePortal
                 id="department"
@@ -161,7 +161,7 @@ function Computer_In_Process_Search_Group({ onSearch }) {
               />
             </div>
 
-            <div className="flex items-center">
+            <div className="flex items-center shadow-md">
               <Autocomplete
                 disablePortal
                 id="costcenter"
@@ -181,30 +181,33 @@ function Computer_In_Process_Search_Group({ onSearch }) {
               />
             </div>
 
-            <Button
-              variant="contained"
-              // size="small"
-              style={{
-                width: 100,
-                height: "50px",
-                borderRadius: 10,
-              }}
-              onClick={handleSearch}
-            >
-              Search
-            </Button>
-
-            <Button
-              variant="contained"
-              // size="small"
-              style={{
-                width: 150,
-                height: "50px",
-                borderRadius: 10,
-              }}
-            >
-              Request SE
-            </Button>
+            <div className="shadow-lg">
+              <Button
+                variant="contained"
+                style={{
+                  width: 100,
+                  height: "100%",
+                  borderRadius: 10,
+                  fontWeight: "bold",
+                }}
+                onClick={handleSearch}
+              >
+                Search
+              </Button>
+            </div>
+            <div className="shadow-lg">
+              <Button
+                variant="contained"
+                style={{
+                  width: 150,
+                  height: "100%",
+                  borderRadius: 10,
+                  fontWeight: "bold",
+                }}
+              >
+                Request SE
+              </Button>
+            </div>
           </div>
         </Grid>
       </Box>
