@@ -69,31 +69,6 @@ const StyledDataGrid = styled(DataGrid)({
 });
 
 export default function ComputerInProcess() {
-  //*Division *//
-  const [divisions, setDivisions] = useState([]);
-  const divURL = `http://10.17.66.242:3001/api/smart_recovery/filter-division-list`;
-  //*Department *//
-  const [departments, setDepartments] = useState([]);
-  const depURL = `http://10.17.66.242:3001/api/smart_recovery/filter-department-list?division=Division`;
-  //*Cost Center *//
-  const [costCenters, setCostCenters] = useState([]);
-  const costURL = `http://10.17.66.242:3001/api/smart_recovery/filter-costcenter-list?division=Division&department=Department`;
-
-  const getDivisions = async () => {
-    const response = await axios.get(divURL);
-    setDivisions(response.data);
-  };
-
-  const getDepartments = async () => {
-    const response = await axios.get(depURL);
-    setDepartments(response.data);
-  };
-
-  const getCostCenters = async () => {
-    const response = await axios.get(costURL);
-    setCostCenters(response.data);
-  };
-
   const [selecteddivision, setSelecteddivision] = useState({
     division: "Division",
   });
@@ -104,18 +79,8 @@ export default function ComputerInProcess() {
     cost_center_name: "Cost Center",
   });
 
-  // console.log(divisions);
-  // console.log(departments);
-  // console.log(costCenters);
-
-  //*Get search data from API *//
-  useEffect(() => {
-    getDivisions();
-    getDepartments();
-    getCostCenters();
-  }, []);
-
   //*Table *//
+
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -260,7 +225,6 @@ export default function ComputerInProcess() {
   //*Dialog *//
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState({});
-  const [formData, setFormData] = useState({});
 
   const handleOpen = (data) => {
     const selectedID = data.id;
@@ -292,8 +256,6 @@ export default function ComputerInProcess() {
     setJoinDomain(data["join_domain"]);
     setJoinDomainDate(data["join_domain_date"]);
 
-    console.log("State of form", formData);
-
     setOpen(true);
   };
 
@@ -303,6 +265,14 @@ export default function ComputerInProcess() {
     (row) => row.id === selectedID
   )?.pc_name;
 
+  //* Get user for update by data*//
+  const userLoginInfo = localStorage.getItem("guestToken" || "userToken");
+  const userLoginInfoJSON = JSON.parse(userLoginInfo);
+  const userLogin = userLoginInfoJSON.user_login;
+
+  console.log("User Login:", userLoginInfo);
+  console.log("User Login In:", userLoginInfoJSON);
+  console.log("User Login:", userLogin);
   console.log("Local ID:", selectedID);
   console.log("Selected Computer Name:", selectedComputerName);
 
@@ -338,23 +308,18 @@ export default function ComputerInProcess() {
       connectType,
       joinDomain,
       joinDomainDate,
+      updateBy: userLogin,
     };
 
     console.log("Edited Data:", editedData);
 
     axios
       .get(
-        `http://10.17.66.242:3001/api/smart_recovery/update-data-computer-master?row_id=${selectedData.id}&pc_name=${pcName}&pc_type=${pcType}&os=${os}&os_version=${osVersion}&mac_address=${macAddress}&pc_use_for=${pcUseFor}&employee_id=${idCode}&cost_center_code=${costCenter}&building=${building}&area=${area}`
+        `http://10.17.66.242:3001/api/smart_recovery/update-data-computer-master?row_id=${selectedData.id}&pc_name=${pcName}&pc_type=${pcType}&os=${os}&os_version=${osVersion}&mac_address=${macAddress}&pc_use_for=${pcUseFor}&employee_id=${idCode}&cost_center_code=${costCenter}&building=${building}&area=${area}&update_by=${userLogin}`
       )
       .then((res) => {
         console.log("Success:", res.data);
-        // console.log(res.data);
-        // localStorage.setItem("data", JSON.stringify(res.data));
       });
-
-    // if (formData === null) {
-    //   setFormData(selectedData);
-    // }
 
     Swal.fire({
       icon: "success",
@@ -475,42 +440,148 @@ export default function ComputerInProcess() {
   const [waitConnect, setWaitConnect] = useState(0);
 
   useEffect(() => {
-    const getTotalPC = async () => {
+    const fetchDataPC = async () => {
       const response = await axios.get(
         `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-status?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
       );
-      setTotalPC(response.data[0].total_pc);
-      setPCconnect(response.data[0].pc_connect);
-      setWaitConnect(response.data[0].wait_connect);
+      const data = response.data[0];
+
+      if (data) {
+        setTotalPC(data.total_pc);
+        setPCconnect(data.pc_connect);
+        setWaitConnect(data.wait_connect);
+      }
     };
-    getTotalPC();
-  });
+
+    fetchDataPC();
+  }, [selecteddivision, selectedDepartment, selectedCostCenter]);
 
   //*Charts *//
-  const BarChartTest = () => {
-    const pcUseForValue = 83;
+
+  const BarChartUseFor = () => {
+    const [useForPersonal, setUseForPersonal] = useState(0);
+    const [useForCenter, setUseForCenter] = useState(0);
+
+    useEffect(() => {
+      const fetchDataUseForChart = async () => {
+        const response = await axios.get(
+          `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-pc-use-for?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
+        );
+        const dataUseForPersonal = response.data[0].count_pc_use_for;
+        const dataUseForCenter = response.data[1].count_pc_use_for;
+
+        setUseForPersonal(dataUseForPersonal);
+        setUseForCenter(dataUseForCenter);
+      };
+
+      fetchDataUseForChart();
+    }, []);
 
     const state = {
       series: [
         {
-          name: "Machine",
-          data: [25],
-        },
-        {
-          name: "Scan",
-          data: [13],
+          name: "Center",
+          data: [useForCenter],
         },
         {
           name: "Personal",
-          data: [pcUseForValue],
+          data: [useForPersonal],
+        },
+      ],
+      options: {
+        chart: {
+          type: "bar",
+          height: 160,
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: "75%",
+            endingShape: "rounded",
+          },
+        },
+        dataLabels: {
+          enabled: false,
+        },
+        xaxis: {
+          categories: [""],
+        },
+        legend: {
+          position: "right",
+          offsetY: -10,
+        },
+      },
+    };
+
+    return (
+      <ReactApexChart
+        options={state.options}
+        series={state.series}
+        type="bar"
+        height={160}
+        width={300}
+      />
+    );
+  };
+
+  const BarChartBuilding = () => {
+    const [buildingA, setBuildingA] = useState(0);
+    const [buildingB, setBuildingB] = useState(0);
+    const [buildingC, setBuildingC] = useState(0);
+    const [buildingC1, setBuildingC1] = useState(0);
+    const [buildingC2, setBuildingC2] = useState(0);
+    const [buildingC22F, setBuildingC22F] = useState(0);
+    const [buildingC3, setBuildingC3] = useState(0);
+    const [buildingD, setBuildingD] = useState(0);
+
+    useEffect(() => {
+      const fetchDataBuildingChart = async () => {
+        const response = await axios.get(
+          `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-building?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
+        );
+        const dataBuildingA = response.data[0].count_building;
+        const dataBuildingB = response.data[1].count_building;
+
+        setBuildingC1(dataBuildingA);
+        setBuildingC3(dataBuildingB);
+      };
+
+      fetchDataBuildingChart();
+    }, []);
+
+    const state = {
+      series: [
+        {
+          name: "A",
+          data: [buildingA],
         },
         {
-          name: "CCTV",
-          data: [32],
+          name: "B",
+          data: [buildingB],
         },
         {
-          name: "Scrap",
-          data: [13],
+          name: "C",
+          data: [buildingC],
+        },
+        {
+          name: "C1",
+          data: [buildingC1],
+        },
+        {
+          name: "C2",
+          data: [buildingC2],
+        },
+        {
+          name: "C2 2F",
+          data: [buildingC22F],
+        },
+        {
+          name: "C3",
+          data: [buildingC3],
+        },
+        {
+          name: "D",
+          data: [buildingD],
         },
       ],
       options: {
@@ -593,10 +664,10 @@ export default function ComputerInProcess() {
 
               <div className="flex flex-col w-screen lg:w-1/3 sm:flex-row">
                 <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg">
-                  <BarChartTest />
+                  <BarChartUseFor />
                 </div>
                 <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg">
-                  <BarChart />
+                  <BarChartBuilding />
                 </div>
                 <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg pt-6">
                   <DonutChart />
@@ -643,7 +714,7 @@ export default function ComputerInProcess() {
                 <DialogContent sx={{ background: "#e3e3e3" }}>
                   <div className="flex flex-row">
                     <div className="computer-data">
-                      <div className="bg-white p-4 rounded-2xl">
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2">
                         <p className="dialog-head">Computer Data</p>
                         <label className="font-bold text-blue-300 flex items-center">
                           PC Name
@@ -835,7 +906,7 @@ export default function ComputerInProcess() {
                     {/* //*User Data  */}
 
                     <div className="user-data">
-                      <div className="bg-white p-4 rounded-2xl">
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2">
                         <p className="dialog-head">User Data</p>
                         <label className="font-bold text-blue-300 flex items-center">
                           PC Use For
@@ -1043,7 +1114,7 @@ export default function ComputerInProcess() {
                     {/* //*permission Data */}
 
                     <div className="permission-data">
-                      <div className="bg-white p-4 rounded-2xl">
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2">
                         <p className="dialog-head">Permission Data</p>
                         <label className="font-bold text-blue-300 flex items-center">
                           MFG Pro
@@ -1191,7 +1262,7 @@ export default function ComputerInProcess() {
                     {/* //*Security Data */}
 
                     <div className="security-data">
-                      <div className="bg-white p-4 rounded-2xl">
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2">
                         <p className="dialog-head">Security Data</p>
                         <label className="font-bold text-blue-300 flex items-center">
                           Antivirus
