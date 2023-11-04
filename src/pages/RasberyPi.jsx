@@ -1,4 +1,3 @@
-import "./styles/ProjectRasberyPiConnectNetwork.css";
 import Navbar from "../components/navbar/Navbar";
 
 function RasberyPi() {

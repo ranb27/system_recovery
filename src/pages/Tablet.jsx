@@ -1,4 +1,4 @@
-import "./styles/ProjectTableConnectNetwork.css";
+
 import Navbar from "../components/Navbar/Navbar";
 
 function Tablet() {

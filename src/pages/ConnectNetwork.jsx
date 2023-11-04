@@ -1,4 +1,4 @@
-import "./styles/ProjectPCConectNetwork.css";
+
 import Navbar from "../components/Navbar/Navbar";
 
 function ConnectNetwork() {

@@ -1,6 +1,6 @@
 //* Login page component *//
 
-import "./styles/Login.css";
+
 import { useState } from "react";
 import { Button, TextField } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -84,8 +84,8 @@ function Login() {
   return (
     <>
       <div className="container">
-        <div className="login-container h-screen -ml-8">
-          <div className="title-container flex justify-center">
+        <div className="h-screen w-screen mx-auto flex flex-col justify-center items-center">
+          <div className="flex justify-center">
             <img
               src={FujiLogo}
               alt="fuji"
@@ -95,9 +95,9 @@ function Login() {
                 margin: 10,
               }}
             />
-            <div>
-              <p className="login-title">Smart IT Management</p>
-              <p className="login-subtitle">System Recovery</p>
+            <div className="flex flex-col justify-center">
+              <p className="font-extrabold text-2xl">Smart IT Management</p>
+              <p className="font-bold text-md text-right">System Recovery</p>
             </div>
           </div>
 

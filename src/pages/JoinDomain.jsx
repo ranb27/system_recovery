@@ -1,4 +1,4 @@
-import "./styles/JoinDomain.css";
+
 import Navbar from "../components/Navbar/Navbar";
 
 function JoinDomain() {
