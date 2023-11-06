@@ -1,6 +1,5 @@
 //* Login page component *//
 
-
 import { useState } from "react";
 import { Button, TextField } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -9,7 +8,7 @@ import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Translate } from "@mui/icons-material";
+// import { Translate } from "@mui/icons-material";
 
 function Login() {
   //*State for user login and password*//
@@ -62,6 +61,8 @@ function Login() {
           text: "Please check your username or password",
         });
       });
+
+    localStorage.removeItem("guestToken");
   };
 
   const handleGuest = () => {
@@ -74,6 +75,9 @@ function Login() {
         role_no: 4,
       })
     );
+
+    localStorage.removeItem("userToken");
+
     Swal.fire({
       icon: "warning",
       title: "Guest Mode",

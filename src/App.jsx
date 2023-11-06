@@ -4,29 +4,32 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoutes from "./components/auth/ProtectedRoutes";
 import ProtectedRoutesSupper from "./components/auth/ProtectedRoutesSupper";
+import ProtectedLoggedIn from "./components/auth/ProtectedLoggedIn";
 
 //*import the pages and components to be routed
 import Login from "./pages/Login.jsx";
 import ComputerInProcess from "./pages/ComputerInProcess";
-import ConnectNetwork from "./pages/ConnectNetwork";
+import ConnectNewwork from "./pages/ConnectNewwork";
 import Tablet from "./pages/Tablet";
-import RasberyPConnectNetwork from "./pages/RasberyPi";
+// import RasberyPConnectNetwork from "./pages/RasberyPi";
 import JoinDomain from "./pages/JoinDomain";
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "./components/navbar/Navbar";
 import RasberyPi from "./pages/RasberyPi";
 
 function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/computer_in_process" element={<ComputerInProcess />} />
+        <Route element={<ProtectedLoggedIn />}>
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+        </Route>
 
         {/* //* Wrap the protected routes in a route component */}
         <Route element={<ProtectedRoutes />}>
           <Route path="/home" element={<Navbar />} />
-          <Route path="/connect_network" element={<ConnectNetwork />} />
+          <Route path="/computer_in_process" element={<ComputerInProcess />} />
+          <Route path="/connect_newwork" element={<ConnectNewwork />} />
         </Route>
         {/* //* Wrap the protected routes in a route component */}
 

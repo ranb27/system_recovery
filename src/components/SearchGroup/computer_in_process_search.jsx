@@ -3,7 +3,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 function Computer_In_Process_Search_Group({ onSearch }) {
@@ -164,6 +164,7 @@ function Computer_In_Process_Search_Group({ onSearch }) {
             <div className="flex items-center shadow-md">
               <Autocomplete
                 disablePortal
+                listBox={{ style: { textAlign: "center" } }}
                 id="costcenter"
                 options={distinctCostCenter}
                 getOptionLabel={(option) => option && option.cost_center_name}

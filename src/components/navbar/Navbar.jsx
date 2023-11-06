@@ -134,7 +134,7 @@ export default function Navbar({ onToggle }) {
         setMenuName("Computer in Process");
         break;
       case "/connect_network":
-        setMenuName("PC Connect Network");
+        setMenuName("PC Connect Newwork");
         break;
       case "/tablet":
         setMenuName("Tablet");
@@ -149,6 +149,12 @@ export default function Navbar({ onToggle }) {
         setMenuName("IT Management System Recovery");
     }
   }, [location.pathname]);
+
+  //*Active menu ******************************************************
+
+  const isActive = (to) => {
+    return location.pathname === to;
+  };
 
   return (
     <>
@@ -230,7 +236,13 @@ export default function Navbar({ onToggle }) {
             <ListItem
               onClick={() => setMenuName("Computer in Process")}
               disablePadding
-              sx={{ display: "block", color: "black" }}
+              sx={{
+                display: "block",
+                color: "black",
+                backgroundColor: isActive("/computer_in_process")
+                  ? "#D6EAF8"
+                  : "initial",
+              }}
               component={Link}
               to="/computer_in_process"
             >
@@ -263,11 +275,17 @@ export default function Navbar({ onToggle }) {
 
             {/* //Project PC */}
             <ListItem
-              onClick={() => setMenuName("PC Connect Network")}
+              onClick={() => setMenuName("PC Connect Newwork")}
               disablePadding
-              sx={{ display: "block", color: "black" }}
+              sx={{
+                display: "block",
+                color: "black",
+                backgroundColor: isActive("/connect_newwork")
+                  ? "#D6EAF8"
+                  : "initial",
+              }}
               component={Link}
-              to="/connect_network"
+              to="/connect_newwork"
             >
               <ListItemButton
                 sx={{
@@ -300,7 +318,11 @@ export default function Navbar({ onToggle }) {
             <ListItem
               onClick={() => setMenuName("Tablet")}
               disablePadding
-              sx={{ display: "block", color: "black" }}
+              sx={{
+                display: "block",
+                color: "black",
+                backgroundColor: isActive("/tablet") ? "#D6EAF8" : "initial",
+              }}
               component={Link}
               to="/tablet"
             >
@@ -335,7 +357,13 @@ export default function Navbar({ onToggle }) {
             <ListItem
               onClick={() => setMenuName("Rasbery Pi")}
               disablePadding
-              sx={{ display: "block", color: "black" }}
+              sx={{
+                display: "block",
+                color: "black",
+                backgroundColor: isActive("/rasbery_pi")
+                  ? "#D6EAF8"
+                  : "initial",
+              }}
               component={Link}
               to="/rasbery_pi"
             >
@@ -370,7 +398,13 @@ export default function Navbar({ onToggle }) {
             <ListItem
               onClick={() => setMenuName("Join Domain")}
               disablePadding
-              sx={{ display: "block", color: "black" }}
+              sx={{
+                display: "block",
+                color: "black",
+                backgroundColor: isActive("/join_domain")
+                  ? "#D6EAF8"
+                  : "initial",
+              }}
               component={Link}
               to="/join_domain"
             >

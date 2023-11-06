@@ -7,9 +7,7 @@ import ReactApexChart from "react-apexcharts";
 //* Computer in process page component *//
 
 import Navbar from "../components/Navbar/Navbar";
-import Computer_In_Process_Search_Group from "../components/SearchGroup/computer_in_process_search";
-import BarChart from "../components/charts/ComputerInProcessBarCharts";
-import DonutChart from "../components/charts/ComputerInProcessDonutChart";
+import Computer_In_Process_Search_Group from "../components/searchgroup/computer_in_process_search";
 import Chart from "react-apexcharts";
 
 //*mui imports //
@@ -20,7 +18,6 @@ import { styled } from "@mui/material/styles";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import {
-  Container,
   Dialog,
   DialogContent,
   DialogActions,
@@ -106,50 +103,15 @@ export default function ComputerInProcess() {
           );
           setOsVersionOption(osVersions);
 
-          const macAddresses = Array.from(
-            new Set(res.data.map((item) => item.mac_address))
-          );
-          setMacAddressOption(macAddresses);
-
-          const ipAddresses = Array.from(
-            new Set(res.data.map((item) => item.new_ip))
-          );
-          setIpAddressOption(ipAddresses);
+          // const macAddresses = Array.from(
+          //   new Set(res.data.map((item) => item.mac_address))
+          // );
+          // setMacAddressOption(macAddresses);
 
           const idCodes = Array.from(
             new Set(res.data.map((item) => item.employee_id))
           );
           setIdCodeOption(idCodes);
-
-          const nameSurnames = Array.from(
-            new Set(res.data.map((item) => item.emp_name_eng))
-          );
-          setNameSurnameOption(nameSurnames);
-
-          const emails = Array.from(
-            new Set(res.data.map((item) => item.user_email))
-          );
-          setEmailOption(emails);
-
-          const jobLevels = Array.from(
-            new Set(res.data.map((item) => item.job_level))
-          );
-          setJobLevelOption(jobLevels);
-
-          const divisions = Array.from(
-            new Set(res.data.map((item) => item.division))
-          );
-          setDivisionOption(divisions);
-
-          const departments = Array.from(
-            new Set(res.data.map((item) => item.department_unit))
-          );
-          setDepartmentOption(departments);
-
-          const managers = Array.from(
-            new Set(res.data.map((item) => item.supervision_name))
-          );
-          setManagerOption(managers);
 
           const costCenters = Array.from(
             new Set(res.data.map((item) => item.cost_center_code))
@@ -281,7 +243,7 @@ export default function ComputerInProcess() {
             padding: "4px 12px",
             color: params.value === "Network Connected" ? "white" : "black",
             backgroundColor:
-              params.value === "Network Connected" ? "green" : "transparent",
+              params.value === "Network Connected" ? "#4ade80" : "transparent",
           }}
         >
           {params.value}
@@ -301,11 +263,26 @@ export default function ComputerInProcess() {
       width: 100,
       align: "center",
       headerAlign: "center",
-      renderCell: (params) => (
-        <Button variant="outlined" onClick={() => handleOpen(params.row)}>
-          <EditIcon />
-        </Button>
-      ),
+      renderCell: (params) => {
+        if (userRoleNo === 1 || userRoleNo === 2 || userRoleNo === 5) {
+          return (
+            <Button variant="outlined" onClick={() => handleOpen(params.row)}>
+              <EditIcon />
+            </Button>
+          );
+        } else if (userIdCode === idCode && userRoleNo === 3) {
+          return (
+            <Button
+              variant="outlined"
+              onClick={() => handleOpen(params.row.employee_id)}
+            >
+              <EditIcon />
+            </Button>
+          );
+        } else {
+          return null;
+        }
+      },
     },
   ];
 
@@ -354,7 +331,8 @@ export default function ComputerInProcess() {
     setHumatrix(data["humatrix"]);
     setZwcad(data["zwcad"]);
     setA1Server(data["a1_server"]);
-    setOutsystem(data["internet"]);
+    setEWorking(data["internet"]);
+    setInternet(data["internet"]);
 
     setAntivirus(data["antivirus"]);
     setAntivirusStatus(data["antivirus_status"]);
@@ -370,13 +348,21 @@ export default function ComputerInProcess() {
   )?.pc_name;
 
   //* Get user for update by data*//
-  const userLoginInfo = localStorage.getItem("guestToken" || "userToken");
-  const userLoginInfoJSON = JSON.parse(userLoginInfo);
-  const userLogin = userLoginInfoJSON.user_login;
+  const userLoginInfo =
+    localStorage.getItem("guestToken") || localStorage.getItem("userToken");
+  const userLoginInfoJSON = userLoginInfo ? JSON.parse(userLoginInfo) : null;
+  const userLogin = userLoginInfoJSON ? userLoginInfoJSON.user_login : null;
+
+  //* Get user role no *//
+  const userRoleNo = userLoginInfoJSON.role_no;
+
+  //* Get user id code *//
+  const userIdCode = userLoginInfoJSON.user_id_code;
 
   console.log("User Login:", userLoginInfo);
   console.log("User Login In:", userLoginInfoJSON);
   console.log("User Login:", userLogin);
+  console.log("User Role No:", userRoleNo);
   console.log("Local ID:", selectedID);
   console.log("Selected Computer Name:", selectedComputerName);
 
@@ -394,6 +380,11 @@ export default function ComputerInProcess() {
       osVersion,
       startDate,
       macAddress,
+      ipAddress,
+      connectType,
+      joinDomain,
+      joinDomainDate,
+
       pcUseFor,
       idCode,
       nameSurname,
@@ -405,13 +396,20 @@ export default function ComputerInProcess() {
       costCenter,
       building,
       area,
+
+      mfgPro,
+      btp,
+      fpc,
+      humatrix,
+      zwcad,
+      a1Server,
+      eWorking,
+      internet,
+
       antivirus,
       antivirusStatus,
       edrStatus,
-      ipAddress,
-      connectType,
-      joinDomain,
-      joinDomainDate,
+
       updateBy: userLogin,
     };
 
@@ -481,7 +479,8 @@ export default function ComputerInProcess() {
   const [humatrix, setHumatrix] = useState("");
   const [zwcad, setZwcad] = useState("");
   const [a1Server, setA1Server] = useState("");
-  const [outsystem, setOutsystem] = useState("");
+  const [eWorking, setEWorking] = useState("");
+  const [internet, setInternet] = useState("");
 
   const [antivirus, setAntivirus] = useState("");
   const [antivirusStatus, setAntivirusStatus] = useState("");
@@ -508,14 +507,14 @@ export default function ComputerInProcess() {
   ];
   const [osVersionOption, setOsVersionOption] = useState([]);
 
-  const startDateOption = ["2021-10-01", "2021-10-02"];
-  const [macAddressOption, setMacAddressOption] = useState([]);
-  const [ipAddressOption, setIpAddressOption] = useState([]);
-  const connectTypeOption = [
-    "LAN (WAN)",
-    "WIFI (PRD_SCAN)",
-    "WIFI (PRD_OFFICE)",
-  ];
+  // const startDateOption = ["2021-10-01", "2021-10-02"];
+  // const [macAddressOption, setMacAddressOption] = useState([]);
+  // const [ipAddressOption, setIpAddressOption] = useState([]);
+  // const connectTypeOption = [
+  //   "LAN (WAN)",
+  //   "WIFI (PRD_SCAN)",
+  //   "WIFI (PRD_OFFICE)",
+  // ];
 
   //User Data
   const pcUseForOption = [
@@ -529,24 +528,25 @@ export default function ComputerInProcess() {
     "Resign",
   ];
   const [idCodeOption, setIdCodeOption] = useState([]);
-  const [nameSurnameOption, setNameSurnameOption] = useState([]);
-  const [emailOption, setEmailOption] = useState([]);
-  const [jobLevelOption, setJobLevelOption] = useState([]);
-  const [divisionOption, setDivisionOption] = useState([]);
-  const [departmentOption, setDepartmentOption] = useState([]);
-  const [managerOption, setManagerOption] = useState([]);
+  // const [nameSurnameOption, setNameSurnameOption] = useState([]);
+  // const [emailOption, setEmailOption] = useState([]);
+  // const [jobLevelOption, setJobLevelOption] = useState([]);
+  // const [divisionOption, setDivisionOption] = useState([]);
+  // const [departmentOption, setDepartmentOption] = useState([]);
+  // const [managerOption, setManagerOption] = useState([]);
   const [costCenterOption, setCostCenterOption] = useState([]);
   const buildingOption = ["A", "B", "C", "C1", "C2", "C2 2F", "C3", "D"];
   const [areaOption, setAreaOption] = useState([]);
 
   //Permission Data
-  const mfgProOption = ["y", "n"];
-  const btpOption = ["y", "n"];
-  const fpcOption = ["y", "n"];
-  const humatrixOption = ["y", "n"];
-  const zwcadOption = ["y", "n"];
-  const a1ServerOption = ["y", "n"];
-  const outsystemOption = ["y", "n"];
+  const mfgProOption = ["Yes", "No"];
+  const btpOption = ["Yes", "No"];
+  const fpcOption = ["Yes", "No"];
+  const humatrixOption = ["Yes", "No"];
+  const zwcadOption = ["Yes", "No"];
+  const a1ServerOption = ["Yes", "No"];
+  const eWorkingOption = ["Yes", "No"];
+  const internetOption = ["Yes", "No"];
 
   //Security Data
   const antivirusOption = ["Kastersky", "Symantec", "Trend Micro", "McAfee"];
@@ -561,22 +561,33 @@ export default function ComputerInProcess() {
   };
 
   //*Total PC *//
-  const [totalPC, setTotalPC] = useState(0);
-  const [PCconnect, setPCconnect] = useState(0);
-  const [waitConnect, setWaitConnect] = useState(0);
+  const [pcStatus, setPcStatus] = useState([]); //["Total PC", "PC Connect", "Wait Connect"
+  // const [totalPC, setTotalPC] = useState(0);
+  // const [PCconnect, setPCconnect] = useState(0);
+  // const [waitConnect, setWaitConnect] = useState(0);
 
   useEffect(() => {
     const fetchDataPC = async () => {
       const response = await axios.get(
         `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-status?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
       );
-      const data = response.data[0];
+      const data = response.data;
 
-      if (data) {
-        setTotalPC(data.total_pc);
-        setPCconnect(data.pc_connect);
-        setWaitConnect(data.wait_connect);
-      }
+      const statusData = {
+        total_pc: 0,
+        pc_connect: 0,
+        wait_connect: 0,
+      };
+
+      data.map((item) => {
+        statusData.total_pc = item.total_pc;
+        statusData.pc_connect = item.pc_connect;
+        statusData.wait_connect = item.wait_connect;
+      });
+
+      console.log("Status Data:", statusData);
+
+      setPcStatus(statusData);
     };
 
     fetchDataPC();
@@ -858,7 +869,13 @@ export default function ComputerInProcess() {
       <Navbar onToggle={handleNavbarToggle} />
       <ThemeProvider theme={theme}>
         <div className="container mx-16 my-24 w-screen">
-          <Box marginLeft={isNavbarOpen ? "220px" : 4} marginTop={8}>
+          <Box
+            marginLeft={isNavbarOpen ? "220px" : 4}
+            marginTop={8}
+            className={`transition-all duration-500 ease-in-out ${
+              isNavbarOpen ? "ml-64" : ""
+            }`}
+          >
             {/* //Chart Group */}
 
             <div className="flex flex-col lg:flex-row gap-4">
@@ -867,8 +884,8 @@ export default function ComputerInProcess() {
                   <div className="bg-blue-500 rounded-lg p-4 shadow-lg h-40">
                     <p className="text-white text-xl font-bold">Total PC</p>
                     <div className="bg-white rounded-lg p-4 mt-8 h-16">
-                      <p className="text-gray-700 text-2xl font-bold">
-                        {totalPC}
+                      <p className="text-blue-700 text-3xl font-bold">
+                        {pcStatus.total_pc}
                       </p>
                     </div>
                   </div>
@@ -878,8 +895,8 @@ export default function ComputerInProcess() {
                   <div className="bg-green-500 rounded-lg p-4 shadow-lg h-40">
                     <p className="text-white text-xl font-bold">PC Connect</p>
                     <div className="bg-white rounded-lg p-4 mt-8 h-16">
-                      <p className="text-gray-700 text-2xl font-bold">
-                        {PCconnect}
+                      <p className="text-green-700 text-3xl font-bold">
+                        {pcStatus.pc_connect}
                       </p>
                     </div>
                   </div>
@@ -889,8 +906,8 @@ export default function ComputerInProcess() {
                   <div className="bg-yellow-500 rounded-lg p-4 shadow-lg h-40">
                     <p className="text-white text-xl font-bold">Wait Connect</p>
                     <div className="bg-white rounded-lg p-4 mt-8 h-16">
-                      <p className="text-gray-700 text-2xl font-bold">
-                        {waitConnect}
+                      <p className="text-yellow-700 text-3xl font-bold">
+                        {pcStatus.wait_connect}
                       </p>
                     </div>
                   </div>
@@ -899,13 +916,13 @@ export default function ComputerInProcess() {
 
               <div className="flex flex-col w-screen lg:w-1/3 lg:flex-row">
                 <div className="container flex">
-                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg">
+                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left">
                     <BarChartUseFor />
                   </div>
-                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg">
+                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left">
                     <BarChartBuilding />
                   </div>
-                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg pt-6">
+                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg flex items-center text-left">
                     <DonutChartJoinDomain />
                   </div>
                 </div>
@@ -929,7 +946,7 @@ export default function ComputerInProcess() {
             <div
               className="shadow-xl"
               style={{
-                height: "55vh",
+                height: "50vh",
                 width: isNavbarOpen ? "calc(90vw - 10vw)" : "90vw",
                 marginTop: "16px",
                 marginBottom: "16px",
@@ -951,8 +968,10 @@ export default function ComputerInProcess() {
                 <DialogContent sx={{ background: "#e3e3e3" }}>
                   <div className="flex flex-row">
                     <div className="computer-data">
-                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2">
-                        <p className="dialog-head">Computer Data</p>
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-lg h-full">
+                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-sky-500">
+                          Computer Data
+                        </p>
                         <label className="font-bold text-blue-300 flex items-center">
                           PC Name
                           <Autocomplete
@@ -963,13 +982,14 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.pc_name}
                             renderInput={(params) => (
-                              <TextField {...params} label="PC Name" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
                             onChange={(event, newValue) => setPcName(newValue)}
                           />
@@ -984,13 +1004,14 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.pc_type}
                             renderInput={(params) => (
-                              <TextField {...params} label="PC Type" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
                             onChange={(event, newValue) => setPcType(newValue)}
                           />
@@ -1005,13 +1026,14 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.os}
                             renderInput={(params) => (
-                              <TextField {...params} label="OS" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
                             onChange={(event, newValue) => setOs(newValue)}
                           />
@@ -1026,13 +1048,14 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.os_version}
                             renderInput={(params) => (
-                              <TextField {...params} label="OS Version" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
                             onChange={(event, newValue) =>
                               setOsVersion(newValue)
@@ -1045,9 +1068,11 @@ export default function ComputerInProcess() {
                             disabled
                             size="small"
                             id="outlined-disabled"
-                            defaultValue="2021-10-01"
+                            defaultValue={new Date(
+                              selectedData.update_datetime
+                            ).toLocaleDateString("en-CA")}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1056,24 +1081,20 @@ export default function ComputerInProcess() {
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           MAC Address
-                          <Autocomplete
-                            disablePortal
+                          <TextField
                             size="small"
-                            id="mac-address-autocomplete"
-                            options={macAddressOption}
-                            getOptionLabel={(option) => option}
+                            id="mac-address-textfield"
                             defaultValue={selectedData.mac_address}
-                            renderInput={(params) => (
-                              <TextField {...params} label="Mac Address" />
-                            )}
+                            label=""
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
-                            onChange={(event, newValue) =>
-                              setMacAddress(newValue)
+                            onChange={(event) =>
+                              setMacAddress(event.target.value)
                             }
                           />
                         </label>
@@ -1085,7 +1106,7 @@ export default function ComputerInProcess() {
                             id="outlined-disabled"
                             defaultValue={selectedData.new_ip}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1100,7 +1121,7 @@ export default function ComputerInProcess() {
                             id="outlined-disabled"
                             defaultValue={selectedData.connect_type}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1115,7 +1136,7 @@ export default function ComputerInProcess() {
                             id="outlined-disabled"
                             defaultValue={selectedData.join_domain_status}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1130,7 +1151,7 @@ export default function ComputerInProcess() {
                             id="outlined-disabled"
                             defaultValue={selectedData.join_domain_date}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1143,8 +1164,10 @@ export default function ComputerInProcess() {
                     {/* //*User Data  */}
 
                     <div className="user-data">
-                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2">
-                        <p className="dialog-head">User Data</p>
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-lg h-full">
+                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-pink-500">
+                          User Data
+                        </p>
                         <label className="font-bold text-blue-300 flex items-center">
                           PC Use For
                           <Autocomplete
@@ -1155,13 +1178,14 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.pc_use_for}
                             renderInput={(params) => (
-                              <TextField {...params} label="PC Use For" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
                             onChange={(event, newValue) =>
                               setPcUseFor(newValue)
@@ -1178,13 +1202,14 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.employee_id}
                             renderInput={(params) => (
-                              <TextField {...params} label="ID Code" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
                             onChange={(event, newValue) => setIdCode(newValue)}
                           />
@@ -1197,7 +1222,7 @@ export default function ComputerInProcess() {
                             id="outlined-disabled"
                             defaultValue={selectedData.emp_name_eng}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1213,7 +1238,7 @@ export default function ComputerInProcess() {
                             id="outlined-disabled"
                             defaultValue={selectedData.user_email}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1228,7 +1253,7 @@ export default function ComputerInProcess() {
                             id="outlined-disabled"
                             defaultValue={selectedData.job_level}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1243,7 +1268,7 @@ export default function ComputerInProcess() {
                             id="outlined-disabled"
                             defaultValue={selectedData.division}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1258,7 +1283,7 @@ export default function ComputerInProcess() {
                             id="outlined-disabled"
                             defaultValue={selectedData.department_unit}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1273,7 +1298,7 @@ export default function ComputerInProcess() {
                             id="outlined-disabled"
                             defaultValue={selectedData.supervision_name}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1290,13 +1315,14 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.cost_center_code}
                             renderInput={(params) => (
-                              <TextField {...params} label="Cost Center" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
                             onChange={(event, newValue) =>
                               setCostCenter(newValue)
@@ -1313,13 +1339,14 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.building}
                             renderInput={(params) => (
-                              <TextField {...params} label="Building" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
                             onChange={handleBuildingChange}
                           />
@@ -1334,13 +1361,14 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.area}
                             renderInput={(params) => (
-                              <TextField {...params} label="Area" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
                             onChange={(event, newValue) => setArea(newValue)}
                           />
@@ -1351,11 +1379,18 @@ export default function ComputerInProcess() {
                     {/* //*permission Data */}
 
                     <div className="permission-data">
-                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2">
-                        <p className="dialog-head">Permission Data</p>
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-lg h-full">
+                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-green-500">
+                          Permission Data
+                        </p>
                         <label className="font-bold text-blue-300 flex items-center">
                           MFG Pro
                           <Autocomplete
+                            className={`${
+                              selectedData.mfgpro_btp_fpc === "Yes"
+                                ? "bg-green-200"
+                                : "bg-yellow-200"
+                            }`}
                             disablePortal
                             size="small"
                             id="mfg-pro-autocomplete"
@@ -1363,20 +1398,39 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.mfgpro_btp_fpc}
                             renderInput={(params) => (
-                              <TextField {...params} label="MFG Pro" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
                             }}
                             onchange={(event, newValue) => setMfgPro(newValue)}
+                            renderOption={(props, option) => {
+                              const backgroundColor =
+                                option === "Yes"
+                                  ? " #bbf7d0 "
+                                  : option === "No"
+                                  ? "  #fef08a  "
+                                  : "white";
+
+                              return (
+                                <li {...props} style={{ backgroundColor }}>
+                                  {option}
+                                </li>
+                              );
+                            }}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           BTP
                           <Autocomplete
+                            className={`${
+                              selectedData.btp_only === "Yes"
+                                ? "bg-green-200"
+                                : "bg-yellow-200"
+                            }`}
                             disablePortal
                             size="small"
                             id="btp-autocomplete"
@@ -1384,20 +1438,39 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.btp_only}
                             renderInput={(params) => (
-                              <TextField {...params} label="BTP" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
                             }}
                             onchange={(event, newValue) => setBtp(newValue)}
+                            renderOption={(props, option) => {
+                              const backgroundColor =
+                                option === "Yes"
+                                  ? " #bbf7d0 "
+                                  : option === "No"
+                                  ? "  #fef08a  "
+                                  : "white";
+
+                              return (
+                                <li {...props} style={{ backgroundColor }}>
+                                  {option}
+                                </li>
+                              );
+                            }}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           FPC
                           <Autocomplete
+                            className={`${
+                              selectedData.fpc_only === "Yes"
+                                ? "bg-green-200"
+                                : "bg-yellow-200"
+                            }`}
                             disablePortal
                             size="small"
                             id="fpc-autocomplete"
@@ -1405,20 +1478,39 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.fpc_only}
                             renderInput={(params) => (
-                              <TextField {...params} label="FPC" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
                             }}
                             onchange={(event, newValue) => setFpc(newValue)}
+                            renderOption={(props, option) => {
+                              const backgroundColor =
+                                option === "Yes"
+                                  ? " #bbf7d0 "
+                                  : option === "No"
+                                  ? "  #fef08a  "
+                                  : "white";
+
+                              return (
+                                <li {...props} style={{ backgroundColor }}>
+                                  {option}
+                                </li>
+                              );
+                            }}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           Humatrix
                           <Autocomplete
+                            className={`${
+                              selectedData.humatrix === "Yes"
+                                ? "bg-green-200"
+                                : "bg-yellow-200"
+                            }`}
                             disablePortal
                             size="small"
                             id="humatrix-autocomplete"
@@ -1426,10 +1518,10 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.humatrix}
                             renderInput={(params) => (
-                              <TextField {...params} label="Humatrix" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1437,11 +1529,30 @@ export default function ComputerInProcess() {
                             onchange={(event, newValue) =>
                               setHumatrix(newValue)
                             }
+                            renderOption={(props, option) => {
+                              const backgroundColor =
+                                option === "Yes"
+                                  ? " #bbf7d0 "
+                                  : option === "No"
+                                  ? "  #fef08a  "
+                                  : "white";
+
+                              return (
+                                <li {...props} style={{ backgroundColor }}>
+                                  {option}
+                                </li>
+                              );
+                            }}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           ZWCAD
                           <Autocomplete
+                            className={`${
+                              selectedData.zwcad === "Yes"
+                                ? "bg-green-200"
+                                : "bg-yellow-200"
+                            }`}
                             disablePortal
                             size="small"
                             id="zwcad-autocomplete"
@@ -1449,20 +1560,39 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.zwcad}
                             renderInput={(params) => (
-                              <TextField {...params} label="ZWCAD" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
                             }}
                             onchange={(event, newValue) => setZwcad(newValue)}
+                            renderOption={(props, option) => {
+                              const backgroundColor =
+                                option === "Yes"
+                                  ? " #bbf7d0 "
+                                  : option === "No"
+                                  ? "  #fef08a  "
+                                  : "white";
+
+                              return (
+                                <li {...props} style={{ backgroundColor }}>
+                                  {option}
+                                </li>
+                              );
+                            }}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           A1 Server
                           <Autocomplete
+                            className={`${
+                              selectedData.a1_server === "Yes"
+                                ? "bg-green-200"
+                                : "bg-yellow-200"
+                            }`}
                             disablePortal
                             size="small"
                             id="a1-server-autocomplete"
@@ -1470,10 +1600,10 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.a1_server}
                             renderInput={(params) => (
-                              <TextField {...params} label="A1 Server" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1481,29 +1611,104 @@ export default function ComputerInProcess() {
                             onchange={(event, newValue) =>
                               setA1Server(newValue)
                             }
+                            renderOption={(props, option) => {
+                              const backgroundColor =
+                                option === "Yes"
+                                  ? " #bbf7d0 "
+                                  : option === "No"
+                                  ? "  #fef08a  "
+                                  : "white";
+
+                              return (
+                                <li {...props} style={{ backgroundColor }}>
+                                  {option}
+                                </li>
+                              );
+                            }}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
-                          Outsystem
+                          E-working
                           <Autocomplete
+                            className={`${
+                              selectedData.e_working === "Yes"
+                                ? "bg-green-200"
+                                : "bg-yellow-200"
+                            }`}
                             disablePortal
                             size="small"
-                            id="outsystem-autocomplete"
-                            options={outsystemOption}
+                            id="e_working-autocomplete"
+                            options={eWorkingOption}
                             getOptionLabel={(option) => option}
-                            defaultValue={selectedData.internet}
+                            defaultValue={selectedData.e_working}
                             renderInput={(params) => (
-                              <TextField {...params} label="Outsystem" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
                             }}
                             onchange={(event, newValue) =>
-                              setOutsystem(newValue)
+                              setEWorking(newValue)
                             }
+                            renderOption={(props, option) => {
+                              const backgroundColor =
+                                option === "Yes"
+                                  ? " #bbf7d0 "
+                                  : option === "No"
+                                  ? "  #fef08a  "
+                                  : "white";
+
+                              return (
+                                <li {...props} style={{ backgroundColor }}>
+                                  {option}
+                                </li>
+                              );
+                            }}
+                          />
+                        </label>
+                        <label className="font-bold text-blue-300 flex items-center">
+                          Internet
+                          <Autocomplete
+                            className={`${
+                              selectedData.internet === "Yes"
+                                ? "bg-green-200"
+                                : "bg-yellow-200"
+                            }`}
+                            disablePortal
+                            size="small"
+                            id="internet-autocomplete"
+                            options={internetOption}
+                            getOptionLabel={(option) => option}
+                            defaultValue={selectedData.internet}
+                            renderInput={(params) => (
+                              <TextField {...params} label="" />
+                            )}
+                            sx={{
+                              width: 220,
+                              mt: 1,
+                              mb: 1,
+                              marginLeft: "auto",
+                            }}
+                            onchange={(event, newValue) =>
+                              setInternet(newValue)
+                            }
+                            renderOption={(props, option) => {
+                              const backgroundColor =
+                                option === "Yes"
+                                  ? " #bbf7d0 "
+                                  : option === "No"
+                                  ? "  #fef08a  "
+                                  : "white";
+
+                              return (
+                                <li {...props} style={{ backgroundColor }}>
+                                  {option}
+                                </li>
+                              );
+                            }}
                           />
                         </label>
                       </div>
@@ -1512,11 +1717,18 @@ export default function ComputerInProcess() {
                     {/* //*Security Data */}
 
                     <div className="security-data">
-                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2">
-                        <p className="dialog-head">Security Data</p>
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-lg h-full">
+                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-orange-500">
+                          Security Data
+                        </p>
                         <label className="font-bold text-blue-300 flex items-center">
                           Antivirus
                           <Autocomplete
+                            className={`${
+                              selectedData.antivirus_status !== null
+                                ? "bg-green-200"
+                                : "bg-yellow-200"
+                            }`}
                             disablePortal
                             size="small"
                             id="antivirus-autocomplete"
@@ -1524,10 +1736,10 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.antivirus}
                             renderInput={(params) => (
-                              <TextField {...params} label="Antivirus" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1535,12 +1747,35 @@ export default function ComputerInProcess() {
                             onchange={(event, newValue) =>
                               setAntivirus(newValue)
                             }
+                            renderOption={(props, option) => {
+                              const backgroundColor =
+                                option === "Kastersky"
+                                  ? " #58d68d "
+                                  : option === "Symantec"
+                                  ? " #58d68d "
+                                  : option === "Trend Micro"
+                                  ? " #58d68d "
+                                  : option === "McAfee"
+                                  ? " #58d68d "
+                                  : "white";
+
+                              return (
+                                <li {...props} style={{ backgroundColor }}>
+                                  {option}
+                                </li>
+                              );
+                            }}
                           />
                         </label>
 
                         <label className="font-bold text-blue-300 flex items-center">
                           Antivirus Status
                           <Autocomplete
+                            className={`${
+                              selectedData.antivirus_status === "Normal"
+                                ? "bg-green-200"
+                                : "bg-yellow-200"
+                            }`}
                             disablePortal
                             size="small"
                             id="antivirus-status-autocomplete"
@@ -1548,10 +1783,10 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.antivirus_status}
                             renderInput={(params) => (
-                              <TextField {...params} label="Antivirus Status" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1559,11 +1794,30 @@ export default function ComputerInProcess() {
                             onchange={(event, newValue) =>
                               setAntivirusStatus(newValue)
                             }
+                            renderOption={(props, option) => {
+                              const backgroundColor =
+                                option === "Normal"
+                                  ? " #bbf7d0 "
+                                  : option === "Abnormal"
+                                  ? "  #fef08a  "
+                                  : "white";
+
+                              return (
+                                <li {...props} style={{ backgroundColor }}>
+                                  {option}
+                                </li>
+                              );
+                            }}
                           />
                         </label>
                         <label className="font-bold text-blue-300 flex items-center">
                           EDR Status
                           <Autocomplete
+                            className={`${
+                              selectedData.edr_status === "Normal"
+                                ? "bg-green-200"
+                                : "bg-yellow-200"
+                            }`}
                             disablePortal
                             size="small"
                             id="edr-status-autocomplete"
@@ -1571,10 +1825,10 @@ export default function ComputerInProcess() {
                             getOptionLabel={(option) => option}
                             defaultValue={selectedData.edr_status}
                             renderInput={(params) => (
-                              <TextField {...params} label="EDR Status" />
+                              <TextField {...params} label="" />
                             )}
                             sx={{
-                              width: 240,
+                              width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
@@ -1582,6 +1836,20 @@ export default function ComputerInProcess() {
                             onChange={(event, newValue) =>
                               setEdrStatus(newValue)
                             }
+                            renderOption={(props, option) => {
+                              const backgroundColor =
+                                option === "Normal"
+                                  ? " #bbf7d0 "
+                                  : option === "Abnormal"
+                                  ? "  #fef08a  "
+                                  : "white";
+
+                              return (
+                                <li {...props} style={{ backgroundColor }}>
+                                  {option}
+                                </li>
+                              );
+                            }}
                           />
                         </label>
                       </div>
