@@ -68,7 +68,75 @@ const StyledDataGrid = styled(DataGrid)({
   },
 });
 
+//*Set style for dialog *//
+const StatusInput = ({ label, options, value, onChange }) => {
+  return (
+    <label className="font-bold text-blue-300 flex items-center">
+      {label}
+      <Autocomplete
+        size="small"
+        options={options}
+        getOptionLabel={(option) => option}
+        value={value}
+        onChange={onChange}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label=""
+            InputProps={{
+              ...params.InputProps,
+              style: {
+                backgroundColor:
+                  value === "Yes" ||
+                  value === "Normal" ||
+                  value === "Kastersky" ||
+                  value === "Symantec" ||
+                  value === "Trend Micro"
+                    ? "#bbf7d0"
+                    : "#fef08a",
+              },
+            }}
+          />
+        )}
+        sx={{
+          width: 220,
+          mt: 1,
+          mb: 1,
+          marginLeft: "auto",
+        }}
+        renderOption={(props, option) => {
+          const backgroundColor =
+            option === "Yes" ||
+            option === "Normal" ||
+            option === "Kastersky" ||
+            option === "Symantec" ||
+            option === "Trend Micro"
+              ? "#bbf7d0"
+              : "#fef08a";
+
+          return (
+            <li {...props} style={{ backgroundColor }}>
+              {option}
+            </li>
+          );
+        }}
+      />
+    </label>
+  );
+};
+
+//* Main component *//
 export default function ComputerInProcess() {
+  useEffect(() => {
+    // Display the SweetAlert when the component is mounted
+    Swal.fire({
+      title: "Please Search Area",
+      icon: "info",
+      text: "Select and Search before editing data",
+      confirmButtonText: "OK",
+    });
+  }, []);
+
   const [selecteddivision, setSelecteddivision] = useState({
     division: "Division",
   });
@@ -243,7 +311,9 @@ export default function ComputerInProcess() {
             padding: "4px 12px",
             color: params.value === "Network Connected" ? "white" : "black",
             backgroundColor:
-              params.value === "Network Connected" ? "#4ade80" : "transparent",
+              params.value === "Network Connected"
+                ? "rgb(34 197 94)"
+                : "rgb(234 179 8)",
           }}
         >
           {params.value}
@@ -266,21 +336,29 @@ export default function ComputerInProcess() {
       renderCell: (params) => {
         if (userRoleNo === 1 || userRoleNo === 2 || userRoleNo === 5) {
           return (
-            <Button variant="outlined" onClick={() => handleOpen(params.row)}>
+            <Button variant="contained" onClick={() => handleOpen(params.row)}>
               <EditIcon />
             </Button>
           );
-        } else if (userIdCode === idCode && userRoleNo === 3) {
+        } else if (userRoleNo === 3 && userIdCode === params.row.employee_id) {
+          // Users with role 1 can only edit rows where their userIdCode matches the row's employee_id
           return (
-            <Button
-              variant="outlined"
-              onClick={() => handleOpen(params.row.employee_id)}
-            >
+            <Button variant="contained" onClick={() => handleOpen(params.row)}>
+              <EditIcon />
+            </Button>
+          );
+        } else if (userRoleNo === 4) {
+          return (
+            <Button disabled>
               <EditIcon />
             </Button>
           );
         } else {
-          return null;
+          return (
+            <Button disabled>
+              <EditIcon />
+            </Button>
+          );
         }
       },
     },
@@ -296,17 +374,20 @@ export default function ComputerInProcess() {
   //*Dialog *//
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState({});
+  // const [selectedDataRow, setSelectedDataRow] = useState({});
 
   const handleOpen = (data) => {
     const selectedID = data.id;
     localStorage.setItem("selectedID", selectedID);
     setSelectedData(data);
+    // localStorage.setItem("selectedDataRow", JSON.stringify(data));
+    // setSelectedDataRow(data);
 
     setPcName(data["pc_name"]);
     setPcType(data["pc_type"]);
     setOs(data["os"]);
     setOsVersion(data["os_version"]);
-    setStartDate(data["start_date"]);
+    setStartDate(data["update_datetime"]);
     setMacAddress(data["mac_address"]);
     setIpAddress(data["new_ip"]);
     setConnectType(data["connect_type"]);
@@ -343,34 +424,51 @@ export default function ComputerInProcess() {
 
   //*Monitor selected ID after handleOpen *//
   let selectedID = localStorage.getItem("selectedID");
-  const selectedComputerName = rows.find(
-    (row) => row.id === selectedID
-  )?.pc_name;
+  let selectedComputerName = rows.find((row) => row.id === selectedID)?.pc_name;
+
+  // console.log("Selected Data Row:", selectedDataRow);
+  // console.log("Selected Data Row ID Code:", selectedDataRow.employee_id);
 
   //* Get user for update by data*//
   const userLoginInfo =
     localStorage.getItem("guestToken") || localStorage.getItem("userToken");
   const userLoginInfoJSON = userLoginInfo ? JSON.parse(userLoginInfo) : null;
   const userLogin = userLoginInfoJSON ? userLoginInfoJSON.user_login : null;
+  // const userName = userLoginInfoJSON ? userLoginInfoJSON.user_name : null;
+  // const userSurname = userLoginInfoJSON ? userLoginInfoJSON.user_surname : null;
 
   //* Get user role no *//
   const userRoleNo = userLoginInfoJSON.role_no;
 
   //* Get user id code *//
-  const userIdCode = userLoginInfoJSON.user_id_code;
+  let userIdCode = userLoginInfoJSON.user_id_code;
+  let selectedDataIdCode = rows.find(
+    (row) => row.id === selectedID
+  )?.employee_id;
 
-  console.log("User Login:", userLoginInfo);
-  console.log("User Login In:", userLoginInfoJSON);
-  console.log("User Login:", userLogin);
-  console.log("User Role No:", userRoleNo);
-  console.log("Local ID:", selectedID);
-  console.log("Selected Computer Name:", selectedComputerName);
+  // console.log("User Login:", userLoginInfo);
+  console.log(
+    `User Login: ${userLogin},
+    User Role No: ${userRoleNo},
+    Local Row ID Selected: ${selectedID},
+    Selected Computer Name: ${selectedComputerName},
+    Selected Data ID Code: ${selectedDataIdCode}`
+  );
 
   const handleClose = () => {
     setOpen(false);
   };
 
+  //*Update Date Time *//
+  const updateDateTime = new Date(new Date().getTime() + 7 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
+  console.log("Update Date Time:", updateDateTime);
+
   const handleSave = () => {
+    // const updateByInfo = `${userLogin} ${userName} ${userSurname}`;
+
     const editedData = {
       id: selectedData.id,
       selectedComputerName,
@@ -411,6 +509,7 @@ export default function ComputerInProcess() {
       edrStatus,
 
       updateBy: userLogin,
+      updateDateTime,
     };
 
     console.log("Edited Data:", editedData);
@@ -429,7 +528,7 @@ export default function ComputerInProcess() {
       if (result.isConfirmed) {
         axios
           .get(
-            `http://10.17.66.242:3001/api/smart_recovery/update-data-computer-master?row_id=${selectedData.id}&pc_name=${pcName}&pc_type=${pcType}&os=${os}&os_version=${osVersion}&mac_address=${macAddress}&pc_use_for=${pcUseFor}&employee_id=${idCode}&cost_center_code=${costCenter}&building=${building}&area=${area}&update_by=${userLogin}`
+            `http://10.17.66.242:3001/api/smart_recovery/update-data-computer-master?row_id=${selectedData.id}&pc_name=${pcName}&pc_type=${pcType}&os=${os}&os_version=${osVersion}&mac_address=${macAddress}&pc_use_for=${pcUseFor}&employee_id=${idCode}&cost_center_code=${costCenter}&building=${building}&area=${area}&update_by=${userLogin}&antivirus=${antivirus}&antivirus_status=${antivirusStatus}&edr_status=${edrStatus}&update_datetime=${updateDateTime}`
           )
           .then((res) => {
             console.log("Success:", res.data);
@@ -486,7 +585,7 @@ export default function ComputerInProcess() {
   const [antivirusStatus, setAntivirusStatus] = useState("");
   const [edrStatus, setEdrStatus] = useState("");
 
-  //*option *//
+  //*Option *//
   const [pcNameOption, setPcNameOption] = useState([]);
   const pcTypeOption = [
     "Desktop",
@@ -539,19 +638,33 @@ export default function ComputerInProcess() {
   const [areaOption, setAreaOption] = useState([]);
 
   //Permission Data
-  const mfgProOption = ["Yes", "No"];
-  const btpOption = ["Yes", "No"];
-  const fpcOption = ["Yes", "No"];
-  const humatrixOption = ["Yes", "No"];
-  const zwcadOption = ["Yes", "No"];
-  const a1ServerOption = ["Yes", "No"];
-  const eWorkingOption = ["Yes", "No"];
-  const internetOption = ["Yes", "No"];
+  // const mfgProOption = ["Yes", "No"];
+  // const btpOption = ["Yes", "No"];
+  // const fpcOption = ["Yes", "No"];
+  // const humatrixOption = ["Yes", "No"];
+  // const zwcadOption = ["Yes", "No"];
+  // const a1ServerOption = ["Yes", "No"];
+  // const eWorkingOption = ["Yes", "No"];
+  // const internetOption = ["Yes", "No"];
 
   //Security Data
-  const antivirusOption = ["Kastersky", "Symantec", "Trend Micro", "McAfee"];
-  const antivirusStatusOption = ["Normal", "Abnormal"];
-  const edrStatusOption = ["Normal", "Abnormal"];
+  // const antivirusOption = ["Kastersky", "Symantec", "Trend Micro", "McAfee"];
+  // const antivirusStatusOption = ["Normal", "Abnormal"];
+  // const edrStatusOption = ["Normal", "Abnormal"];
+
+  //*Handle Change Background Color For Option Inuput*//
+  const [mfgProColor, setMfgProColor] = useState("");
+  const [btpColor, setBtpColor] = useState("");
+  const [fpcColor, setFpcColor] = useState("");
+  const [humatrixColor, setHumatrixColor] = useState("");
+  const [zwcadColor, setZwcadColor] = useState("");
+  const [a1ServerColor, setA1ServerColor] = useState("");
+  const [eWorkingColor, setEWorkingColor] = useState("");
+  const [internetColor, setInternetColor] = useState("");
+
+  // const [antivirusColor, setAntivirusColor] = useState("");
+  // const [antivirusStatusColor, setAntivirusStatusColor] = useState("");
+  // const [edrStatusColor, setEdrStatusColor] = useState("");
 
   //*Responsive for Navbar *//
   const [isNavbarOpen, setIsNavbarOpen] = React.useState(false);
@@ -561,10 +674,7 @@ export default function ComputerInProcess() {
   };
 
   //*Total PC *//
-  const [pcStatus, setPcStatus] = useState([]); //["Total PC", "PC Connect", "Wait Connect"
-  // const [totalPC, setTotalPC] = useState(0);
-  // const [PCconnect, setPCconnect] = useState(0);
-  // const [waitConnect, setWaitConnect] = useState(0);
+  const [pcStatus, setPcStatus] = useState([]);
 
   useEffect(() => {
     const fetchDataPC = async () => {
@@ -585,7 +695,7 @@ export default function ComputerInProcess() {
         statusData.wait_connect = item.wait_connect;
       });
 
-      console.log("Status Data:", statusData);
+      // console.log("Status Data:", statusData);
 
       setPcStatus(statusData);
     };
@@ -607,7 +717,7 @@ export default function ComputerInProcess() {
 
         let data = response.data;
 
-        console.log("Data:", data);
+        // console.log("Data:", data);
 
         const useForData = {
           Center: 0,
@@ -619,7 +729,7 @@ export default function ComputerInProcess() {
           useForData[item.pc_use_for] = item.count_pc_use_for;
         });
 
-        console.log("Use For Data:", useForData);
+        // console.log("Use For Data:", useForData);
 
         setUseForData(useForData);
       };
@@ -690,7 +800,7 @@ export default function ComputerInProcess() {
 
         let data = response.data;
 
-        console.log("Building Data:", data);
+        // console.log("Building Data:", data);
 
         const buildingData = {
           A: 0,
@@ -707,7 +817,7 @@ export default function ComputerInProcess() {
           buildingData[item.building] = item.count_building;
         });
 
-        console.log("Building Data:", buildingData);
+        // console.log("Building Data:", buildingData);
 
         setBuildingData(buildingData);
       };
@@ -825,7 +935,7 @@ export default function ComputerInProcess() {
               },
               responsive: [
                 {
-                  breakpoint: 480,
+                  breakpoint: 350,
                   options: {
                     chart: {
                       width: 350,
@@ -836,6 +946,7 @@ export default function ComputerInProcess() {
                   },
                 },
               ],
+              colors: [" #22c55e ", " #eab308 "],
             });
 
             setChartSeries(values);
@@ -916,13 +1027,13 @@ export default function ComputerInProcess() {
 
               <div className="flex flex-col w-screen lg:w-1/3 lg:flex-row">
                 <div className="container flex">
-                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left">
+                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left h-40">
                     <BarChartUseFor />
                   </div>
-                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left">
+                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left h-40">
                     <BarChartBuilding />
                   </div>
-                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg flex items-center text-left">
+                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg flex items-center text-left h-40">
                     <DonutChartJoinDomain />
                   </div>
                 </div>
@@ -946,7 +1057,7 @@ export default function ComputerInProcess() {
             <div
               className="shadow-xl"
               style={{
-                height: "50vh",
+                height: "55vh",
                 width: isNavbarOpen ? "calc(90vw - 10vw)" : "90vw",
                 marginTop: "16px",
                 marginBottom: "16px",
@@ -1383,334 +1494,77 @@ export default function ComputerInProcess() {
                         <p className="flex font-bold text-lg mb-6 justify-center underline decoration-green-500">
                           Permission Data
                         </p>
-                        <label className="font-bold text-blue-300 flex items-center">
-                          MFG Pro
-                          <Autocomplete
-                            className={`${
-                              selectedData.mfgpro_btp_fpc === "Yes"
-                                ? "bg-green-200"
-                                : "bg-yellow-200"
-                            }`}
-                            disablePortal
-                            size="small"
-                            id="mfg-pro-autocomplete"
-                            options={mfgProOption}
-                            getOptionLabel={(option) => option}
-                            defaultValue={selectedData.mfgpro_btp_fpc}
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                            onchange={(event, newValue) => setMfgPro(newValue)}
-                            renderOption={(props, option) => {
-                              const backgroundColor =
-                                option === "Yes"
-                                  ? " #bbf7d0 "
-                                  : option === "No"
-                                  ? "  #fef08a  "
-                                  : "white";
+                        <StatusInput
+                          label="MFG Pro"
+                          value={mfgPro}
+                          options={["Yes", "No"]}
+                          onChange={(event, newValue) => setMfgPro(newValue)}
+                          color={mfgProColor}
+                          setColor={setMfgProColor}
+                        />
 
-                              return (
-                                <li {...props} style={{ backgroundColor }}>
-                                  {option}
-                                </li>
-                              );
-                            }}
-                          />
-                        </label>
-                        <label className="font-bold text-blue-300 flex items-center">
-                          BTP
-                          <Autocomplete
-                            className={`${
-                              selectedData.btp_only === "Yes"
-                                ? "bg-green-200"
-                                : "bg-yellow-200"
-                            }`}
-                            disablePortal
-                            size="small"
-                            id="btp-autocomplete"
-                            options={btpOption}
-                            getOptionLabel={(option) => option}
-                            defaultValue={selectedData.btp_only}
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                            onchange={(event, newValue) => setBtp(newValue)}
-                            renderOption={(props, option) => {
-                              const backgroundColor =
-                                option === "Yes"
-                                  ? " #bbf7d0 "
-                                  : option === "No"
-                                  ? "  #fef08a  "
-                                  : "white";
+                        <StatusInput
+                          label="BTP"
+                          value={btp}
+                          options={["Yes", "No"]}
+                          onChange={(event, newValue) => setBtp(newValue)}
+                          color={btpColor}
+                          setColor={setBtpColor}
+                        />
 
-                              return (
-                                <li {...props} style={{ backgroundColor }}>
-                                  {option}
-                                </li>
-                              );
-                            }}
-                          />
-                        </label>
-                        <label className="font-bold text-blue-300 flex items-center">
-                          FPC
-                          <Autocomplete
-                            className={`${
-                              selectedData.fpc_only === "Yes"
-                                ? "bg-green-200"
-                                : "bg-yellow-200"
-                            }`}
-                            disablePortal
-                            size="small"
-                            id="fpc-autocomplete"
-                            options={fpcOption}
-                            getOptionLabel={(option) => option}
-                            defaultValue={selectedData.fpc_only}
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                            onchange={(event, newValue) => setFpc(newValue)}
-                            renderOption={(props, option) => {
-                              const backgroundColor =
-                                option === "Yes"
-                                  ? " #bbf7d0 "
-                                  : option === "No"
-                                  ? "  #fef08a  "
-                                  : "white";
+                        <StatusInput
+                          label="FPC"
+                          value={fpc}
+                          options={["Yes", "No"]}
+                          onChange={(event, newValue) => setFpc(newValue)}
+                          color={fpcColor}
+                          setColor={setFpcColor}
+                        />
 
-                              return (
-                                <li {...props} style={{ backgroundColor }}>
-                                  {option}
-                                </li>
-                              );
-                            }}
-                          />
-                        </label>
-                        <label className="font-bold text-blue-300 flex items-center">
-                          Humatrix
-                          <Autocomplete
-                            className={`${
-                              selectedData.humatrix === "Yes"
-                                ? "bg-green-200"
-                                : "bg-yellow-200"
-                            }`}
-                            disablePortal
-                            size="small"
-                            id="humatrix-autocomplete"
-                            options={humatrixOption}
-                            getOptionLabel={(option) => option}
-                            defaultValue={selectedData.humatrix}
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                            onchange={(event, newValue) =>
-                              setHumatrix(newValue)
-                            }
-                            renderOption={(props, option) => {
-                              const backgroundColor =
-                                option === "Yes"
-                                  ? " #bbf7d0 "
-                                  : option === "No"
-                                  ? "  #fef08a  "
-                                  : "white";
+                        <StatusInput
+                          label="Humatrix"
+                          value={humatrix}
+                          options={["Yes", "No"]}
+                          onChange={(event, newValue) => setHumatrix(newValue)}
+                          color={humatrixColor}
+                          setColor={setHumatrixColor}
+                        />
 
-                              return (
-                                <li {...props} style={{ backgroundColor }}>
-                                  {option}
-                                </li>
-                              );
-                            }}
-                          />
-                        </label>
-                        <label className="font-bold text-blue-300 flex items-center">
-                          ZWCAD
-                          <Autocomplete
-                            className={`${
-                              selectedData.zwcad === "Yes"
-                                ? "bg-green-200"
-                                : "bg-yellow-200"
-                            }`}
-                            disablePortal
-                            size="small"
-                            id="zwcad-autocomplete"
-                            options={zwcadOption}
-                            getOptionLabel={(option) => option}
-                            defaultValue={selectedData.zwcad}
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                            onchange={(event, newValue) => setZwcad(newValue)}
-                            renderOption={(props, option) => {
-                              const backgroundColor =
-                                option === "Yes"
-                                  ? " #bbf7d0 "
-                                  : option === "No"
-                                  ? "  #fef08a  "
-                                  : "white";
+                        <StatusInput
+                          label="ZWCAD"
+                          value={zwcad}
+                          options={["Yes", "No"]}
+                          onChange={(event, newValue) => setZwcad(newValue)}
+                          color={zwcadColor}
+                          setColor={setZwcadColor}
+                        />
 
-                              return (
-                                <li {...props} style={{ backgroundColor }}>
-                                  {option}
-                                </li>
-                              );
-                            }}
-                          />
-                        </label>
-                        <label className="font-bold text-blue-300 flex items-center">
-                          A1 Server
-                          <Autocomplete
-                            className={`${
-                              selectedData.a1_server === "Yes"
-                                ? "bg-green-200"
-                                : "bg-yellow-200"
-                            }`}
-                            disablePortal
-                            size="small"
-                            id="a1-server-autocomplete"
-                            options={a1ServerOption}
-                            getOptionLabel={(option) => option}
-                            defaultValue={selectedData.a1_server}
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                            onchange={(event, newValue) =>
-                              setA1Server(newValue)
-                            }
-                            renderOption={(props, option) => {
-                              const backgroundColor =
-                                option === "Yes"
-                                  ? " #bbf7d0 "
-                                  : option === "No"
-                                  ? "  #fef08a  "
-                                  : "white";
+                        <StatusInput
+                          label="A1 Server"
+                          value={a1Server}
+                          options={["Yes", "No"]}
+                          onChange={(event, newValue) => setA1Server(newValue)}
+                          color={a1ServerColor}
+                          setColor={setA1ServerColor}
+                        />
 
-                              return (
-                                <li {...props} style={{ backgroundColor }}>
-                                  {option}
-                                </li>
-                              );
-                            }}
-                          />
-                        </label>
-                        <label className="font-bold text-blue-300 flex items-center">
-                          E-working
-                          <Autocomplete
-                            className={`${
-                              selectedData.e_working === "Yes"
-                                ? "bg-green-200"
-                                : "bg-yellow-200"
-                            }`}
-                            disablePortal
-                            size="small"
-                            id="e_working-autocomplete"
-                            options={eWorkingOption}
-                            getOptionLabel={(option) => option}
-                            defaultValue={selectedData.e_working}
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                            onchange={(event, newValue) =>
-                              setEWorking(newValue)
-                            }
-                            renderOption={(props, option) => {
-                              const backgroundColor =
-                                option === "Yes"
-                                  ? " #bbf7d0 "
-                                  : option === "No"
-                                  ? "  #fef08a  "
-                                  : "white";
+                        <StatusInput
+                          label="E-Working"
+                          value={eWorking}
+                          options={["Yes", "No"]}
+                          onChange={(event, newValue) => setEWorking(newValue)}
+                          color={eWorkingColor}
+                          setColor={setEWorkingColor}
+                        />
 
-                              return (
-                                <li {...props} style={{ backgroundColor }}>
-                                  {option}
-                                </li>
-                              );
-                            }}
-                          />
-                        </label>
-                        <label className="font-bold text-blue-300 flex items-center">
-                          Internet
-                          <Autocomplete
-                            className={`${
-                              selectedData.internet === "Yes"
-                                ? "bg-green-200"
-                                : "bg-yellow-200"
-                            }`}
-                            disablePortal
-                            size="small"
-                            id="internet-autocomplete"
-                            options={internetOption}
-                            getOptionLabel={(option) => option}
-                            defaultValue={selectedData.internet}
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                            onchange={(event, newValue) =>
-                              setInternet(newValue)
-                            }
-                            renderOption={(props, option) => {
-                              const backgroundColor =
-                                option === "Yes"
-                                  ? " #bbf7d0 "
-                                  : option === "No"
-                                  ? "  #fef08a  "
-                                  : "white";
-
-                              return (
-                                <li {...props} style={{ backgroundColor }}>
-                                  {option}
-                                </li>
-                              );
-                            }}
-                          />
-                        </label>
+                        <StatusInput
+                          label="Internet"
+                          value={internet}
+                          options={["Yes", "No"]}
+                          onChange={(event, newValue) => setInternet(newValue)}
+                          color={internetColor}
+                          setColor={setInternetColor}
+                        />
                       </div>
                     </div>
 
@@ -1721,137 +1575,27 @@ export default function ComputerInProcess() {
                         <p className="flex font-bold text-lg mb-6 justify-center underline decoration-orange-500">
                           Security Data
                         </p>
-                        <label className="font-bold text-blue-300 flex items-center">
-                          Antivirus
-                          <Autocomplete
-                            className={`${
-                              selectedData.antivirus_status !== null
-                                ? "bg-green-200"
-                                : "bg-yellow-200"
-                            }`}
-                            disablePortal
-                            size="small"
-                            id="antivirus-autocomplete"
-                            options={antivirusOption}
-                            getOptionLabel={(option) => option}
-                            defaultValue={selectedData.antivirus}
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                            onchange={(event, newValue) =>
-                              setAntivirus(newValue)
-                            }
-                            renderOption={(props, option) => {
-                              const backgroundColor =
-                                option === "Kastersky"
-                                  ? " #58d68d "
-                                  : option === "Symantec"
-                                  ? " #58d68d "
-                                  : option === "Trend Micro"
-                                  ? " #58d68d "
-                                  : option === "McAfee"
-                                  ? " #58d68d "
-                                  : "white";
+                        <StatusInput
+                          label="Antivirus"
+                          options={["Kastersky", "Symantec", "Trend Micro"]}
+                          value={antivirus}
+                          onChange={(event, newValue) => setAntivirus(newValue)}
+                        />
 
-                              return (
-                                <li {...props} style={{ backgroundColor }}>
-                                  {option}
-                                </li>
-                              );
-                            }}
-                          />
-                        </label>
-
-                        <label className="font-bold text-blue-300 flex items-center">
-                          Antivirus Status
-                          <Autocomplete
-                            className={`${
-                              selectedData.antivirus_status === "Normal"
-                                ? "bg-green-200"
-                                : "bg-yellow-200"
-                            }`}
-                            disablePortal
-                            size="small"
-                            id="antivirus-status-autocomplete"
-                            options={antivirusStatusOption}
-                            getOptionLabel={(option) => option}
-                            defaultValue={selectedData.antivirus_status}
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                            onchange={(event, newValue) =>
-                              setAntivirusStatus(newValue)
-                            }
-                            renderOption={(props, option) => {
-                              const backgroundColor =
-                                option === "Normal"
-                                  ? " #bbf7d0 "
-                                  : option === "Abnormal"
-                                  ? "  #fef08a  "
-                                  : "white";
-
-                              return (
-                                <li {...props} style={{ backgroundColor }}>
-                                  {option}
-                                </li>
-                              );
-                            }}
-                          />
-                        </label>
-                        <label className="font-bold text-blue-300 flex items-center">
-                          EDR Status
-                          <Autocomplete
-                            className={`${
-                              selectedData.edr_status === "Normal"
-                                ? "bg-green-200"
-                                : "bg-yellow-200"
-                            }`}
-                            disablePortal
-                            size="small"
-                            id="edr-status-autocomplete"
-                            options={edrStatusOption}
-                            getOptionLabel={(option) => option}
-                            defaultValue={selectedData.edr_status}
-                            renderInput={(params) => (
-                              <TextField {...params} label="" />
-                            )}
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                            onChange={(event, newValue) =>
-                              setEdrStatus(newValue)
-                            }
-                            renderOption={(props, option) => {
-                              const backgroundColor =
-                                option === "Normal"
-                                  ? " #bbf7d0 "
-                                  : option === "Abnormal"
-                                  ? "  #fef08a  "
-                                  : "white";
-
-                              return (
-                                <li {...props} style={{ backgroundColor }}>
-                                  {option}
-                                </li>
-                              );
-                            }}
-                          />
-                        </label>
+                        <StatusInput
+                          label="Antivirus Status"
+                          options={["Normal", "Abnormal"]}
+                          value={antivirusStatus}
+                          onChange={(event, newValue) =>
+                            setAntivirusStatus(newValue)
+                          }
+                        />
+                        <StatusInput
+                          label="EDR Status"
+                          options={["Normal", "Abnormal"]}
+                          value={edrStatus}
+                          onChange={(event, newValue) => setEdrStatus(newValue)}
+                        />
                       </div>
                     </div>
                   </div>

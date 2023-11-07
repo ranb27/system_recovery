@@ -41,7 +41,7 @@ function Login() {
           Swal.fire({
             icon: "success",
             title: "Login Success",
-            text: "Welcome to Smart Planning",
+            text: "Welcome to IT Management System Recovery",
           });
           navigate("/home");
         } else {

@@ -15,11 +15,11 @@ import { Link } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 
 //*mui icon ******************************************************
-import ComputerIcon from "@mui/icons-material/Computer";
-import CableIcon from "@mui/icons-material/Cable";
-import StayPrimaryPortraitIcon from "@mui/icons-material/StayPrimaryPortrait";
-import MemoryIcon from "@mui/icons-material/Memory";
-import DomainIcon from "@mui/icons-material/Domain";
+// import ComputerIcon from "@mui/icons-material/Computer";
+// import CableIcon from "@mui/icons-material/Cable";
+// import StayPrimaryPortraitIcon from "@mui/icons-material/StayPrimaryPortrait";
+// import MemoryIcon from "@mui/icons-material/Memory";
+// import DomainIcon from "@mui/icons-material/Domain";
 
 import {
   List,
@@ -133,7 +133,7 @@ export default function Navbar({ onToggle }) {
       case "/computer_in_process":
         setMenuName("Computer in Process");
         break;
-      case "/connect_network":
+      case "/connect_newwork":
         setMenuName("PC Connect Newwork");
         break;
       case "/tablet":
@@ -238,7 +238,9 @@ export default function Navbar({ onToggle }) {
               disablePadding
               sx={{
                 display: "block",
-                color: "black",
+                color: isActive("/computer_in_process")
+                  ? " #3b82f6 "
+                  : "initial",
                 backgroundColor: isActive("/computer_in_process")
                   ? "#D6EAF8"
                   : "initial",
@@ -264,7 +266,7 @@ export default function Navbar({ onToggle }) {
                     },
                   }}
                 >
-                  <ComputerIcon />
+                  <img src="/computer.png" alt="" width={30} />
                 </ListItemIcon>
                 <ListItemText
                   primary="Computer in Process"
@@ -279,7 +281,7 @@ export default function Navbar({ onToggle }) {
               disablePadding
               sx={{
                 display: "block",
-                color: "black",
+                color: isActive("/connect_newwork") ? " #3b82f6 " : "initial",
                 backgroundColor: isActive("/connect_newwork")
                   ? "#D6EAF8"
                   : "initial",
@@ -305,7 +307,7 @@ export default function Navbar({ onToggle }) {
                     },
                   }}
                 >
-                  <CableIcon />
+                  <img src="/lan.png" alt="" width={30} />
                 </ListItemIcon>
                 <ListItemText
                   primary={<Typography>Connect Network</Typography>}
@@ -320,7 +322,7 @@ export default function Navbar({ onToggle }) {
               disablePadding
               sx={{
                 display: "block",
-                color: "black",
+                color: isActive("/tablet") ? " #3b82f6 " : "initial",
                 backgroundColor: isActive("/tablet") ? "#D6EAF8" : "initial",
               }}
               component={Link}
@@ -344,7 +346,7 @@ export default function Navbar({ onToggle }) {
                     },
                   }}
                 >
-                  <StayPrimaryPortraitIcon />
+                  <img src="/tablet.png" alt="" width={30} />
                 </ListItemIcon>
                 <ListItemText
                   primary={<Typography>Tablet</Typography>}
@@ -359,7 +361,7 @@ export default function Navbar({ onToggle }) {
               disablePadding
               sx={{
                 display: "block",
-                color: "black",
+                color: isActive("/rasbery_pi") ? " #3b82f6 " : "initial",
                 backgroundColor: isActive("/rasbery_pi")
                   ? "#D6EAF8"
                   : "initial",
@@ -385,7 +387,7 @@ export default function Navbar({ onToggle }) {
                     },
                   }}
                 >
-                  <MemoryIcon />
+                  <img src="/raspberries.png" alt="" width={30} />
                 </ListItemIcon>
                 <ListItemText
                   primary={<Typography>Rasbery Pi</Typography>}
@@ -400,7 +402,7 @@ export default function Navbar({ onToggle }) {
               disablePadding
               sx={{
                 display: "block",
-                color: "black",
+                color: isActive("/join_domain") ? " #3b82f6 " : "initial",
                 backgroundColor: isActive("/join_domain")
                   ? "#D6EAF8"
                   : "initial",
@@ -426,7 +428,7 @@ export default function Navbar({ onToggle }) {
                     },
                   }}
                 >
-                  <DomainIcon />
+                  <img src="/domain.png" alt="" width={30} />
                 </ListItemIcon>
                 <ListItemText
                   primary={<Typography>Join Domain</Typography>}

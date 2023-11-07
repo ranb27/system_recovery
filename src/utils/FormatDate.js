@@ -8,11 +8,11 @@ export const formatDate = (dates) => {
     const hours = String(date.getUTCHours()).padStart(2, "0");
     const minutes = String(date.getUTCMinutes()).padStart(2, "0");
     const seconds = String(date.getUTCSeconds()).padStart(2, "0");
-    // const milliseconds = String(date.getUTCMilliseconds()).padStart(3, "0");
+    const milliseconds = String(date.getUTCMilliseconds()).padStart(3, "0");
 
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    // return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-    // return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}:${milliseconds}`;
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}:${milliseconds}`;
 
     // return `${year}-${month}`;
 

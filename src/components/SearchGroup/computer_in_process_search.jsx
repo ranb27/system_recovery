@@ -5,6 +5,7 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 function Computer_In_Process_Search_Group({ onSearch }) {
   const [error, setError] = useState(null);
@@ -137,6 +138,16 @@ function Computer_In_Process_Search_Group({ onSearch }) {
                 renderInput={(params) => (
                   <TextField {...params} label="Division" />
                 )}
+                renderOption={(props, option) => {
+                  return (
+                    <li
+                      {...props}
+                      style={{ textAlign: "left" }} // Add this style to justify to the left
+                    >
+                      <span>{option.division}</span>
+                    </li>
+                  );
+                }}
                 isOptionEqualToValue={(option, value) =>
                   option && value && option.division === value.division
                 }
@@ -155,6 +166,16 @@ function Computer_In_Process_Search_Group({ onSearch }) {
                 renderInput={(params) => (
                   <TextField {...params} label="Department" />
                 )}
+                renderOption={(props, option) => {
+                  return (
+                    <li
+                      {...props}
+                      style={{ textAlign: "left" }} // Add this style to justify to the left
+                    >
+                      <span>{option.dep_unit}</span>
+                    </li>
+                  );
+                }}
                 isOptionEqualToValue={(option, value) =>
                   option && value && option.dep_unit === value.dep_unit
                 }
@@ -164,7 +185,6 @@ function Computer_In_Process_Search_Group({ onSearch }) {
             <div className="flex items-center shadow-md">
               <Autocomplete
                 disablePortal
-                listBox={{ style: { textAlign: "center" } }}
                 id="costcenter"
                 options={distinctCostCenter}
                 getOptionLabel={(option) => option && option.cost_center_name}
@@ -174,6 +194,16 @@ function Computer_In_Process_Search_Group({ onSearch }) {
                 renderInput={(params) => (
                   <TextField {...params} label="Cost Center" />
                 )}
+                renderOption={(props, option) => {
+                  return (
+                    <li
+                      {...props}
+                      style={{ textAlign: "left" }} // Add this style to justify to the left
+                    >
+                      <span>{option.cost_center_name}</span>
+                    </li>
+                  );
+                }}
                 isOptionEqualToValue={(option, value) =>
                   option &&
                   value &&
@@ -182,33 +212,28 @@ function Computer_In_Process_Search_Group({ onSearch }) {
               />
             </div>
 
-            <div className="shadow-lg">
-              <Button
-                variant="contained"
-                style={{
-                  width: 100,
-                  height: "100%",
-                  borderRadius: 10,
-                  fontWeight: "bold",
-                }}
-                onClick={handleSearch}
-              >
-                Search
-              </Button>
-            </div>
-            <div className="shadow-lg">
-              <Button
-                variant="contained"
-                style={{
-                  width: 150,
-                  height: "100%",
-                  borderRadius: 10,
-                  fontWeight: "bold",
-                }}
-              >
-                Request SE
-              </Button>
-            </div>
+            <button
+              className="bg-blue-500 w-full font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none"
+              onClick={handleSearch}
+            >
+              Search
+            </button>
+
+            <button
+              className="bg-green-500 w-full font-bold rounded-lg px-4 shadow-lg text-white hover:bg-green-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none"
+              style={{ whiteSpace: "nowrap" }}
+              onClick={() => {
+                Swal.fire({
+                  title: "This feature is not available",
+                  icon: "warning",
+                  showCancelButton: false,
+                  confirmButtonText: "OK",
+                  confirmButtonColor: "#3085d6",
+                });
+              }}
+            >
+              Request SE
+            </button>
           </div>
         </Grid>
       </Box>
