@@ -26,6 +26,7 @@ class DonutChart extends React.Component {
             },
           },
         ],
+        colors: ["#4C51BF", "#E53E3E"],
       },
       series: [150, 90],
     };
@@ -38,7 +39,7 @@ class DonutChart extends React.Component {
           options={this.state.options}
           series={this.state.series}
           type="donut"
-          width={300}
+          width={400}
         />
       </div>
     );

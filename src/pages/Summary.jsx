@@ -2,6 +2,8 @@ import * as React from "react";
 
 //* Components
 import Navbar from "../components/Navbar/Navbar";
+import BarChart from "../components/Charts/ComputerInProcessBarCharts";
+import DonutChart from "../components/Charts/ComputerInProcessDonutChart";
 
 //* MUI
 import Box from "@mui/material/Box";
@@ -197,6 +199,15 @@ function Summary() {
             </div>
             <div className="bg-white rounded-lg shadow-lg p-6 col-span-1">
               <RadialChart />
+            </div>
+            <div className="bg-white rounded-lg shadow-lg p-6 col-span-1 flex items-center">
+              <DonutChart />
+            </div>
+            <div className="bg-white rounded-lg shadow-lg p-6 col-span-2">
+              <div className="text-gray-500 font-medium text-sm mb-2">
+                PC Use For
+              </div>
+              <BarChart />
             </div>
           </div>
         </Box>
