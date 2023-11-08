@@ -67,7 +67,9 @@ function Summary() {
 
   function RadialChart() {
     const options = {
+      series: [44, 55, 67, 83],
       chart: {
+        height: 350,
         type: "radialBar",
       },
       plotOptions: {
@@ -83,13 +85,14 @@ function Summary() {
               show: true,
               label: "Total",
               formatter: function (w) {
-                return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                // By default this function returns the average of all series. The below is just an example to show the use of custom formatter function
+                return 249;
               },
             },
           },
         },
       },
-      labels: ["Series 1"],
+      labels: ["Apples", "Oranges", "Bananas", "Berries"],
     };
 
     const series = [70]; // Replace with your data series

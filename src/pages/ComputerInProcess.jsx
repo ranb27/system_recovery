@@ -128,15 +128,15 @@ const StatusInput = ({ label, options, value, onChange }) => {
 
 //* Main component *//
 export default function ComputerInProcess() {
-  useEffect(() => {
-    // Display the SweetAlert when the component is mounted
-    Swal.fire({
-      title: "Please Search Area",
-      icon: "info",
-      text: "Select and Search before editing data",
-      confirmButtonText: "OK",
-    });
-  }, []);
+  // useEffect(() => {
+  //   // Display the SweetAlert when the component is mounted
+  //   Swal.fire({
+  //     title: "Please Search Area",
+  //     icon: "info",
+  //     text: "Select and Search before editing data",
+  //     confirmButtonText: "OK",
+  //   });
+  // }, []);
 
   const [selecteddivision, setSelecteddivision] = useState({
     division: "Division",
@@ -1083,13 +1083,13 @@ export default function ComputerInProcess() {
 
               <div className="flex flex-col w-screen lg:w-1/3 lg:flex-row">
                 <div className="container flex h-48">
-                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 overflow-clip lg:w-full">
+                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full">
                     <BarChartUseFor />
                   </div>
-                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 overflow-clip lg:w-full">
+                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full">
                     <BarChartBuilding />
                   </div>
-                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg flex items-center text-left w-52 overflow-clip lg:w-full">
+                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg flex items-center text-left w-52 lg:w-full">
                     <DonutChartJoinDomain />
                   </div>
                 </div>
