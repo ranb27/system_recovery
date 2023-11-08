@@ -973,19 +973,7 @@ export default function ComputerInProcess() {
               dataLabels: {
                 enabled: true,
               },
-              responsive: [
-                {
-                  breakpoint: 350,
-                  options: {
-                    chart: {
-                      width: 350,
-                    },
-                    legend: {
-                      position: "right",
-                    },
-                  },
-                },
-              ],
+
               colors: [" #22c55e ", " #eab308 "],
             });
 
@@ -1083,13 +1071,13 @@ export default function ComputerInProcess() {
 
               <div className="flex flex-col w-screen lg:w-1/3 lg:flex-row">
                 <div className="container flex h-48">
-                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full">
+                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full overflow-hidden lg:overflow-visible ">
                     <BarChartUseFor />
                   </div>
-                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full">
+                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full overflow-hidden lg:overflow-visible ">
                     <BarChartBuilding />
                   </div>
-                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg flex items-center text-left w-52 lg:w-full">
+                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full overflow-hidden lg:overflow-visible flex items-center">
                     <DonutChartJoinDomain />
                   </div>
                 </div>
