@@ -25,6 +25,7 @@ import {
   TextField,
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
+import CircularProgress from "@mui/material/CircularProgress";
 
 //*Set style for page *//
 const theme = createTheme({
@@ -71,7 +72,7 @@ const StyledDataGrid = styled(DataGrid)({
 //*Set style for dialog *//
 const StatusInput = ({ label, options, value, onChange }) => {
   return (
-    <label className="font-bold text-blue-300 flex items-center">
+    <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
       {label}
       <Autocomplete
         size="small"
@@ -225,7 +226,7 @@ export default function ComputerInProcess() {
     {
       field: "factory_emp",
       headerName: "Factory",
-      width: 70,
+      width: 60,
       align: "center",
       headerAlign: "center",
     },
@@ -466,6 +467,22 @@ export default function ComputerInProcess() {
     .replace("T", " ");
   console.log("Update Date Time:", updateDateTime);
 
+  //*Update Permission *//
+  const handlePermissionUpdate = () => {
+    axios
+      .get(
+        `http://10.17.66.242:3001/api/smart_recovery/update-data-computer-permission?pc_name=${pcName}&new_ip=${ipAddress}&mfgpro_btp_fpc=${mfgPro}&btp_only=${btp}&fpc_only=${fpc}&humatrix=${humatrix}&zwcad=${zwcad}&a1_server=${a1Server}&e_working=${eWorking}&internet=${internet}`
+      )
+      .then((secondRes) => {
+        console.log("Permission Update Success:", secondRes.data);
+      })
+      .catch((secondError) => {
+        console.error("Permission Update Error:", secondError);
+      });
+
+    fetchData();
+  };
+
   const handleSave = () => {
     // const updateByInfo = `${userLogin} ${userName} ${userSurname}`;
 
@@ -531,6 +548,8 @@ export default function ComputerInProcess() {
             `http://10.17.66.242:3001/api/smart_recovery/update-data-computer-master?row_id=${selectedData.id}&pc_name=${pcName}&pc_type=${pcType}&os=${os}&os_version=${osVersion}&mac_address=${macAddress}&pc_use_for=${pcUseFor}&employee_id=${idCode}&cost_center_code=${costCenter}&building=${building}&area=${area}&update_by=${userLogin}&antivirus=${antivirus}&antivirus_status=${antivirusStatus}&edr_status=${edrStatus}&update_datetime=${updateDateTime}`
           )
           .then((res) => {
+            handlePermissionUpdate();
+
             console.log("Success:", res.data);
           });
 
@@ -751,6 +770,26 @@ export default function ComputerInProcess() {
           name: "Resign",
           data: [useForData.Resign],
         },
+        {
+          name: "Machine",
+          data: [useForData.Machine],
+        },
+        {
+          name: "Scan WIP",
+          data: [useForData.Scan],
+        },
+        {
+          name: "CCTV",
+          data: [useForData.Cctv],
+        },
+        {
+          name: "Scrap",
+          data: [useForData.Scrap],
+        },
+        {
+          name: "Server",
+          data: [useForData.Server],
+        },
       ],
       options: {
         chart: {
@@ -900,6 +939,7 @@ export default function ComputerInProcess() {
   const DonutChartJoinDomain = () => {
     const [chartOptions, setChartOptions] = useState({});
     const [chartSeries, setChartSeries] = useState([]);
+    const [dataFetched, setDataFetched] = useState(false); // Track if data is fetched
 
     useEffect(() => {
       const fetchData = async () => {
@@ -909,8 +949,8 @@ export default function ComputerInProcess() {
           );
           const data = response.data;
 
-          // Process the data and prepare chart options and series
           if (data && data.length > 0) {
+            // Data is available, prepare chart options and series
             const sortedData = [...data].sort(
               (a, b) => a.count_join_domain - b.count_join_domain
             );
@@ -950,6 +990,7 @@ export default function ComputerInProcess() {
             });
 
             setChartSeries(values);
+            setDataFetched(true); // Set dataFetched to true when data is fetched
           } else {
             setChartOptions({});
             setChartSeries([]);
@@ -964,13 +1005,22 @@ export default function ComputerInProcess() {
 
     return (
       <div>
-        <Chart
-          options={chartOptions}
-          series={chartSeries}
-          type="donut"
-          width={350}
-          height={150}
-        />
+        {dataFetched ? ( // Conditionally render the chart when data is fetched
+          <Chart
+            options={chartOptions}
+            series={chartSeries}
+            type="donut"
+            width={350}
+            height={150}
+          />
+        ) : (
+          <div className="flex flex-col justify-center items-center h-48 mx-8 lg:mx-24">
+            <CircularProgress color="success" />
+            <span className=" text-yellow-600 text-md font-bold mt-4 whitespace-nowrap">
+              Waiting for Search
+            </span>
+          </div>
+        )}
       </div>
     );
   };
@@ -979,7 +1029,7 @@ export default function ComputerInProcess() {
     <>
       <Navbar onToggle={handleNavbarToggle} />
       <ThemeProvider theme={theme}>
-        <div className="container mx-16 my-24 w-screen">
+        <div className="container mx-16 mt-24 w-screen">
           <Box
             marginLeft={isNavbarOpen ? "220px" : 4}
             marginTop={8}
@@ -990,11 +1040,11 @@ export default function ComputerInProcess() {
             {/* //Chart Group */}
 
             <div className="flex flex-col lg:flex-row gap-4">
-              <div className="container flex gap-4 w-fit">
+              <div className="container flex gap-4 w-fit h-48">
                 <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                  <div className="bg-blue-500 rounded-lg p-4 shadow-lg h-40">
-                    <p className="text-white text-xl font-bold">Total PC</p>
-                    <div className="bg-white rounded-lg p-4 mt-8 h-16">
+                  <div className="bg-blue-500 rounded-lg p-4 shadow-lg hover:bg-blue-600 transition-colors ease-linear duration-300 hover:shadow-none">
+                    <p className="text-slate-50 text-xl font-bold">Total PC</p>
+                    <div className="bg-slate-50 rounded-lg p-4 mt-9 h-16">
                       <p className="text-blue-700 text-3xl font-bold">
                         {pcStatus.total_pc}
                       </p>
@@ -1003,22 +1053,28 @@ export default function ComputerInProcess() {
                 </div>
 
                 <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                  <div className="bg-green-500 rounded-lg p-4 shadow-lg h-40">
-                    <p className="text-white text-xl font-bold">PC Connect</p>
-                    <div className="bg-white rounded-lg p-4 mt-8 h-16">
+                  <div className="bg-green-500 rounded-lg p-4 shadow-lg hover:bg-green-600 transition-colors ease-linear duration-300 hover:shadow-none">
+                    <p className="text-slate-50 text-xl font-bold">
+                      PC Connect
+                    </p>
+                    <div className="bg-slate-50 rounded-lg p-4 mt-9 h-16">
                       <p className="text-green-700 text-3xl font-bold">
-                        {pcStatus.pc_connect}
+                        {pcStatus.pc_connect !== null ? pcStatus.pc_connect : 0}{" "}
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                  <div className="bg-yellow-500 rounded-lg p-4 shadow-lg h-40">
-                    <p className="text-white text-xl font-bold">Wait Connect</p>
-                    <div className="bg-white rounded-lg p-4 mt-8 h-16">
+                  <div className="bg-yellow-500 rounded-lg p-4 shadow-lg hover:bg-yellow-600 transition-colors ease-linear duration-300 hover:shadow-none">
+                    <p className="text-slate-50 text-xl font-bold">
+                      Wait Connect
+                    </p>
+                    <div className="bg-slate-50 rounded-lg p-4 mt-9 h-16">
                       <p className="text-yellow-700 text-3xl font-bold">
-                        {pcStatus.wait_connect}
+                        {pcStatus.wait_connect !== null
+                          ? pcStatus.wait_connect
+                          : 0}
                       </p>
                     </div>
                   </div>
@@ -1026,14 +1082,14 @@ export default function ComputerInProcess() {
               </div>
 
               <div className="flex flex-col w-screen lg:w-1/3 lg:flex-row">
-                <div className="container flex">
-                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left h-40">
+                <div className="container flex h-48">
+                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 overflow-clip lg:w-full">
                     <BarChartUseFor />
                   </div>
-                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left h-40">
+                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 overflow-clip lg:w-full">
                     <BarChartBuilding />
                   </div>
-                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg flex items-center text-left h-40">
+                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg flex items-center text-left w-52 overflow-clip lg:w-full">
                     <DonutChartJoinDomain />
                   </div>
                 </div>
@@ -1042,7 +1098,7 @@ export default function ComputerInProcess() {
 
             {/* //Search Group */}
 
-            <div className="mb-6">
+            <div className="mb-60 lg:mb-6">
               {/* <Computer_In_Process_Search_Group onSearch={onSearch} /> */}
               <Computer_In_Process_Search_Group
                 onSearch={(queryParams) => {
@@ -1058,7 +1114,7 @@ export default function ComputerInProcess() {
               className="shadow-xl"
               style={{
                 height: "55vh",
-                width: isNavbarOpen ? "calc(90vw - 10vw)" : "90vw",
+                width: isNavbarOpen ? "calc(95vw - 10vw)" : "90vw",
                 marginTop: "16px",
                 marginBottom: "16px",
               }}
@@ -1076,14 +1132,14 @@ export default function ComputerInProcess() {
 
             {selectedData && (
               <Dialog open={open} onClose={handleClose} maxWidth="100vw">
-                <DialogContent sx={{ background: "#e3e3e3" }}>
+                <DialogContent>
                   <div className="flex flex-row">
                     <div className="computer-data">
-                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-lg h-full">
-                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-sky-500">
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-md h-full">
+                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-sky-500 drop-shadow-md">
                           Computer Data
                         </p>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           PC Name
                           <Autocomplete
                             disablePortal
@@ -1105,7 +1161,7 @@ export default function ComputerInProcess() {
                             onChange={(event, newValue) => setPcName(newValue)}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           PC Type
                           <Autocomplete
                             disablePortal
@@ -1127,7 +1183,7 @@ export default function ComputerInProcess() {
                             onChange={(event, newValue) => setPcType(newValue)}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           OS
                           <Autocomplete
                             disablePortal
@@ -1149,7 +1205,7 @@ export default function ComputerInProcess() {
                             onChange={(event, newValue) => setOs(newValue)}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           OS Version
                           <Autocomplete
                             disablePortal
@@ -1173,7 +1229,7 @@ export default function ComputerInProcess() {
                             }
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Start Date
                           <TextField
                             disabled
@@ -1190,7 +1246,7 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           MAC Address
                           <TextField
                             size="small"
@@ -1209,7 +1265,7 @@ export default function ComputerInProcess() {
                             }
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           IP Address
                           <TextField
                             disabled
@@ -1224,7 +1280,7 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Connect Type
                           <TextField
                             disabled
@@ -1239,7 +1295,7 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Join Domain
                           <TextField
                             disabled
@@ -1254,7 +1310,7 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Join Domain Date
                           <TextField
                             disabled
@@ -1275,11 +1331,11 @@ export default function ComputerInProcess() {
                     {/* //*User Data  */}
 
                     <div className="user-data">
-                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-lg h-full">
-                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-pink-500">
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-md h-full">
+                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-pink-500 drop-shadow-md">
                           User Data
                         </p>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           PC Use For
                           <Autocomplete
                             disablePortal
@@ -1303,7 +1359,7 @@ export default function ComputerInProcess() {
                             }
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           ID Code
                           <Autocomplete
                             disablePortal
@@ -1325,7 +1381,7 @@ export default function ComputerInProcess() {
                             onChange={(event, newValue) => setIdCode(newValue)}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Name - Surname
                           <TextField
                             disabled
@@ -1341,7 +1397,7 @@ export default function ComputerInProcess() {
                           />
                         </label>
 
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Email
                           <TextField
                             disabled
@@ -1356,7 +1412,7 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Job Level
                           <TextField
                             disabled
@@ -1371,7 +1427,7 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Division
                           <TextField
                             disabled
@@ -1386,7 +1442,7 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Department
                           <TextField
                             disabled
@@ -1401,7 +1457,7 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Manager
                           <TextField
                             disabled
@@ -1416,7 +1472,7 @@ export default function ComputerInProcess() {
                             }}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Cost Center
                           <Autocomplete
                             disablePortal
@@ -1440,7 +1496,7 @@ export default function ComputerInProcess() {
                             }
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Building
                           <Autocomplete
                             disablePortal
@@ -1462,7 +1518,7 @@ export default function ComputerInProcess() {
                             onChange={handleBuildingChange}
                           />
                         </label>
-                        <label className="font-bold text-blue-300 flex items-center">
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Area
                           <Autocomplete
                             disablePortal
@@ -1490,8 +1546,8 @@ export default function ComputerInProcess() {
                     {/* //*permission Data */}
 
                     <div className="permission-data">
-                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-lg h-full">
-                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-green-500">
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-md h-full">
+                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-green-500 drop-shadow-md">
                           Permission Data
                         </p>
                         <StatusInput
@@ -1571,8 +1627,8 @@ export default function ComputerInProcess() {
                     {/* //*Security Data */}
 
                     <div className="security-data">
-                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-lg h-full">
-                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-orange-500">
+                      <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-md h-full">
+                        <p className="flex font-bold text-lg mb-6 justify-center underline decoration-orange-500 drop-shadow-md">
                           Security Data
                         </p>
                         <StatusInput
@@ -1600,21 +1656,19 @@ export default function ComputerInProcess() {
                     </div>
                   </div>
                 </DialogContent>
-                <DialogActions sx={{ background: "#e3e3e3" }}>
-                  <Button
+                <DialogActions>
+                  <button
+                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded hover:scale-105 transform transition-all duration-300 active:bg-green-600 active:scale-95"
                     onClick={handleSave}
-                    color="secondary"
-                    sx={{ fontWeight: "bold", fontSize: 20 }}
                   >
                     Save
-                  </Button>
-                  <Button
+                  </button>
+                  <button
+                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded hover:scale-105 transform transition-all duration-300 active:bg-red-600 active:scale-95"
                     onClick={handleClose}
-                    color="error"
-                    sx={{ fontWeight: "bold", fontSize: 20 }}
                   >
                     Cancel
-                  </Button>
+                  </button>
                 </DialogActions>
               </Dialog>
             )}

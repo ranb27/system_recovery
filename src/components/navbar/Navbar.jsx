@@ -196,7 +196,11 @@ export default function Navbar({ onToggle }) {
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography variant="p" sx={{ mr: 1, fontWeight: "Bold" }}>
                 {userName && userSurname
-                  ? `${userName} ${userSurname}`
+                  ? `${userName.charAt(0).toUpperCase()}${userName
+                      .slice(1)
+                      .toLowerCase()} ${userSurname
+                      .charAt(0)
+                      .toUpperCase()}${userSurname.slice(1).toLowerCase()}`
                   : userGuestName}
               </Typography>
 

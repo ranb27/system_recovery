@@ -8,13 +8,14 @@ import ProtectedLoggedIn from "./components/auth/ProtectedLoggedIn";
 
 //*import the pages and components to be routed
 import Login from "./pages/Login.jsx";
+import Summary from "./pages/Summary";
 import ComputerInProcess from "./pages/ComputerInProcess";
 import ConnectNewwork from "./pages/ConnectNewwork";
 import Tablet from "./pages/Tablet";
-// import RasberyPConnectNetwork from "./pages/RasberyPi";
-import JoinDomain from "./pages/JoinDomain";
-import Navbar from "./components/navbar/Navbar";
 import RasberyPi from "./pages/RasberyPi";
+import JoinDomain from "./pages/JoinDomain";
+
+// import Navbar from "../components/Navbar/Navbar";
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
 
         {/* //* Wrap the protected routes in a route component */}
         <Route element={<ProtectedRoutes />}>
-          <Route path="/home" element={<Navbar />} />
+          <Route path="/home" element={<Summary />} />
           <Route path="/computer_in_process" element={<ComputerInProcess />} />
           <Route path="/connect_newwork" element={<ConnectNewwork />} />
         </Route>

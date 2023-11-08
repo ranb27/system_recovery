@@ -1,8 +1,6 @@
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -12,13 +10,13 @@ function Computer_In_Process_Search_Group({ onSearch }) {
 
   //Set Dropdown List
   const [selecteddivision, setSelecteddivision] = useState({
-    division: "Division",
+    division: "ALL",
   });
   const [selectedDepartment, setSelectedDepartment] = useState({
-    dep_unit: "Department",
+    dep_unit: "ALL",
   });
   const [selectedCostCenter, setSelectedCostCenter] = useState({
-    cost_center_name: "Cost Center",
+    cost_center_name: "ALL",
   });
 
   //Set Parameter from API
@@ -75,26 +73,29 @@ function Computer_In_Process_Search_Group({ onSearch }) {
 
   //สร้าง Function selection change
   const handleDivisionChange = (event, newValue) => {
-    if (newValue !== null && newValue.length !== 0) {
-      setSelecteddivision(newValue);
-    } else {
-      setSelecteddivision({ division: "Division" });
+    setSelecteddivision(newValue);
+    setSelectedDepartment({ dep_unit: "ALL" });
+    setSelectedCostCenter({ cost_center_name: "ALL" });
+    if (newValue === null || newValue === undefined) {
+      setSelecteddivision({ division: "ALL" });
+      setSelectedDepartment({ dep_unit: "ALL" });
+      setSelectedCostCenter({ cost_center_name: "ALL" });
     }
   };
 
   const handleDepartmentChange = (event, newValue) => {
-    if (newValue !== null && newValue.length !== 0) {
-      setSelectedDepartment(newValue);
-    } else {
-      setSelectedDepartment({ dep_unit: "Department" });
+    setSelectedDepartment(newValue);
+    setSelectedCostCenter({ cost_center_name: "ALL" });
+    if (newValue === null || newValue === undefined) {
+      setSelectedDepartment({ dep_unit: "ALL" });
+      setSelectedCostCenter({ cost_center_name: "ALL" });
     }
   };
 
   const handleCostcenterChange = (event, newValue) => {
-    if (newValue !== null && newValue.length !== 0) {
-      setSelectedCostCenter(newValue);
-    } else {
-      setSelectedCostCenter({ cost_center_name: "Cost Center" });
+    setSelectedCostCenter(newValue);
+    if (newValue === null || newValue === undefined) {
+      setSelectedCostCenter({ cost_center_name: "ALL" });
     }
   };
 
@@ -105,7 +106,7 @@ function Computer_In_Process_Search_Group({ onSearch }) {
       Department: selectedDepartment.dep_unit,
       Cost_center: selectedCostCenter.cost_center_name,
     };
-    console.log("Query Params:", queryParams);
+    // console.log("Query Params:", queryParams);
     onSearch(queryParams);
   };
 
@@ -124,9 +125,9 @@ function Computer_In_Process_Search_Group({ onSearch }) {
   return (
     <>
       <Box maxWidth="xl" sx={{ width: "100%", height: 50, mb: 1 }}>
-        <Grid container spacing={0} className="w-1350">
-          <div className="flex flex-row gap-4">
-            <div className="flex items-center shadow-md">
+        <div className="container">
+          <div className="flex flex-col gap-4 lg:flex-row">
+            <div className="flex items-center shadow-md w-fit">
               <Autocomplete
                 disablePortal
                 id="division"
@@ -154,7 +155,7 @@ function Computer_In_Process_Search_Group({ onSearch }) {
               />
             </div>
 
-            <div className="flex items-center shadow-md">
+            <div className="flex items-center shadow-md w-fit">
               <Autocomplete
                 disablePortal
                 id="department"
@@ -182,7 +183,7 @@ function Computer_In_Process_Search_Group({ onSearch }) {
               />
             </div>
 
-            <div className="flex items-center shadow-md">
+            <div className="flex items-center shadow-md w-fit">
               <Autocomplete
                 disablePortal
                 id="costcenter"
@@ -211,31 +212,31 @@ function Computer_In_Process_Search_Group({ onSearch }) {
                 }
               />
             </div>
+            <div className="flex flex-row gap-4">
+              <button
+                className="bg-blue-500 w-24 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full"
+                onClick={handleSearch}
+              >
+                Search
+              </button>
 
-            <button
-              className="bg-blue-500 w-full font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none"
-              onClick={handleSearch}
-            >
-              Search
-            </button>
-
-            <button
-              className="bg-green-500 w-full font-bold rounded-lg px-4 shadow-lg text-white hover:bg-green-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none"
-              style={{ whiteSpace: "nowrap" }}
-              onClick={() => {
-                Swal.fire({
-                  title: "This feature is not available",
-                  icon: "warning",
-                  showCancelButton: false,
-                  confirmButtonText: "OK",
-                  confirmButtonColor: "#3085d6",
-                });
-              }}
-            >
-              Request SE
-            </button>
+              <button
+                className="bg-green-500 w-36 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-green-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full whitespace-nowrap"
+                onClick={() => {
+                  Swal.fire({
+                    title: "This feature is not available",
+                    icon: "warning",
+                    showCancelButton: false,
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#3085d6",
+                  });
+                }}
+              >
+                Request SE
+              </button>
+            </div>
           </div>
-        </Grid>
+        </div>
       </Box>
     </>
   );

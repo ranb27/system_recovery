@@ -1,9 +1,33 @@
-import Navbar from "../components/navbar/Navbar";
+import * as React from "react";
+
+//* Components
+import Navbar from "../components/Navbar/Navbar";
+
+//* MUI
+import Box from "@mui/material/Box";
 
 function RasberyPi() {
+  //* Responsive Navbar
+  const [isNavbarOpen, setIsNavbarOpen] = React.useState(false);
+
+  const handleNavbarToggle = (openStatus) => {
+    setIsNavbarOpen(openStatus);
+  };
+
   return (
     <>
-      <Navbar />;<h1>Project Rasbery Pi Page</h1>
+      <Navbar onToggle={handleNavbarToggle} />
+      <div className="container mt-24 ml-12">
+        <Box
+          marginLeft={isNavbarOpen ? "220px" : 4}
+          marginTop={8}
+          className={`transition-all duration-500 ease-in-out ${
+            isNavbarOpen ? "ml-64" : ""
+          }`}
+        >
+          <h1>Raspberry Pi Page</h1>
+        </Box>
+      </div>
     </>
   );
 }
