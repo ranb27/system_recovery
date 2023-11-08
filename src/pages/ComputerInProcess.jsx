@@ -254,14 +254,14 @@ export default function ComputerInProcess() {
     {
       field: "pc_use_for",
       headerName: "PC Use For",
-      width: 120,
+      width: 110,
       align: "center",
       headerAlign: "center",
     },
     {
       field: "building",
       headerName: "Building",
-      width: 90,
+      width: 80,
       align: "center",
       headerAlign: "center",
     },
@@ -289,7 +289,7 @@ export default function ComputerInProcess() {
     {
       field: "emp_name_eng",
       headerName: "Name - Surname",
-      width: 350,
+      width: 340,
       headerAlign: "center",
     },
     {
@@ -331,7 +331,7 @@ export default function ComputerInProcess() {
     {
       field: "edit",
       headerName: "Edit",
-      width: 100,
+      width: 80,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
