@@ -822,7 +822,7 @@ export default function ComputerInProcess() {
         series={state.series}
         type="bar"
         height={160}
-        width={300}
+        width={310}
       />
     );
   };
@@ -930,7 +930,7 @@ export default function ComputerInProcess() {
         series={state.series}
         type="bar"
         height={160}
-        width={300}
+        width={290}
       />
     );
   };
