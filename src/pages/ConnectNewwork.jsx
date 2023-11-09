@@ -17,7 +17,7 @@ function ConnectNewwork() {
   return (
     <>
       <Navbar onToggle={handleNavbarToggle} />
-      <div className="container mt-24 ml-12">
+      <div className="container mt-20 ml-12">
         <Box
           marginLeft={isNavbarOpen ? "220px" : 4}
           marginTop={8}

@@ -2,8 +2,8 @@ import * as React from "react";
 
 //* Components
 import Navbar from "../components/Navbar/Navbar";
-import BarChart from "../components/Charts/ComputerInProcessBarCharts";
-import DonutChart from "../components/Charts/ComputerInProcessDonutChart";
+import BarChart from "../components/charts/BarChart";
+import DonutChart from "../components/charts/DonutChart";
 
 //* MUI
 import Box from "@mui/material/Box";
@@ -86,7 +86,7 @@ function Summary() {
             total: {
               show: true,
               label: "Total",
-              formatter: function (w) {
+              formatter: function () {
                 // By default this function returns the average of all series. The below is just an example to show the use of custom formatter function
                 return 249;
               },
@@ -114,7 +114,7 @@ function Summary() {
   return (
     <>
       <Navbar onToggle={handleNavbarToggle} />
-      <div className="container mt-24 ml-12">
+      <div className="container mt-20 ml-12">
         <Box
           marginLeft={isNavbarOpen ? "220px" : 4}
           marginTop={8}

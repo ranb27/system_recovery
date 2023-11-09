@@ -127,26 +127,35 @@ export default function Navbar({ onToggle }) {
   //*Menu name ******************************************************
 
   const [menuName, setMenuName] = React.useState("System Recovery");
+  const [menuIcon, setMenuIcon] = React.useState(
+    <img src="/dashboard.png" alt="" width={30} />
+  );
 
   React.useEffect(() => {
     switch (location.pathname) {
       case "/computer_in_process":
         setMenuName("Computer in Process");
+        setMenuIcon(<img src="/computer.png" alt="" width={30} />);
         break;
       case "/connect_newwork":
         setMenuName("PC Connect Newwork");
+        setMenuIcon(<img src="/lan.png" alt="" width={30} />);
         break;
       case "/tablet":
         setMenuName("Tablet");
+        setMenuIcon(<img src="/tablet.png" alt="" width={30} />);
         break;
       case "/rasbery_pi":
         setMenuName("Rasbery Pi");
+        setMenuIcon(<img src="/raspberries.png" alt="" width={30} />);
         break;
       case "/join_domain":
         setMenuName("Join Domain");
+        setMenuIcon(<img src="/domain.png" alt="" width={30} />);
         break;
       default:
         setMenuName("IT Management System Recovery");
+        setMenuIcon(<img src="/dashboard.png" alt="" width={30} />);
     }
   }, [location.pathname]);
 
@@ -181,16 +190,21 @@ export default function Navbar({ onToggle }) {
               >
                 <MenuIcon />
               </IconButton>
-              <Typography
-                variant="h6"
-                noWrap
-                component="div"
-                sx={{
-                  fontWeight: "bold",
-                }}
-              >
-                {menuName}
-              </Typography>
+              <div className="animate-rtl">
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="div"
+                  sx={{
+                    fontWeight: "bold",
+                    display: "flex",
+                    gap: 2,
+                  }}
+                >
+                  {menuIcon}
+                  {menuName}
+                </Typography>
+              </div>
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center" }}>

@@ -7,7 +7,7 @@ import ReactApexChart from "react-apexcharts";
 //* Computer in process page component *//
 
 import Navbar from "../components/Navbar/Navbar";
-import Computer_In_Process_Search_Group from "../components/searchgroup/computer_in_process_search";
+import ComputerInProcessSearchGroup from "../components/searchgroup/ComputerInProcessSearch";
 import Chart from "react-apexcharts";
 
 //*mui imports //
@@ -17,13 +17,7 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
-import {
-  Dialog,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-} from "@mui/material";
+import { Dialog, DialogContent, DialogActions, TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -66,6 +60,18 @@ const StyledDataGrid = styled(DataGrid)({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+  "& ::-webkit-scrollbar": {
+    width: "8px",
+    height: "8px",
+  },
+  "& ::-webkit-scrollbar-track": {
+    backgroundColor: "#ffffff",
+  },
+  "& ::-webkit-scrollbar-thumb": {
+    borderRadius: "4px",
+
+    backgroundColor: "#3b82f6",
   },
 });
 
@@ -128,16 +134,6 @@ const StatusInput = ({ label, options, value, onChange }) => {
 
 //* Main component *//
 export default function ComputerInProcess() {
-  // useEffect(() => {
-  //   // Display the SweetAlert when the component is mounted
-  //   Swal.fire({
-  //     title: "Please Search Area",
-  //     icon: "info",
-  //     text: "Select and Search before editing data",
-  //     confirmButtonText: "OK",
-  //   });
-  // }, []);
-
   const [selecteddivision, setSelecteddivision] = useState({
     division: "Division",
   });
@@ -171,11 +167,6 @@ export default function ComputerInProcess() {
             new Set(res.data.map((item) => item.os_version))
           );
           setOsVersionOption(osVersions);
-
-          // const macAddresses = Array.from(
-          //   new Set(res.data.map((item) => item.mac_address))
-          // );
-          // setMacAddressOption(macAddresses);
 
           const idCodes = Array.from(
             new Set(res.data.map((item) => item.employee_id))
@@ -1023,7 +1014,7 @@ export default function ComputerInProcess() {
     <>
       <Navbar onToggle={handleNavbarToggle} />
       <ThemeProvider theme={theme}>
-        <div className="container mx-16 mt-24 w-screen">
+        <div className="container mt-20 mx-12  w-screen">
           <Box
             marginLeft={isNavbarOpen ? "220px" : 4}
             marginTop={8}
@@ -1090,7 +1081,7 @@ export default function ComputerInProcess() {
 
             <div className="mb-60 lg:mb-6">
               {/* <Computer_In_Process_Search_Group onSearch={onSearch} /> */}
-              <Computer_In_Process_Search_Group
+              <ComputerInProcessSearchGroup
                 onSearch={(queryParams) => {
                   setSelecteddivision(queryParams.division);
                   setSelectedDepartment(queryParams.Department);
@@ -1123,7 +1114,7 @@ export default function ComputerInProcess() {
             {selectedData && (
               <Dialog open={open} onClose={handleClose} maxWidth="100vw">
                 <DialogContent>
-                  <div className="flex flex-row">
+                  <div className="grid grid-flow-row gap-2 lg:grid-flow-col lg:gap-0">
                     <div className="computer-data">
                       <div className="bg-white p-4 rounded-2xl mx-2 mt-2 shadow-md h-full">
                         <p className="flex font-bold text-lg mb-6 justify-center underline decoration-sky-500 drop-shadow-md">
@@ -1132,7 +1123,7 @@ export default function ComputerInProcess() {
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           PC Name
                           <Autocomplete
-                            disablePortal
+                            // disablePortal
                             size="small"
                             id="pc-name-autocomplete"
                             options={pcNameOption}
@@ -1154,7 +1145,7 @@ export default function ComputerInProcess() {
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           PC Type
                           <Autocomplete
-                            disablePortal
+                            // disablePortal
                             size="small"
                             id="pc-type-autocomplete"
                             options={pcTypeOption}
@@ -1176,7 +1167,7 @@ export default function ComputerInProcess() {
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           OS
                           <Autocomplete
-                            disablePortal
+                            // disablePortal
                             size="small"
                             id="os-autocomplete"
                             options={osOption}
@@ -1198,7 +1189,7 @@ export default function ComputerInProcess() {
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           OS Version
                           <Autocomplete
-                            disablePortal
+                            // disablePortal
                             size="small"
                             id="os-version-autocomplete"
                             options={osVersionOption}
@@ -1328,7 +1319,7 @@ export default function ComputerInProcess() {
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           PC Use For
                           <Autocomplete
-                            disablePortal
+                            // disablePortal
                             size="small"
                             id="pc-use-for-autocomplete"
                             options={pcUseForOption}
@@ -1352,7 +1343,7 @@ export default function ComputerInProcess() {
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           ID Code
                           <Autocomplete
-                            disablePortal
+                            // disablePortal
                             size="small"
                             id="id-code-autocomplete"
                             options={idCodeOption}
@@ -1465,7 +1456,7 @@ export default function ComputerInProcess() {
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Cost Center
                           <Autocomplete
-                            disablePortal
+                            // disablePortal
                             size="small"
                             id="cost-center-autocomplete"
                             options={costCenterOption}
@@ -1489,7 +1480,7 @@ export default function ComputerInProcess() {
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Building
                           <Autocomplete
-                            disablePortal
+                            // disablePortal
                             size="small"
                             id="building-autocomplete"
                             options={buildingOption}
@@ -1511,7 +1502,7 @@ export default function ComputerInProcess() {
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Area
                           <Autocomplete
-                            disablePortal
+                            // disablePortal
                             size="small"
                             id="area-autocomplete"
                             options={areaOption}

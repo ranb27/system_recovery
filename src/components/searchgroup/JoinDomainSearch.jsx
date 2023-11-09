@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-function Computer_In_Process_Search_Group({ onSearch }) {
+function JoinDomainSearch({ onSearch }) {
   const [error, setError] = useState(null);
 
   //Set Dropdown List
@@ -232,7 +232,7 @@ function Computer_In_Process_Search_Group({ onSearch }) {
                   });
                 }}
               >
-                Request SE
+                Set Schedule
               </button>
             </div>
           </div>
@@ -242,4 +242,4 @@ function Computer_In_Process_Search_Group({ onSearch }) {
   );
 }
 
-export default Computer_In_Process_Search_Group;
+export default JoinDomainSearch;
