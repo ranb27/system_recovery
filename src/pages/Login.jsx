@@ -1,7 +1,7 @@
 //* Login page component *//
 
 import { useState } from "react";
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { Link } from "react-router-dom";
 import FujiLogo from "../assets/FujiLogo.png";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
@@ -125,13 +125,13 @@ function Login() {
             <br />
             <button
               type="submit"
-              className="bg-blue-500 my-8 px-4 py-2 rounded-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none"
+              className="bg-blue-500 my-8 px-4 py-2 rounded-lg text-white font-semibold hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none"
             >
               Login <LockOpenOutlinedIcon sx={{ ml: 1 }} />
             </button>
             <br />
             <Link to="/home" onClick={handleGuest}>
-              <p className="hover:scale-105 duration-300">
+              <p className="text-green-500 hover:scale-105 duration-300 hover:text-yellow-500">
                 Go to dashboard with guest
               </p>
             </Link>

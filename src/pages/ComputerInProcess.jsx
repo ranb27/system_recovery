@@ -337,28 +337,34 @@ export default function ComputerInProcess() {
       renderCell: (params) => {
         if (userRoleNo === 1 || userRoleNo === 2 || userRoleNo === 5) {
           return (
-            <Button variant="contained" onClick={() => handleOpen(params.row)}>
+            <button
+              className="bg-purple-500 px-2 py-1.5 rounded-xl text-white hover:bg-purple-700 hover:scale-110 duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+              onClick={() => handleOpen(params.row)}
+            >
               <EditIcon />
-            </Button>
+            </button>
           );
         } else if (userRoleNo === 3 && userIdCode === params.row.employee_id) {
           // Users with role 1 can only edit rows where their userIdCode matches the row's employee_id
           return (
-            <Button variant="contained" onClick={() => handleOpen(params.row)}>
+            <button
+              className="bg-purple-500 px-2 py-1.5 rounded-xl text-white hover:bg-purple-700 hover:scale-110 duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
+              onClick={() => handleOpen(params.row)}
+            >
               <EditIcon />
-            </Button>
+            </button>
           );
         } else if (userRoleNo === 4) {
           return (
-            <Button disabled>
+            <button className="text-slate-300" disabled>
               <EditIcon />
-            </Button>
+            </button>
           );
         } else {
           return (
-            <Button disabled>
+            <button className="text-slate-300" disabled>
               <EditIcon />
-            </Button>
+            </button>
           );
         }
       },
@@ -1028,7 +1034,7 @@ export default function ComputerInProcess() {
             {/* //Chart Group */}
 
             <div className="flex flex-col lg:flex-row gap-4">
-              <div className="container flex gap-4 w-fit h-48">
+              <div className="container flex gap-4 w-fit h-fit">
                 <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
                   <div className="bg-blue-500 rounded-lg p-4 shadow-lg hover:bg-blue-600 transition-colors ease-linear duration-300 hover:shadow-none animate-fade">
                     <p className="text-white text-xl font-bold">Total PC</p>
@@ -1642,7 +1648,7 @@ export default function ComputerInProcess() {
                 </DialogContent>
                 <DialogActions>
                   <button
-                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded hover:scale-105 transform transition-all duration-300 active:bg-green-600 active:scale-95"
+                    className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded hover:scale-105 transform transition-all duration-300 active:bg-green-600 active:scale-95"
                     onClick={handleSave}
                   >
                     Save
