@@ -122,7 +122,7 @@ function Summary() {
             isNavbarOpen ? "ml-64" : ""
           }`}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade">
             <div className="bg-white rounded-lg shadow-lg p-6">
               <div className="text-gray-500 font-medium text-sm mb-2">
                 Total Sales
@@ -200,10 +200,12 @@ function Summary() {
             <div className="bg-white rounded-lg shadow-lg p-6 col-span-1">
               <RadialChart />
             </div>
-            <div className="bg-white rounded-lg shadow-lg p-6 col-span-1 flex items-center">
+
+            <div className="bg-white rounded-lg shadow-lg p-6 col-span-1 flex flex-col items-center justify-center">
               <DonutChart />
             </div>
-            <div className="bg-white rounded-lg shadow-lg p-6 col-span-2">
+
+            <div className="bg-white rounded-lg shadow-lg p-6 col-span-2 flex flex-col items-center justify-center">
               <div className="text-gray-500 font-medium text-sm mb-2">
                 PC Use For
               </div>

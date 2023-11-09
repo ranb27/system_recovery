@@ -123,17 +123,17 @@ function Login() {
               onChange={(event) => setPassword(event.target.value)}
             />
             <br />
-            <Button
-              variant="contained"
-              color="primary"
+            <button
               type="submit"
-              sx={{ m: 4 }}
+              className="bg-blue-500 my-8 px-4 py-2 rounded-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none"
             >
               Login <LockOpenOutlinedIcon sx={{ ml: 1 }} />
-            </Button>
+            </button>
             <br />
             <Link to="/home" onClick={handleGuest}>
-              Go to dashboard with guest
+              <p className="hover:scale-105 duration-300">
+                Go to dashboard with guest
+              </p>
             </Link>
           </form>
         </div>

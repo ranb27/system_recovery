@@ -1,6 +1,6 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
-import charts from "react-apexcharts";
+// import charts from "react-apexcharts";
 
 class DonutChart extends React.Component {
   constructor(props) {
@@ -39,7 +39,7 @@ class DonutChart extends React.Component {
           options={this.state.options}
           series={this.state.series}
           type="donut"
-          width={400}
+          height="auto"
         />
       </div>
     );

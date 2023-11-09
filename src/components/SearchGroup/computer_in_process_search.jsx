@@ -126,7 +126,7 @@ function Computer_In_Process_Search_Group({ onSearch }) {
     <>
       <Box maxWidth="xl" sx={{ width: "100%", height: 50, mb: 1 }}>
         <div className="container">
-          <div className="flex flex-col gap-4 lg:flex-row">
+          <div className="flex flex-col gap-4 lg:flex-row animate-fade">
             <div className="flex items-center shadow-md w-fit">
               <Autocomplete
                 disablePortal
@@ -214,14 +214,14 @@ function Computer_In_Process_Search_Group({ onSearch }) {
             </div>
             <div className="flex flex-row gap-4">
               <button
-                className="bg-blue-500 w-24 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full"
+                className="bg-blue-500 w-24 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full animate-fade"
                 onClick={handleSearch}
               >
                 Search
               </button>
 
               <button
-                className="bg-green-500 w-36 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-green-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full whitespace-nowrap"
+                className="bg-green-500 w-36 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-green-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full whitespace-nowrap animate-fade"
                 onClick={() => {
                   Swal.fire({
                     title: "This feature is not available",

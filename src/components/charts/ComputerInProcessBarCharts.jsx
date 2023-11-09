@@ -54,8 +54,8 @@ const BarChart = () => {
       options={state.options}
       series={state.series}
       type="bar"
-      height={300}
-      width={850}
+      height={150}
+      width={700}
     />
   );
 };

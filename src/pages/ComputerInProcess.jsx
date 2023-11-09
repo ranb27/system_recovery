@@ -226,7 +226,7 @@ export default function ComputerInProcess() {
     {
       field: "factory_emp",
       headerName: "Factory",
-      width: 60,
+      width: 70,
       align: "center",
       headerAlign: "center",
     },
@@ -289,7 +289,7 @@ export default function ComputerInProcess() {
     {
       field: "emp_name_eng",
       headerName: "Name - Surname",
-      width: 340,
+      width: 330,
       headerAlign: "center",
     },
     {
@@ -1030,9 +1030,9 @@ export default function ComputerInProcess() {
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="container flex gap-4 w-fit h-48">
                 <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                  <div className="bg-blue-500 rounded-lg p-4 shadow-lg hover:bg-blue-600 transition-colors ease-linear duration-300 hover:shadow-none">
-                    <p className="text-slate-50 text-xl font-bold">Total PC</p>
-                    <div className="bg-slate-50 rounded-lg p-4 mt-9 h-16">
+                  <div className="bg-blue-500 rounded-lg p-4 shadow-lg hover:bg-blue-600 transition-colors ease-linear duration-300 hover:shadow-none animate-fade">
+                    <p className="text-white text-xl font-bold">Total PC</p>
+                    <div className="bg-white rounded-lg p-4 mt-9 h-16">
                       <p className="text-blue-700 text-3xl font-bold">
                         {pcStatus.total_pc}
                       </p>
@@ -1041,11 +1041,9 @@ export default function ComputerInProcess() {
                 </div>
 
                 <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                  <div className="bg-green-500 rounded-lg p-4 shadow-lg hover:bg-green-600 transition-colors ease-linear duration-300 hover:shadow-none">
-                    <p className="text-slate-50 text-xl font-bold">
-                      PC Connect
-                    </p>
-                    <div className="bg-slate-50 rounded-lg p-4 mt-9 h-16">
+                  <div className="bg-green-500 rounded-lg p-4 shadow-lg hover:bg-green-600 transition-colors ease-linear duration-300 hover:shadow-none animate-fade">
+                    <p className="text-white text-xl font-bold">PC Connect</p>
+                    <div className="bg-white rounded-lg p-4 mt-9 h-16">
                       <p className="text-green-700 text-3xl font-bold">
                         {pcStatus.pc_connect !== null ? pcStatus.pc_connect : 0}{" "}
                       </p>
@@ -1054,11 +1052,9 @@ export default function ComputerInProcess() {
                 </div>
 
                 <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                  <div className="bg-yellow-500 rounded-lg p-4 shadow-lg hover:bg-yellow-600 transition-colors ease-linear duration-300 hover:shadow-none">
-                    <p className="text-slate-50 text-xl font-bold">
-                      Wait Connect
-                    </p>
-                    <div className="bg-slate-50 rounded-lg p-4 mt-9 h-16">
+                  <div className="bg-yellow-500 rounded-lg p-4 shadow-lg hover:bg-yellow-600 transition-colors ease-linear duration-300 hover:shadow-none animate-fade">
+                    <p className="text-white text-xl font-bold">Wait Connect</p>
+                    <div className="bg-white rounded-lg p-4 mt-9 h-16">
                       <p className="text-yellow-700 text-3xl font-bold">
                         {pcStatus.wait_connect !== null
                           ? pcStatus.wait_connect
@@ -1069,15 +1065,15 @@ export default function ComputerInProcess() {
                 </div>
               </div>
 
-              <div className="flex flex-col w-screen lg:w-1/3 lg:flex-row">
+              <div className="flex flex-col w-screen lg:w-1/3 lg:flex-row animate-fade">
                 <div className="container flex h-48">
-                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full overflow-hidden lg:overflow-visible ">
+                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full overflow-hidden lg:overflow-visible">
                     <BarChartUseFor />
                   </div>
-                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full overflow-hidden lg:overflow-visible ">
+                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full overflow-hidden lg:overflow-visible">
                     <BarChartBuilding />
                   </div>
-                  <div className="bg-slate-50 rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full overflow-hidden lg:overflow-visible flex items-center">
+                  <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full overflow-hidden lg:overflow-visible flex items-center">
                     <DonutChartJoinDomain />
                   </div>
                 </div>
@@ -1099,7 +1095,7 @@ export default function ComputerInProcess() {
 
             {/* Table for Computer in Process */}
             <div
-              className="shadow-xl"
+              className="shadow-xl animate-delay"
               style={{
                 height: "55vh",
                 width: isNavbarOpen ? "calc(95vw - 10vw)" : "90vw",
