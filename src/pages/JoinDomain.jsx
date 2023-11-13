@@ -20,6 +20,11 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateField } from "@mui/x-date-pickers/DateField";
+import dayjs from "dayjs";
 
 //* Styled Data Grid
 const StyledDataGrid = styled(DataGrid)({
@@ -70,7 +75,8 @@ const StatusInput = ({ label, options, value, onChange }) => {
                   value === "Normal" ||
                   value === "Kastersky" ||
                   value === "Symantec" ||
-                  value === "Trend Micro"
+                  value === "Trend Micro" ||
+                  value === "Joined"
                     ? "#bbf7d0"
                     : "#fef08a",
               },
@@ -89,7 +95,8 @@ const StatusInput = ({ label, options, value, onChange }) => {
             option === "Normal" ||
             option === "Kastersky" ||
             option === "Symantec" ||
-            option === "Trend Micro"
+            option === "Trend Micro" ||
+            option === "Joined"
               ? "#bbf7d0"
               : "#fef08a";
 
@@ -892,6 +899,10 @@ function JoinDomain() {
   const [antivirusStatus, setAntivirusStatus] = useState("");
   const [edrStatus, setEdrStatus] = useState("");
 
+  const [joinDomainStatus, setJoinDomainStatus] = useState("");
+  // const [updateBy, setUpdateBy] = useState("");
+  // const [updateDateTime, setUpdateDateTime] = useState("");
+
   //?Filter option for building and area
   const handleBuildingChange = (event, newValue) => {
     setBuilding(newValue);
@@ -943,6 +954,11 @@ function JoinDomain() {
   const [costCenterOption, setCostCenterOption] = useState([]);
   const buildingOption = ["A", "B", "C", "C1", "C2", "C2 2F", "C3", "D"];
   const [areaOption, setAreaOption] = useState([]);
+
+  const joinDomainStatusOption = ["Waiting", "Joined"];
+  // const joinDomainDateOption = ["2021-10-01", "2021-10-02", "2021-10-03"];
+  const joinDomainTimeOption = ["08:00", "10:00", "12:00", "14:00", "16:00"];
+  const seSupportByOption = ["Kanokwan", "Kanokwan", "Kanokwan"];
 
   //?bg color for edit data
   const [mfgProColor, setMfgProColor] = useState("");
@@ -1058,7 +1074,7 @@ function JoinDomain() {
           {selectedData && (
             <Dialog open={open} onClose={handleClose} maxWidth="100vw">
               <DialogContent>
-                <div className="grid grid-flow-row gap-2 xl:grid-flow-col xl:gap-0">
+                <div className="grid grid-flow-row gap-2 2xl:grid-flow-col 2xl:gap-0">
                   {/* //*Computer Data  */}
 
                   <div className="computer-data">
@@ -1547,71 +1563,83 @@ function JoinDomain() {
                         <p className="flex font-bold text-lg mb-6 justify-center underline decoration-purple-500 drop-shadow-md">
                           Join Domain Data
                         </p>
-                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
-                          Join Domain Status
-                          <TextField
-                            disabled
-                            size="small"
-                            id="outlined-disabled"
-                            defaultValue="Waiting"
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                          />
-                        </label>
-                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
+
+                        <StatusInput
+                          label="Join Domain Status"
+                          options={["Waiting", "Joined"]}
+                          value={joinDomainStatus}
+                          onChange={(event, newValue) =>
+                            setJoinDomainStatus(newValue)
+                          }
+                        />
+
+                        <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-6 mb-2">
                           Join Domain Date
-                          <TextField
-                            disabled
-                            size="small"
-                            id="outlined-disabled"
-                            defaultValue="09/08/2022"
-                            sx={{
-                              width: 220,
-                              mt: 1,
-                              mb: 1,
-                              marginLeft: "auto",
-                            }}
-                          />
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer components={["DateField"]}>
+                              <DateField
+                                label=""
+                                format="DD/MM/YYYY"
+                                size="small"
+                                sx={{
+                                  width: 220,
+                                  mt: 1,
+                                  mb: 1,
+                                  marginLeft: "auto",
+                                  backgroundColor: " #cffafe ",
+                                }}
+                              />
+                            </DemoContainer>
+                          </LocalizationProvider>
                         </label>
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Join Domain Time
-                          <TextField
-                            disabled
+                          <Autocomplete
                             size="small"
-                            id="outlined-disabled"
-                            defaultValue="08.00"
+                            id="join-domain-time-autocomplete"
+                            options={joinDomainTimeOption}
+                            getOptionLabel={(option) => option}
+                            defaultValue={"08:00"}
+                            renderInput={(params) => (
+                              <TextField {...params} label="" />
+                            )}
                             sx={{
                               width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
+                            // onChange={(event, newValue) => setOs(newValue)}
                           />
                         </label>
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           SE Support By
-                          <TextField
-                            disabled
+                          <Autocomplete
                             size="small"
-                            id="outlined-disabled"
-                            defaultValue="Key Employee ID"
+                            id="se-support-by-autocomplete"
+                            options={seSupportByOption}
+                            getOptionLabel={(option) => option}
+                            defaultValue={"kanokwan"}
+                            renderInput={(params) => (
+                              <TextField {...params} label="" />
+                            )}
                             sx={{
                               width: 220,
                               mt: 1,
                               mb: 1,
                               marginLeft: "auto",
+                              backgroundColor: " #cffafe ",
                             }}
+                            // onChange={(event, newValue) => setOs(newValue)}
                           />
                         </label>
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                           Remark
                           <TextField
-                            size="small"
-                            id="outlined-disabled"
+                            multiline
+                            maxRows={3}
+                            id="remark"
                             // defaultValue="Remark"
                             sx={{
                               width: 220,
