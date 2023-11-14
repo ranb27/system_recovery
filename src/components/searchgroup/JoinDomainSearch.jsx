@@ -79,31 +79,45 @@ function JoinDomainSearch({ onSearch }) {
     return <div>Error: {error}</div>;
   }
 
+  const clearFilters = () => {
+    setSelecteddivision({ division: "ALL" });
+    setSelectedDepartment({ dep_unit: "ALL" });
+    setSelectedCostCenter({ cost_center_name: "ALL" });
+  };
+
+  // Function to clear date range
+  const clearDateRange = () => {
+    setStartDate(null);
+    setEndDate(null);
+  };
+
   //สร้าง Function selection change
   const handleDivisionChange = (event, newValue) => {
     setSelecteddivision(newValue);
     setSelectedDepartment({ dep_unit: "ALL" });
     setSelectedCostCenter({ cost_center_name: "ALL" });
+    clearDateRange(); // Clear date range when division changes
     if (newValue === null || newValue === undefined) {
-      setSelecteddivision({ division: "ALL" });
-      setSelectedDepartment({ dep_unit: "ALL" });
-      setSelectedCostCenter({ cost_center_name: "ALL" });
+      clearFilters();
     }
   };
 
+  // Function to handle department change
   const handleDepartmentChange = (event, newValue) => {
     setSelectedDepartment(newValue);
     setSelectedCostCenter({ cost_center_name: "ALL" });
+    clearDateRange(); // Clear date range when department changes
     if (newValue === null || newValue === undefined) {
-      setSelectedDepartment({ dep_unit: "ALL" });
-      setSelectedCostCenter({ cost_center_name: "ALL" });
+      clearFilters();
     }
   };
 
+  // Function to handle cost center change
   const handleCostcenterChange = (event, newValue) => {
     setSelectedCostCenter(newValue);
+    clearDateRange(); // Clear date range when cost center changes
     if (newValue === null || newValue === undefined) {
-      setSelectedCostCenter({ cost_center_name: "ALL" });
+      clearFilters();
     }
   };
 
@@ -135,11 +149,16 @@ function JoinDomainSearch({ onSearch }) {
   const [endDate, setEndDate] = useState(null);
 
   const handleStartDateChange = (event) => {
-    setStartDate(new Date(event.target.value));
+    const value = event.target.value;
+    setStartDate(value ? new Date(value) : null);
+    clearFilters(); // Clear division, department, and cost center when start date changes
   };
 
+  // Function to handle end date change
   const handleEndDateChange = (event) => {
-    setEndDate(new Date(event.target.value));
+    const value = event.target.value;
+    setEndDate(value ? new Date(value) : null);
+    clearFilters(); // Clear division, department, and cost center when end date changes
   };
 
   return (
@@ -265,22 +284,29 @@ function JoinDomainSearch({ onSearch }) {
                 </DemoContainer>
               </LocalizationProvider>
             </div> */}
-            <div>
-              <label>
-                From Date:
+            <div className="flex flex-row gap-4 bg-green-500 px-1.5 rounded-lg shadow-lg hover:bg-green-600 duration-300 hover:shadow-none">
+              <label className="flex flex-col">
+                <span className="text-sm font-semibold text-white">
+                  From Date
+                </span>
                 <input
+                  format="yyyy-MM-dd"
                   type="date"
                   value={startDate ? format(startDate, "yyyy-MM-dd") : ""}
                   onChange={handleStartDateChange}
+                  className="cursor-pointer mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
               </label>
 
-              <label>
-                To Date:
+              <label className="flex flex-col">
+                <span className="text-sm font-semibold text-white">
+                  To Date
+                </span>
                 <input
                   type="date"
                   value={endDate ? format(endDate, "yyyy-MM-dd") : ""}
                   onChange={handleEndDateChange}
+                  className="cursor-pointer mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
               </label>
             </div>

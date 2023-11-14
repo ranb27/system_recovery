@@ -26,6 +26,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import dayjs, { Dayjs } from "dayjs";
+import { set } from "date-fns";
 
 //* Styled Data Grid
 const StyledDataGrid = styled(DataGrid)({
@@ -138,6 +139,13 @@ function JoinDomain() {
   const [selectedCostCenter, setSelectedCostCenter] = useState({
     cost_center_name: "Cost Center",
   });
+
+  //*Filter Date Range
+  const [fromDateFilter, setFromDateFilter] = useState("");
+  const [toDateFilter, setToDateFilter] = useState("");
+
+  console.log("From Date Filter:", fromDateFilter);
+  console.log("To Date Filter:", toDateFilter);
 
   //*Monitor selected ID after handleOpen *//
 
@@ -867,49 +875,90 @@ function JoinDomain() {
   const [rows, setRows] = useState([]);
   useEffect(() => {
     const getRows = async () => {
-      const response = await axios
-        .get(
+      try {
+        const response = await axios.get(
           `http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
-        )
-        .then((res) => {
-          //getJoinDomainDate for filter date range
-          const getJoinDomainDate = res.data.map(
+        );
+
+        // Check if either fromDateFilter or toDateFilter is not null
+        if (fromDateFilter !== null || toDateFilter !== null) {
+          const getJoinDomainDate = response.data.map(
             (item) => item.join_domain_date
           );
           console.log("Join Domain Date:", getJoinDomainDate);
 
-          //setRows
-          setRows(res.data);
-
-          console.log("res", res.data);
-
-          const pcNames = Array.from(
-            new Set(res.data.map((item) => item.pc_name))
+          const convertJoinDomainDate = getJoinDomainDate.map((item) =>
+            dayjs(item).format("YYYY-MM-DD")
           );
-          setPcNameOption(pcNames);
+          console.log("Convert Join Domain Date:", convertJoinDomainDate);
 
-          const osVersions = Array.from(
-            new Set(res.data.map((item) => item.os_version))
+          // Filter out null dates
+          const validDates = convertJoinDomainDate.filter(
+            (date) => date !== null
           );
-          setOsVersionOption(osVersions);
 
-          const idCodes = Array.from(
-            new Set(res.data.map((item) => item.employee_id))
+          const filterJoinDomainDateRange = validDates.filter(
+            (item) =>
+              item &&
+              dayjs(item).isAfter(fromDateFilter) &&
+              dayjs(item).isBefore(toDateFilter)
           );
-          setIdCodeOption(idCodes);
+          console.log(
+            "Filter Join Domain Date Range:",
+            filterJoinDomainDateRange
+          );
 
-          const costCenters = Array.from(
-            new Set(res.data.map((item) => item.cost_center_code))
+          // Filter rows based on date range
+          const filteredRows = response.data.filter((item) =>
+            item.join_domain_date
+              ? filterJoinDomainDateRange.includes(
+                  dayjs(item.join_domain_date).format("YYYY-MM-DD")
+                )
+              : false
           );
-          setCostCenterOption(costCenters);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      return response;
+
+          // Set filtered rows
+          setRows(filteredRows);
+        } else {
+          // If both fromDateFilter and toDateFilter are null, set rows to the original data
+          setRows(response.data);
+        }
+
+        console.log("res", response.data);
+
+        // Set other state variables
+        const pcNames = Array.from(
+          new Set(response.data.map((item) => item.pc_name))
+        );
+        setPcNameOption(pcNames);
+
+        const osVersions = Array.from(
+          new Set(response.data.map((item) => item.os_version))
+        );
+        setOsVersionOption(osVersions);
+
+        const idCodes = Array.from(
+          new Set(response.data.map((item) => item.employee_id))
+        );
+        setIdCodeOption(idCodes);
+
+        const costCenters = Array.from(
+          new Set(response.data.map((item) => item.cost_center_code))
+        );
+        setCostCenterOption(costCenters);
+      } catch (err) {
+        console.log(err);
+      }
     };
+
     getRows();
-  }, [selecteddivision, selectedDepartment, selectedCostCenter]);
+  }, [
+    selecteddivision,
+    selectedDepartment,
+    selectedCostCenter,
+    fromDateFilter,
+    toDateFilter,
+  ]);
 
   //*Edit *//
   //?state for edit data
@@ -1035,13 +1084,6 @@ function JoinDomain() {
   const [a1ServerColor, setA1ServerColor] = useState("");
   const [eWorkingColor, setEWorkingColor] = useState("");
   const [internetColor, setInternetColor] = useState("");
-
-  //*Filter Date Range
-  const [fromDateFilter, setFromDateFilter] = useState("");
-  const [toDateFilter, setToDateFilter] = useState("");
-
-  console.log("From Date Filter:", fromDateFilter);
-  console.log("To Date Filter:", toDateFilter);
 
   return (
     <>
