@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import CountUsageCIP from "../catchcount/CountUsageCIP";
 
 function ComputerInProcessSearch({ onSearch }) {
   const [error, setError] = useState(null);
@@ -215,7 +216,10 @@ function ComputerInProcessSearch({ onSearch }) {
             <div className="flex flex-row gap-4">
               <button
                 className="bg-blue-500 w-24 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full animate-fade"
-                onClick={handleSearch}
+                onClick={() => {
+                  handleSearch();
+                  CountUsageCIP();
+                }}
               >
                 Search
               </button>

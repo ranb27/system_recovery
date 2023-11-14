@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 //* Components
 import Navbar from "../components/Navbar/Navbar";
 import JoinDomainSearch from "../components/searchgroup/JoinDomainSearch";
+import CountUsageJD from "../components/catchcount/CountUsageJD";
 
 //* MUI
 import Box from "@mui/material/Box";
@@ -25,8 +26,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-import dayjs, { Dayjs } from "dayjs";
-import { set } from "date-fns";
+import dayjs from "dayjs";
 
 //* Styled Data Grid
 const StyledDataGrid = styled(DataGrid)({
@@ -1795,7 +1795,10 @@ function JoinDomain() {
               <DialogActions>
                 <button
                   className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded hover:scale-105 transform transition-all duration-300 active:bg-green-600 active:scale-95"
-                  onClick={handleSave}
+                  onClick={() => {
+                    handleSave();
+                    CountUsageJD();
+                  }}
                 >
                   Save
                 </button>

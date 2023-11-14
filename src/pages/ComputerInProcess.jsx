@@ -9,6 +9,7 @@ import ReactApexChart from "react-apexcharts";
 import Navbar from "../components/Navbar/Navbar";
 import ComputerInProcessSearchGroup from "../components/searchgroup/ComputerInProcessSearch";
 import Chart from "react-apexcharts";
+import CountUsageCIP from "../components/catchcount/CountUsageCIP";
 
 //*mui imports //
 
@@ -1640,7 +1641,10 @@ export default function ComputerInProcess() {
                 <DialogActions>
                   <button
                     className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded hover:scale-105 transform transition-all duration-300 active:bg-green-600 active:scale-95"
-                    onClick={handleSave}
+                    onClick={() => {
+                      handleSave();
+                      CountUsageCIP();
+                    }}
                   >
                     Save
                   </button>
