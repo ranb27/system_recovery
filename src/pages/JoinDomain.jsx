@@ -23,8 +23,9 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DateField } from "@mui/x-date-pickers/DateField";
-import dayjs from "dayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
+import dayjs, { Dayjs } from "dayjs";
 
 //* Styled Data Grid
 const StyledDataGrid = styled(DataGrid)({
@@ -76,9 +77,14 @@ const StatusInput = ({ label, options, value, onChange }) => {
                   value === "Kastersky" ||
                   value === "Symantec" ||
                   value === "Trend Micro" ||
+                  value === "Finished" ||
                   value === "Joined"
                     ? "#bbf7d0"
+                    : value === "Problem"
+                    ? "#e84548"
                     : "#fef08a",
+
+                color: value === "Problem" ? "white" : "black",
               },
             }}
           />
@@ -96,12 +102,16 @@ const StatusInput = ({ label, options, value, onChange }) => {
             option === "Kastersky" ||
             option === "Symantec" ||
             option === "Trend Micro" ||
+            option === "Finished" ||
             option === "Joined"
               ? "#bbf7d0"
+              : option === "Problem"
+              ? "#e84548"
               : "#fef08a";
 
+          const color = option === "Problem" ? "white" : "black";
           return (
-            <li {...props} style={{ backgroundColor }}>
+            <li {...props} style={{ backgroundColor, color }}>
               {option}
             </li>
           );
@@ -203,6 +213,11 @@ function JoinDomain() {
     setAntivirusStatus(data["antivirus_status"]);
     setEdrStatus(data["edr_status"]);
 
+    setJoinDomainStatus(data["join_domain_status"]);
+    setJoinDomainDate(data["join_domain_date"]);
+    setJoinDomainTime(data["join_domain_time"]);
+    setSeSupportBy(data["join_domain_by"]);
+
     setOpen(true);
   };
 
@@ -250,6 +265,12 @@ function JoinDomain() {
       antivirusStatus,
       edrStatus,
 
+      joinDomainStatus,
+      joinDomainDate,
+      joinDomainTime,
+      seSupportBy,
+      remark,
+
       updateBy: userLogin,
       updateDateTime,
     };
@@ -270,7 +291,8 @@ function JoinDomain() {
       if (result.isConfirmed) {
         axios
           .get(
-            `http://10.17.66.242:3001/api/smart_recovery/update-data-computer-master?row_id=${selectedData.id}&pc_name=${pcName}&pc_type=${pcType}&os=${os}&os_version=${osVersion}&mac_address=${macAddress}&pc_use_for=${pcUseFor}&employee_id=${idCode}&cost_center_code=${costCenter}&building=${building}&area=${area}&update_by=${userLogin}&antivirus=${antivirus}&antivirus_status=${antivirusStatus}&edr_status=${edrStatus}&update_datetime=${updateDateTime}`
+            `http://10.17.66.242:3001/api/smart_recovery/update-data-computer-master-join-domain?row_id=${selectedData.id}&pc_name=${pcName}&pc_type=${pcType}&os=${os}&os_version=${osVersion}&mac_address=${macAddress}&new_ip=${ipAddress}&connect_type=${connectType}&pc_use_for=${pcUseFor}&employee_id=${idCode}&cost_center_code=${costCenter}&building=${building}&area=${area}&antivirus=${antivirus}&antivirus_status=${antivirusStatus}&edr_status=${edrStatus}&join_domain_status=${joinDomainStatus}&join_domain_date=${joinDomainDate}&join_domain_time=${joinDomainTime}&join_domain_by=${seSupportBy}&remark=${remark}&update_by=${userLogin}&update_datetime=${updateDateTime}
+            `
           )
           .then((res) => {
             handlePermissionUpdate();
@@ -333,32 +355,52 @@ function JoinDomain() {
       headerAlign: "center",
     },
     {
-      field: "se_support_by",
+      field: "join_domain_by",
       headerName: "SE Support By",
-      width: 120,
+      width: 140,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "plan_date",
+      field: "join_domain_date",
       headerName: "Plan Date",
       width: 120,
-      align: "center",
       headerAlign: "center",
     },
     {
-      field: "time",
+      field: "join_domain_time",
       headerName: "Time",
       width: 100,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "joid_domain_status",
+      field: "join_domain_status",
       headerName: "Join Domain Status",
       width: 160,
       align: "center",
       headerAlign: "center",
+      renderCell: (params) => (
+        <div
+          style={{
+            borderRadius: 10,
+            padding: "4px 12px",
+            width: 90,
+            color:
+              params.value === "Finished" || params.value === "Problem"
+                ? "white"
+                : "black",
+            backgroundColor:
+              params.value === "Finished"
+                ? "rgb(34 197 94)"
+                : params.value === "Waiting"
+                ? "rgb(234 179 8)"
+                : "#e84548",
+          }}
+        >
+          {params.value}
+        </div>
+      ),
     },
     {
       field: "owner_comfirm_schedule",
@@ -396,30 +438,29 @@ function JoinDomain() {
       headerAlign: "center",
     },
     {
-      field: "cost_center",
+      field: "cost_center_code2",
       headerName: "Cost Center",
       width: 100,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "email",
+      field: "user_email",
       headerName: "E-mail",
-      width: 100,
-      align: "center",
+      width: 260,
       headerAlign: "center",
     },
     {
       field: "new_ip",
       headerName: "New IP",
-      width: 100,
+      width: 110,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "network_status",
+      field: "connect_status",
       headerName: "Network Status",
-      width: 140,
+      width: 160,
       align: "center",
       headerAlign: "center",
     },
@@ -433,7 +474,7 @@ function JoinDomain() {
     {
       field: "building",
       headerName: "Building",
-      width: 100,
+      width: 80,
       align: "center",
       headerAlign: "center",
     },
@@ -447,7 +488,7 @@ function JoinDomain() {
     {
       field: "area",
       headerName: "Area",
-      width: 100,
+      width: 80,
       align: "center",
       headerAlign: "center",
     },
@@ -831,6 +872,13 @@ function JoinDomain() {
           `http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
         )
         .then((res) => {
+          //getJoinDomainDate for filter date range
+          const getJoinDomainDate = res.data.map(
+            (item) => item.join_domain_date
+          );
+          console.log("Join Domain Date:", getJoinDomainDate);
+
+          //setRows
           setRows(res.data);
 
           console.log("res", res.data);
@@ -900,8 +948,10 @@ function JoinDomain() {
   const [edrStatus, setEdrStatus] = useState("");
 
   const [joinDomainStatus, setJoinDomainStatus] = useState("");
-  // const [updateBy, setUpdateBy] = useState("");
-  // const [updateDateTime, setUpdateDateTime] = useState("");
+  const [joinDomainDate, setJoinDomainDate] = useState("");
+  const [joinDomainTime, setJoinDomainTime] = useState("");
+  const [seSupportBy, setSeSupportBy] = useState("");
+  const [remark, setRemark] = useState("");
 
   //?Filter option for building and area
   const handleBuildingChange = (event, newValue) => {
@@ -938,6 +988,11 @@ function JoinDomain() {
     "Mac",
   ];
   const [osVersionOption, setOsVersionOption] = useState([]);
+  const connectTypeOption = [
+    "LAN (WAN)",
+    "WIFI (PRD_SCAN)",
+    "WIFI (PRD_OFFICE)",
+  ];
 
   const pcUseForOption = [
     "Personal",
@@ -955,10 +1010,21 @@ function JoinDomain() {
   const buildingOption = ["A", "B", "C", "C1", "C2", "C2 2F", "C3", "D"];
   const [areaOption, setAreaOption] = useState([]);
 
-  const joinDomainStatusOption = ["Waiting", "Joined"];
-  // const joinDomainDateOption = ["2021-10-01", "2021-10-02", "2021-10-03"];
-  const joinDomainTimeOption = ["08:00", "10:00", "12:00", "14:00", "16:00"];
-  const seSupportByOption = ["Kanokwan", "Kanokwan", "Kanokwan"];
+  const joinDomainTimeOption = [
+    "08:00-10:00",
+    "10:00-12:00",
+    "12:00-14:45",
+    "14:45-16:45",
+  ];
+  const seSupportByOption = [
+    "Amnart.S",
+    "Boonlert.M",
+    "Chalermpon.S",
+    "Naratip.S",
+    "Supharat.D",
+    "Theerawat.T",
+    "Ukrith.K",
+  ];
 
   //?bg color for edit data
   const [mfgProColor, setMfgProColor] = useState("");
@@ -969,6 +1035,13 @@ function JoinDomain() {
   const [a1ServerColor, setA1ServerColor] = useState("");
   const [eWorkingColor, setEWorkingColor] = useState("");
   const [internetColor, setInternetColor] = useState("");
+
+  //*Filter Date Range
+  const [fromDateFilter, setFromDateFilter] = useState("");
+  const [toDateFilter, setToDateFilter] = useState("");
+
+  console.log("From Date Filter:", fromDateFilter);
+  console.log("To Date Filter:", toDateFilter);
 
   return (
     <>
@@ -1046,6 +1119,9 @@ function JoinDomain() {
                 setSelecteddivision(queryParams.division);
                 setSelectedDepartment(queryParams.Department);
                 setSelectedCostCenter(queryParams.Cost_center);
+                // console.log("Filtering date range:", queryParams);
+                setFromDateFilter(queryParams.startDate);
+                setToDateFilter(queryParams.endDate);
               }}
             />
           </div>
@@ -1205,7 +1281,6 @@ function JoinDomain() {
                       <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                         IP Address
                         <TextField
-                          disabled
                           size="small"
                           id="outlined-disabled"
                           defaultValue={selectedData.new_ip}
@@ -1214,22 +1289,31 @@ function JoinDomain() {
                             mt: 1,
                             mb: 1,
                             marginLeft: "auto",
+                            backgroundColor: " #cffafe ",
                           }}
                         />
                       </label>
                       <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
                         Connect Type
-                        <TextField
-                          disabled
+                        <Autocomplete
                           size="small"
-                          id="outlined-disabled"
+                          id="connect-type-autocomplete"
+                          options={connectTypeOption}
+                          getOptionLabel={(option) => option}
                           defaultValue={selectedData.connect_type}
+                          renderInput={(params) => (
+                            <TextField {...params} label="" />
+                          )}
                           sx={{
                             width: 220,
                             mt: 1,
                             mb: 1,
                             marginLeft: "auto",
+                            backgroundColor: " #cffafe ",
                           }}
+                          onChange={(event, newValue) =>
+                            setConnectType(newValue)
+                          }
                         />
                       </label>
                     </div>
@@ -1566,7 +1650,7 @@ function JoinDomain() {
 
                         <StatusInput
                           label="Join Domain Status"
-                          options={["Waiting", "Joined"]}
+                          options={["Waiting", "Problem", "Finished"]}
                           value={joinDomainStatus}
                           onChange={(event, newValue) =>
                             setJoinDomainStatus(newValue)
@@ -1576,10 +1660,10 @@ function JoinDomain() {
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-6 mb-2">
                           Join Domain Date
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DemoContainer components={["DateField"]}>
-                              <DateField
+                            <DemoContainer components={["DatePicker"]}>
+                              <DatePicker
                                 label=""
-                                format="DD/MM/YYYY"
+                                format="YYYY-MM-DD"
                                 size="small"
                                 sx={{
                                   width: 220,
@@ -1588,6 +1672,11 @@ function JoinDomain() {
                                   marginLeft: "auto",
                                   backgroundColor: " #cffafe ",
                                 }}
+                                onChange={(newValue) =>
+                                  setJoinDomainDate(
+                                    newValue.format("YYYY-MM-DD")
+                                  )
+                                }
                               />
                             </DemoContainer>
                           </LocalizationProvider>
@@ -1599,7 +1688,7 @@ function JoinDomain() {
                             id="join-domain-time-autocomplete"
                             options={joinDomainTimeOption}
                             getOptionLabel={(option) => option}
-                            defaultValue={"08:00"}
+                            defaultValue={joinDomainTime}
                             renderInput={(params) => (
                               <TextField {...params} label="" />
                             )}
@@ -1610,7 +1699,9 @@ function JoinDomain() {
                               marginLeft: "auto",
                               backgroundColor: " #cffafe ",
                             }}
-                            // onChange={(event, newValue) => setOs(newValue)}
+                            onChange={(event, newValue) =>
+                              setJoinDomainTime(newValue)
+                            }
                           />
                         </label>
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
@@ -1620,7 +1711,7 @@ function JoinDomain() {
                             id="se-support-by-autocomplete"
                             options={seSupportByOption}
                             getOptionLabel={(option) => option}
-                            defaultValue={"kanokwan"}
+                            defaultValue={seSupportBy}
                             renderInput={(params) => (
                               <TextField {...params} label="" />
                             )}
@@ -1631,7 +1722,9 @@ function JoinDomain() {
                               marginLeft: "auto",
                               backgroundColor: " #cffafe ",
                             }}
-                            // onChange={(event, newValue) => setOs(newValue)}
+                            onChange={(event, newValue) =>
+                              setSeSupportBy(newValue)
+                            }
                           />
                         </label>
                         <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
@@ -1649,6 +1742,7 @@ function JoinDomain() {
                               backgroundColor: " #cffafe ",
                             }}
                             placeholder="Remark"
+                            onChange={(event) => setRemark(event.target.value)}
                           />
                         </label>
                       </div>

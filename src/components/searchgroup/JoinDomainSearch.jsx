@@ -3,7 +3,15 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
+// import DateRangeFilter from "../datefilter/DateFilter";
+
+// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
+import { format, addDays } from "date-fns";
 
 function JoinDomainSearch({ onSearch }) {
   const [error, setError] = useState(null);
@@ -105,14 +113,12 @@ function JoinDomainSearch({ onSearch }) {
       division: selecteddivision.division,
       Department: selectedDepartment.dep_unit,
       Cost_center: selectedCostCenter.cost_center_name,
+      startDate: startDate ? format(startDate, "yyyy-MM-dd") : null,
+      endDate: endDate ? format(endDate, "yyyy-MM-dd") : null,
     };
     // console.log("Query Params:", queryParams);
     onSearch(queryParams);
   };
-
-  // useEffect(() => {
-  //     fetchdivision();
-  // }, []);
 
   useEffect(() => {
     fetchdivision();
@@ -122,12 +128,26 @@ function JoinDomainSearch({ onSearch }) {
     fetchCostCenter();
   }, [selecteddivision, selectedDepartment, selectedCostCenter]);
 
+  // const [fromDate, setFromDate] = useState(null);
+  // const [toDate, setToDate] = useState(null);
+
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  const handleStartDateChange = (event) => {
+    setStartDate(new Date(event.target.value));
+  };
+
+  const handleEndDateChange = (event) => {
+    setEndDate(new Date(event.target.value));
+  };
+
   return (
     <>
       <Box maxWidth="xl" sx={{ width: "100%", height: 50, mb: 1 }}>
         <div className="container">
           <div className="flex flex-col gap-4 lg:flex-row animate-fade">
-            <div className="flex items-center shadow-md w-fit">
+            <div className="flex items-center shadow-md w-fit h-fit">
               <Autocomplete
                 disablePortal
                 id="division"
@@ -135,7 +155,7 @@ function JoinDomainSearch({ onSearch }) {
                 getOptionLabel={(option) => option && option.division}
                 value={selecteddivision}
                 onChange={handleDivisionChange}
-                className="w-96 h-auto"
+                className=" w-72 h-auto"
                 renderInput={(params) => (
                   <TextField {...params} label="Division" />
                 )}
@@ -155,7 +175,7 @@ function JoinDomainSearch({ onSearch }) {
               />
             </div>
 
-            <div className="flex items-center shadow-md w-fit">
+            <div className="flex items-center shadow-md w-fit h-fit">
               <Autocomplete
                 disablePortal
                 id="department"
@@ -163,7 +183,7 @@ function JoinDomainSearch({ onSearch }) {
                 getOptionLabel={(option) => option && option.dep_unit}
                 value={selectedDepartment}
                 onChange={handleDepartmentChange}
-                className="w-96 h-auto"
+                className="w-72 h-auto"
                 renderInput={(params) => (
                   <TextField {...params} label="Department" />
                 )}
@@ -183,7 +203,7 @@ function JoinDomainSearch({ onSearch }) {
               />
             </div>
 
-            <div className="flex items-center shadow-md w-fit">
+            <div className="flex items-center shadow-md w-fit h-fit">
               <Autocomplete
                 disablePortal
                 id="costcenter"
@@ -191,7 +211,7 @@ function JoinDomainSearch({ onSearch }) {
                 getOptionLabel={(option) => option && option.cost_center_name}
                 value={selectedCostCenter}
                 onChange={handleCostcenterChange}
-                className="w-96 h-auto"
+                className="w-72 h-auto"
                 renderInput={(params) => (
                   <TextField {...params} label="Cost Center" />
                 )}
@@ -212,27 +232,65 @@ function JoinDomainSearch({ onSearch }) {
                 }
               />
             </div>
+
+            {/* // Date Range Filter */}
+            {/* <div className="flex items-center shadow-md w-fit">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer
+                  components={["DatePicker"]}
+                  sx={{ paddingTop: 0 }}
+                >
+                  <DatePicker
+                    label="From date"
+                    value={fromDate}
+                    onChange={(newDate) => setFromDate(newDate)}
+                    format="YYYY-MM-DD"
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+            </div>
+
+            <div className="flex items-center shadow-md w-fit h-fit">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer
+                  components={["DatePicker"]}
+                  sx={{ paddingTop: 0 }}
+                >
+                  <DatePicker
+                    label="To date"
+                    value={toDate}
+                    onChange={(newDate) => setToDate(newDate)}
+                    format="YYYY-MM-DD"
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+            </div> */}
+            <div>
+              <label>
+                From Date:
+                <input
+                  type="date"
+                  value={startDate ? format(startDate, "yyyy-MM-dd") : ""}
+                  onChange={handleStartDateChange}
+                />
+              </label>
+
+              <label>
+                To Date:
+                <input
+                  type="date"
+                  value={endDate ? format(endDate, "yyyy-MM-dd") : ""}
+                  onChange={handleEndDateChange}
+                />
+              </label>
+            </div>
+
             <div className="flex flex-row gap-4">
               <button
                 className="bg-blue-500 w-24 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full animate-fade"
                 onClick={handleSearch}
               >
                 Search
-              </button>
-
-              <button
-                className="bg-green-500 w-36 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-green-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full whitespace-nowrap animate-fade"
-                onClick={() => {
-                  Swal.fire({
-                    title: "This feature is not available",
-                    icon: "warning",
-                    showCancelButton: false,
-                    confirmButtonText: "OK",
-                    confirmButtonColor: "#3085d6",
-                  });
-                }}
-              >
-                Set Schedule
               </button>
             </div>
           </div>
