@@ -101,7 +101,9 @@ function Login() {
             />
             <div className="flex flex-col justify-center">
               <p className="font-extrabold text-2xl">Smart IT Management</p>
-              <p className="font-bold text-md text-right">System Recovery</p>
+              <p className="font-bold text-md text-right text-sky-800">
+                System Recovery
+              </p>
             </div>
           </div>
 
@@ -125,7 +127,7 @@ function Login() {
             <br />
             <button
               type="submit"
-              className="bg-blue-500 my-8 px-4 py-2 rounded-lg text-white font-semibold hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none"
+              className="bg-blue-500 my-8 px-4 py-2 rounded-lg text-white font-semibold hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none hover:shadow-blue-100 hover:shadow-lg"
             >
               Login <LockOpenOutlinedIcon sx={{ ml: 1 }} />
             </button>

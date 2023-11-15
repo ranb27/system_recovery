@@ -996,7 +996,7 @@ export default function ComputerInProcess() {
             options={chartOptions}
             series={chartSeries}
             type="donut"
-            width={350}
+            width={300}
             height={150}
           />
         ) : (
@@ -1017,7 +1017,7 @@ export default function ComputerInProcess() {
       <ThemeProvider theme={theme}>
         <div className="container mt-20 mx-12  w-screen">
           <Box
-            marginLeft={isNavbarOpen ? "220px" : 4}
+            marginLeft={isNavbarOpen ? "210px" : 4}
             marginTop={8}
             className={`transition-all duration-500 ease-in-out ${
               isNavbarOpen ? "ml-64" : ""
@@ -1028,7 +1028,7 @@ export default function ComputerInProcess() {
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="container flex gap-4 w-fit h-fit">
                 <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                  <div className="bg-blue-500 rounded-lg p-4 shadow-lg hover:bg-blue-600 transition-colors ease-linear duration-300 hover:shadow-none animate-fade">
+                  <div className="bg-blue-500 rounded-lg p-4 shadow-lg hover:bg-blue-600 transition-colors ease-linear duration-300 hover:shadow-cyan-100 hover:shadow-xl animate-fade">
                     <p className="text-white text-xl font-bold">Total PC</p>
                     <div className="bg-white rounded-lg p-4 mt-9 h-16">
                       <p className="text-blue-700 text-3xl font-bold">
@@ -1039,7 +1039,7 @@ export default function ComputerInProcess() {
                 </div>
 
                 <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                  <div className="bg-green-500 rounded-lg p-4 shadow-lg hover:bg-green-600 transition-colors ease-linear duration-300 hover:shadow-none animate-fade">
+                  <div className="bg-green-500 rounded-lg p-4 shadow-lg hover:bg-green-600 transition-colors ease-linear duration-300 hover:shadow-lime-100 hover:shadow-xl animate-fade">
                     <p className="text-white text-xl font-bold">PC Connect</p>
                     <div className="bg-white rounded-lg p-4 mt-9 h-16">
                       <p className="text-green-700 text-3xl font-bold">
@@ -1050,7 +1050,7 @@ export default function ComputerInProcess() {
                 </div>
 
                 <div className="col-span-1 w-52 hover:translate-x-1 hover:-translate-y-1 transition duration-300 ease-in-out cursor-pointer">
-                  <div className="bg-yellow-500 rounded-lg p-4 shadow-lg hover:bg-yellow-600 transition-colors ease-linear duration-300 hover:shadow-none animate-fade">
+                  <div className="bg-yellow-500 rounded-lg p-4 shadow-lg hover:bg-yellow-600 transition-colors ease-linear duration-300 hover:shadow-amber-100 hover:shadow-xl animate-fade">
                     <p className="text-white text-xl font-bold">Wait Connect</p>
                     <div className="bg-white rounded-lg p-4 mt-9 h-16">
                       <p className="text-yellow-700 text-3xl font-bold">

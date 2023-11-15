@@ -3,11 +3,10 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import CountUsageJD from "../catchcount/CountUsageJD";
+import Swal from "sweetalert2";
+import CountUsageRPi from "../catchcount/CountUsageRPi";
 
-import { format } from "date-fns";
-
-function JoinDomainSearch({ onSearch }) {
+function RaspberyPiSearch({ onSearch }) {
   const [error, setError] = useState(null);
 
   //Set Dropdown List
@@ -73,45 +72,31 @@ function JoinDomainSearch({ onSearch }) {
     return <div>Error: {error}</div>;
   }
 
-  const clearFilters = () => {
-    setSelecteddivision({ division: "ALL" });
-    setSelectedDepartment({ dep_unit: "ALL" });
-    setSelectedCostCenter({ cost_center_name: "ALL" });
-  };
-
-  // Function to clear date range
-  const clearDateRange = () => {
-    setStartDate(null);
-    setEndDate(null);
-  };
-
   //สร้าง Function selection change
   const handleDivisionChange = (event, newValue) => {
     setSelecteddivision(newValue);
     setSelectedDepartment({ dep_unit: "ALL" });
     setSelectedCostCenter({ cost_center_name: "ALL" });
-    clearDateRange(); // Clear date range when division changes
     if (newValue === null || newValue === undefined) {
-      clearFilters();
+      setSelecteddivision({ division: "ALL" });
+      setSelectedDepartment({ dep_unit: "ALL" });
+      setSelectedCostCenter({ cost_center_name: "ALL" });
     }
   };
 
-  // Function to handle department change
   const handleDepartmentChange = (event, newValue) => {
     setSelectedDepartment(newValue);
     setSelectedCostCenter({ cost_center_name: "ALL" });
-    clearDateRange(); // Clear date range when department changes
     if (newValue === null || newValue === undefined) {
-      clearFilters();
+      setSelectedDepartment({ dep_unit: "ALL" });
+      setSelectedCostCenter({ cost_center_name: "ALL" });
     }
   };
 
-  // Function to handle cost center change
   const handleCostcenterChange = (event, newValue) => {
     setSelectedCostCenter(newValue);
-    clearDateRange(); // Clear date range when cost center changes
     if (newValue === null || newValue === undefined) {
-      clearFilters();
+      setSelectedCostCenter({ cost_center_name: "ALL" });
     }
   };
 
@@ -121,12 +106,14 @@ function JoinDomainSearch({ onSearch }) {
       division: selecteddivision.division,
       Department: selectedDepartment.dep_unit,
       Cost_center: selectedCostCenter.cost_center_name,
-      startDate: startDate ? format(startDate, "yyyy-MM-dd") : null,
-      endDate: endDate ? format(endDate, "yyyy-MM-dd") : null,
     };
     // console.log("Query Params:", queryParams);
     onSearch(queryParams);
   };
+
+  // useEffect(() => {
+  //     fetchdivision();
+  // }, []);
 
   useEffect(() => {
     fetchdivision();
@@ -136,31 +123,12 @@ function JoinDomainSearch({ onSearch }) {
     fetchCostCenter();
   }, [selecteddivision, selectedDepartment, selectedCostCenter]);
 
-  // const [fromDate, setFromDate] = useState(null);
-  // const [toDate, setToDate] = useState(null);
-
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-
-  const handleStartDateChange = (event) => {
-    const value = event.target.value;
-    setStartDate(value ? new Date(value) : null);
-    clearFilters(); // Clear division, department, and cost center when start date changes
-  };
-
-  // Function to handle end date change
-  const handleEndDateChange = (event) => {
-    const value = event.target.value;
-    setEndDate(value ? new Date(value) : null);
-    clearFilters(); // Clear division, department, and cost center when end date changes
-  };
-
   return (
     <>
       <Box maxWidth="xl" sx={{ width: "100%", height: 50, mb: 1 }}>
         <div className="container">
           <div className="flex flex-col gap-4 lg:flex-row animate-fade">
-            <div className="flex items-center shadow-md w-fit h-fit">
+            <div className="flex items-center shadow-md w-fit">
               <Autocomplete
                 disablePortal
                 id="division"
@@ -168,9 +136,9 @@ function JoinDomainSearch({ onSearch }) {
                 getOptionLabel={(option) => option && option.division}
                 value={selecteddivision}
                 onChange={handleDivisionChange}
-                className=" w-72 h-auto"
+                className="w-96 h-auto"
                 renderInput={(params) => (
-                  <TextField {...params} label="Division" />
+                  <TextField {...params} label="Project" />
                 )}
                 renderOption={(props, option) => {
                   return (
@@ -188,7 +156,7 @@ function JoinDomainSearch({ onSearch }) {
               />
             </div>
 
-            <div className="flex items-center shadow-md w-fit h-fit">
+            <div className="flex items-center shadow-md w-fit">
               <Autocomplete
                 disablePortal
                 id="department"
@@ -196,9 +164,9 @@ function JoinDomainSearch({ onSearch }) {
                 getOptionLabel={(option) => option && option.dep_unit}
                 value={selectedDepartment}
                 onChange={handleDepartmentChange}
-                className="w-72 h-auto"
+                className="w-96 h-auto"
                 renderInput={(params) => (
-                  <TextField {...params} label="Department" />
+                  <TextField {...params} label="Building" />
                 )}
                 renderOption={(props, option) => {
                   return (
@@ -216,7 +184,7 @@ function JoinDomainSearch({ onSearch }) {
               />
             </div>
 
-            <div className="flex items-center shadow-md w-fit h-fit">
+            <div className="flex items-center shadow-md w-fit">
               <Autocomplete
                 disablePortal
                 id="costcenter"
@@ -224,10 +192,8 @@ function JoinDomainSearch({ onSearch }) {
                 getOptionLabel={(option) => option && option.cost_center_name}
                 value={selectedCostCenter}
                 onChange={handleCostcenterChange}
-                className="w-72 h-auto"
-                renderInput={(params) => (
-                  <TextField {...params} label="Cost Center" />
-                )}
+                className="w-96 h-auto"
+                renderInput={(params) => <TextField {...params} label="Area" />}
                 renderOption={(props, option) => {
                   return (
                     <li
@@ -245,45 +211,15 @@ function JoinDomainSearch({ onSearch }) {
                 }
               />
             </div>
-
-            {/* // Date Range Filter */}
-
-            <div className="flex flex-row gap-4 bg-green-500 px-1.5 rounded-lg shadow-lg hover:bg-green-600 duration-300 hover:shadow-lime-100 hover:shadow-lg w-fit h-14">
-              <label className="flex flex-col">
-                <span className="text-sm font-semibold text-white">
-                  From Date
-                </span>
-                <input
-                  format="yyyy-MM-dd"
-                  type="date"
-                  value={startDate ? format(startDate, "yyyy-MM-dd") : ""}
-                  onChange={handleStartDateChange}
-                  className="cursor-pointer mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </label>
-
-              <label className="flex flex-col">
-                <span className="text-sm font-semibold text-white">
-                  To Date
-                </span>
-                <input
-                  type="date"
-                  value={endDate ? format(endDate, "yyyy-MM-dd") : ""}
-                  onChange={handleEndDateChange}
-                  className="cursor-pointer mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </label>
-            </div>
-
             <div className="flex flex-row gap-4">
               <button
-                className="bg-blue-500 w-24 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full animate-fade hover:shadow-blue-200 hover:shadow-lg"
+                className="bg-purple-500 w-fit h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-purple-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:h-full animate-fade hover:shadow-purple-200 hover:shadow-lg whitespace-nowrap"
                 onClick={() => {
                   handleSearch();
-                  CountUsageJD();
+                  //   CountUsageRPi();
                 }}
               >
-                Search
+                Create Project
               </button>
             </div>
           </div>
@@ -293,4 +229,4 @@ function JoinDomainSearch({ onSearch }) {
   );
 }
 
-export default JoinDomainSearch;
+export default RaspberyPiSearch;
