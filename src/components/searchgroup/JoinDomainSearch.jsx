@@ -248,7 +248,7 @@ function JoinDomainSearch({ onSearch }) {
 
             {/* // Date Range Filter */}
 
-            <div className="flex flex-row gap-4 bg-green-500 px-1.5 rounded-lg shadow-lg hover:bg-green-600 duration-300 hover:shadow-none">
+            <div className="flex flex-row gap-4 bg-green-500 px-1.5 rounded-lg shadow-lg hover:bg-green-600 duration-300 hover:shadow-lime-200 hover:shadow-lg">
               <label className="flex flex-col">
                 <span className="text-sm font-semibold text-white">
                   From Date
@@ -277,7 +277,7 @@ function JoinDomainSearch({ onSearch }) {
 
             <div className="flex flex-row gap-4">
               <button
-                className="bg-blue-500 w-24 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full animate-fade"
+                className="bg-blue-500 w-24 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full animate-fade hover:shadow-blue-200 hover:shadow-lg"
                 onClick={() => {
                   handleSearch();
                   CountUsageJD();

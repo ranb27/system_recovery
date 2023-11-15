@@ -122,8 +122,8 @@ function Summary() {
             isNavbarOpen ? "ml-64" : ""
           }`}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade">
-            <div className="bg-white rounded-lg shadow-lg p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="bg-white rounded-lg shadow-lg p-6 animate-fade">
               <div className="text-gray-500 font-medium text-sm mb-2">
                 Total Sales
               </div>
@@ -144,7 +144,7 @@ function Summary() {
                 10% increase from last month
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="bg-white rounded-lg shadow-lg p-6 animate-fade">
               <div className="text-gray-500 font-medium text-sm mb-2">
                 Total Orders
               </div>
@@ -165,7 +165,7 @@ function Summary() {
                 5% decrease from last month
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="bg-white rounded-lg shadow-lg p-6 animate-fade">
               <div className="text-gray-500 font-medium text-sm mb-2">
                 Total Customers
               </div>
@@ -186,7 +186,7 @@ function Summary() {
                 15% increase from last month
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow-lg p-6 col-span-2">
+            <div className="bg-white rounded-lg shadow-lg p-6 col-span-2 animate-delay">
               <div className="text-gray-500 font-medium text-sm mb-2">
                 Sales Chart
               </div>
@@ -197,15 +197,15 @@ function Summary() {
                 height={300}
               />
             </div>
-            <div className="bg-white rounded-lg shadow-lg p-6 col-span-1">
+            <div className="bg-white rounded-lg shadow-lg p-6 col-span-1 animate-delay">
               <RadialChart />
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg p-6 col-span-1 flex flex-col items-center justify-center">
+            <div className="bg-white rounded-lg shadow-lg p-6 col-span-1 flex flex-col items-center justify-center animate-delay">
               <DonutChart />
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg p-6 col-span-2 flex flex-col items-center justify-center">
+            <div className="bg-white rounded-lg shadow-lg p-6 col-span-2 flex flex-col items-center justify-center animate-delay">
               <div className="text-gray-500 font-medium text-sm mb-2">
                 PC Use For
               </div>

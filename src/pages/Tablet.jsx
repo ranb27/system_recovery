@@ -321,7 +321,7 @@ function Tablet() {
                 enabled: true,
               },
 
-              colors: [" #22c55e ", " #eab308 "],
+              colors: [" #eab308 ", " #22c55e "],
             });
 
             setChartSeries(values);

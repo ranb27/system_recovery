@@ -215,7 +215,7 @@ function ComputerInProcessSearch({ onSearch }) {
             </div>
             <div className="flex flex-row gap-4">
               <button
-                className="bg-blue-500 w-24 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full animate-fade"
+                className="bg-blue-500 w-24 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-blue-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full animate-fade hover:shadow-blue-200 hover:shadow-lg"
                 onClick={() => {
                   handleSearch();
                   CountUsageCIP();
@@ -225,7 +225,7 @@ function ComputerInProcessSearch({ onSearch }) {
               </button>
 
               <button
-                className="bg-green-500 w-36 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-green-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full whitespace-nowrap animate-fade"
+                className="bg-green-500 w-36 h-12 font-bold rounded-lg px-4 shadow-lg text-white hover:bg-green-700 ease-linear transition-colors duration-300 transform hover:scale-105 motion-reduce:transform-none transfrom active:scale-95 motion-reduce:transfrom-none lg:w-fit lg:h-full whitespace-nowrap animate-fade hover:shadow-lime-200 hover:shadow-lg"
                 onClick={() => {
                   Swal.fire({
                     title: "This feature is not available",

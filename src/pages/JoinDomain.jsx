@@ -353,6 +353,14 @@ function JoinDomain() {
     quickFilterValues: [""],
   });
 
+  const sortModel = [
+    { field: "join_domain_by", sort: "asc" },
+    { field: "join_domain_date", sort: "asc" },
+    { field: "join_domain_time", sort: "asc" },
+    { field: "building", sort: "asc" },
+    { field: "process", sort: "asc" },
+  ];
+
   //* Data Grid
   const columns = [
     {
@@ -832,7 +840,7 @@ function JoinDomain() {
                 enabled: true,
               },
 
-              colors: [" #22c55e ", " #eab308 "],
+              colors: [" #eab308 ", " #22c55e "],
             });
 
             setChartSeries(values);
@@ -1186,6 +1194,7 @@ function JoinDomain() {
               onFilterModelChange={(newModel) => setFilterModel(newModel)}
               filterModel={filterModel}
               slotProps={{ toolbar: { showQuickFilter: true } }}
+              sortModel={sortModel}
             />
           </div>
 
