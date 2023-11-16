@@ -421,7 +421,7 @@ function JoinDomain() {
     {
       field: "owner_comfirm_schedule",
       headerName: "Owner Confirm Schedule",
-      width: 200,
+      width: 220,
       align: "center",
       headerAlign: "center",
     },
