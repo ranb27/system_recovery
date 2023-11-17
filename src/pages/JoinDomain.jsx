@@ -476,7 +476,7 @@ function JoinDomain() {
     {
       field: "connect_status",
       headerName: "Network Status",
-      width: 160,
+      width: 170,
       align: "center",
       headerAlign: "center",
     },

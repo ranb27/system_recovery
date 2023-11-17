@@ -294,7 +294,7 @@ export default function ComputerInProcess() {
     {
       field: "connect_status",
       headerName: "Status Connect",
-      width: 160,
+      width: 170,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => (

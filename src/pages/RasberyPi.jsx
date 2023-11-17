@@ -169,7 +169,7 @@ function RasberyPi() {
     {
       field: "connect_status",
       headerName: "Status Connect",
-      width: 150,
+      width: 170,
       headerAlign: "center",
       align: "center",
       renderCell: (params) => (
