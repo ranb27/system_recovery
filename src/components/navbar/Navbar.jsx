@@ -133,6 +133,10 @@ export default function Navbar({ onToggle }) {
 
   React.useEffect(() => {
     switch (location.pathname) {
+      case "/home":
+        setMenuName("Home");
+        setMenuIcon(<img src="/house.png" alt="" width={30} />);
+        break;
       case "/computer_in_process":
         setMenuName("Computer in Process");
         setMenuIcon(<img src="/computer.png" alt="" width={30} />);
@@ -249,8 +253,44 @@ export default function Navbar({ onToggle }) {
 
           {/* //*Menu list ****************************************************** */}
 
-          {/* //Computer in Process */}
+          {/* //Home */}
           <List open={open}>
+            <ListItem
+              onClick={() => setMenuName("Home")}
+              disablePadding
+              sx={{
+                display: "block",
+                color: isActive("/home") ? " #3b82f6 " : "initial",
+                backgroundColor: isActive("/home") ? "#D6EAF8" : "initial",
+              }}
+              component={Link}
+              to="/home"
+            >
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                    color: "inherit", // Set initial color
+                    "&:hover": {
+                      color: "primary.main", // Change color on hover
+                    },
+                  }}
+                >
+                  <img src="/house.png" alt="" width={30} />
+                </ListItemIcon>
+                <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+
+            {/* //Computer in Process */}
             <ListItem
               onClick={() => setMenuName("Computer in Process")}
               disablePadding

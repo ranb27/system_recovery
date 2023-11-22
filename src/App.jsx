@@ -14,6 +14,7 @@ import ConnectNewwork from "./pages/ConnectNewwork";
 import Tablet from "./pages/Tablet";
 import RasberyPi from "./pages/RasberyPi";
 import JoinDomain from "./pages/JoinDomain";
+import Home from "./pages/Home.jsx";
 
 // import Navbar from "../components/Navbar/Navbar";
 
@@ -28,7 +29,7 @@ function App() {
 
         {/* //* Wrap the protected routes in a route component */}
         <Route element={<ProtectedRoutes />}>
-          <Route path="/home" element={<Summary />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/computer_in_process" element={<ComputerInProcess />} />
           <Route path="/connect_newwork" element={<ConnectNewwork />} />
         </Route>

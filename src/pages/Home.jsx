@@ -1,22 +1,17 @@
 import { useState, useEffect } from "react";
-
-import axios from "axios";
 import ReactApexChart from "react-apexcharts";
 import Chart from "react-apexcharts";
 import CircularProgress from "@mui/material/CircularProgress";
+import axios from "axios";
 
 //* Components
 import Navbar from "../components/Navbar/Navbar";
-import RaspberyPiSearch from "../components/searchgroup/RaspberyPiSearch";
 
 //* MUI
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { GridToolbar } from "@mui/x-data-grid";
 import styled from "@mui/material/styles/styled";
-import EditIcon from "@mui/icons-material/Edit";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
 import LinearProgress from "@mui/material/LinearProgress";
 
 const StyledDataGrid = styled(DataGrid)({
@@ -44,7 +39,7 @@ const StyledDataGrid = styled(DataGrid)({
   },
 });
 
-function RasberyPi() {
+function Home() {
   //* Responsive Navbar
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
@@ -52,25 +47,9 @@ function RasberyPi() {
     setIsNavbarOpen(openStatus);
   };
 
-  //* Get user for update by data*//
-  const userLoginInfo =
-    localStorage.getItem("guestToken") || localStorage.getItem("userToken");
-  const userLoginInfoJSON = userLoginInfo ? JSON.parse(userLoginInfo) : null;
-  const userLogin = userLoginInfoJSON ? userLoginInfoJSON.user_login : null;
-  //? Get user role no *//
-  const userRoleNo = userLoginInfoJSON.role_no;
-  //? Get user id code *//
-  let userIdCode = userLoginInfoJSON.user_id_code;
-
-  const [selecteddivision, setSelecteddivision] = useState({
-    division: "Division",
-  });
-  const [selectedDepartment, setSelectedDepartment] = useState({
-    dep_unit: "Department",
-  });
-  const [selectedCostCenter, setSelectedCostCenter] = useState({
-    cost_center_name: "Cost Center",
-  });
+  const [selecteddivision, setSelecteddivision] = useState("ALL");
+  const [selectedDepartment, setSelectedDepartment] = useState("ALL");
+  const [selectedCostCenter, setSelectedCostCenter] = useState("ALL");
 
   //*Filter Model
   const [filterModel, setFilterModel] = useState({
@@ -79,186 +58,161 @@ function RasberyPi() {
     quickFilterValues: [""],
   });
 
-  //*Table
-  const [rows, setRows] = useState([]);
-
-  useEffect(() => {
-    const getRows = async () => {
-      const response = await axios
-        .get(
-          `http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
-        )
-        .then((res) => {
-          setRows(res.data);
-        });
-      return response;
-    };
-
-    getRows();
-  }, [selecteddivision, selectedDepartment, selectedCostCenter]);
-
-  const columns = [
+  //*Rows and Columns
+  //?rows
+  const rows = [
     {
-      field: "id",
-      headerName: "ID",
-      width: 70,
-      headerAlign: "center",
-      align: "center",
-    },
-    {
-      field: "project_name",
-      headerName: "Project Name",
-      width: 150,
-      headerAlign: "center",
-      align: "center",
-    },
-    {
-      field: "pc_name",
-      headerName: "PC Name",
-      width: 110,
-      headerAlign: "center",
-      align: "center",
-    },
-    {
-      field: "pc_type",
-      headerName: "PC Type",
-      width: 100,
-      headerAlign: "center",
-      align: "center",
-    },
-    {
-      field: "os",
-      headerName: "OS",
-      width: 70,
-      headerAlign: "center",
-      align: "center",
-    },
-    {
-      field: "emp_name_eng",
-      headerName: "Name-Surname",
-      width: 340,
-      headerAlign: "center",
-    },
-    {
-      field: "building",
-      headerName: "Building",
-      width: 80,
-      headerAlign: "center",
-      align: "center",
-    },
-    {
-      field: "process",
-      headerName: "Process",
-      width: 80,
-      headerAlign: "center",
-      align: "center",
-    },
-    {
-      field: "area",
-      headerName: "Area",
-      width: 90,
-      headerAlign: "center",
-      align: "center",
-    },
-    {
-      field: "new_ip",
-      headerName: "IP Address",
-      width: 120,
-      headerAlign: "center",
-      align: "center",
-    },
-    {
-      field: "connect_status",
-      headerName: "Status Connect",
-      width: 170,
-      headerAlign: "center",
-      align: "center",
-      renderCell: (params) => (
-        <div
-          style={{
-            borderRadius: 10,
-            padding: "4px 12px",
-            color: params.value === "Network Connected" ? "white" : "black",
-            backgroundColor:
-              params.value === "Network Connected"
-                ? "rgb(34 197 94)"
-                : "rgb(234 179 8)",
-          }}
-        >
-          {params.value}
-        </div>
-      ),
-    },
-    {
-      field: "connect_date",
-      headerName: "Connect Date",
-      width: 150,
-      headerAlign: "center",
-      align: "center",
-    },
-    {
-      field: "edit",
-      headerName: "Edit",
-      width: 70,
-      headerAlign: "center",
-      align: "center",
-      renderCell: (params) => {
-        if (userRoleNo === 1 || userRoleNo === 2 || userRoleNo === 5) {
-          return (
-            <button
-              className="bg-purple-500 px-2 py-1.5 rounded-xl text-white hover:bg-purple-700 hover:scale-110 duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
-              onClick={() => handleOpen(params.row)}
-            >
-              <EditIcon />
-            </button>
-          );
-        } else if (userRoleNo === 3 && userIdCode === params.row.employee_id) {
-          // Users with role 1 can only edit rows where their userIdCode matches the row's employee_id
-          return (
-            <button
-              className="bg-purple-500 px-2 py-1.5 rounded-xl text-white hover:bg-purple-700 hover:scale-110 duration-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50"
-              onClick={() => handleOpen(params.row)}
-            >
-              <EditIcon />
-            </button>
-          );
-        } else if (userRoleNo === 4) {
-          return (
-            <button className="text-slate-300" disabled>
-              <EditIcon />
-            </button>
-          );
-        } else {
-          return (
-            <button className="text-slate-300" disabled>
-              <EditIcon />
-            </button>
-          );
-        }
-      },
+      id: 1,
+      join_domain_by: "SE Support",
+      join_domain_date: "2021-09-01",
+      total_pc: 10,
+      type_notebook: 5,
+      type_desktop: 5,
+      type_nas: 0,
+      connect_status: 10,
+      not_connect_network: 0,
+      join_domain_status: 10,
+      not_join_domain: 0,
+      edr_status: 10,
+      edr_off: 0,
+      building_A: 0,
+      building_B: 0,
+      building_C1: 0,
+      building_C2: 0,
+      building_C3: 0,
+      building_D: 0,
     },
   ];
 
-  // console.log(
-  //   `User Login: ${userLogin},
-  //   User Role No: ${userRoleNo},
-  //   Local Row ID Selected: ${selectedID},
-  //   User ID Code: ${userIdCode}`
-  // );
-  const [open, setOpen] = useState(false);
-  const [selectedData, setSelectedData] = useState({});
-
-  const handleOpen = (data) => {
-    const selectedID = data.id;
-    localStorage.setItem("selectedID", selectedID);
-    setSelectedData(data);
-
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  //?columns
+  const columns = [
+    {
+      field: "join_domain_by",
+      headerName: "SE Support By",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "join_domain_date",
+      headerName: "Plan Date",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "total_pc",
+      headerName: "Total PC",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "type_notebook",
+      headerName: "Type Notebook",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "type_desktop",
+      headerName: "Type Desktop",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "type_nas",
+      headerName: "Type NAS",
+      width: 110,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "connect_status",
+      headerName: "Connect Network",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "not_connect_network",
+      headerName: "Not Connect Network",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "join_domain_status",
+      headerName: "Join Domain",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "not_join_domain",
+      headerName: "Not Join Domain",
+      width: 150,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "edr_status",
+      headerName: "EDR On",
+      width: 80,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "edr_off",
+      headerName: "EDR Off",
+      width: 80,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "building_A",
+      headerName: "Building A",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "building_B",
+      headerName: "Building B",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "building_C1",
+      headerName: "Building C1",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "building_C2",
+      headerName: "Building C2",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "building_C3",
+      headerName: "Building C3",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "building_D",
+      headerName: "Building D",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+    },
+  ];
 
   //*Total PC *//
   const [pcStatus, setPcStatus] = useState([]);
@@ -647,61 +601,30 @@ function RasberyPi() {
             </div>
           </div>
 
-          {/* //Search Group */}
-
-          <div className="mb-60 lg:mb-6">
-            {/* <Computer_In_Process_Search_Group onSearch={onSearch} /> */}
-            <RaspberyPiSearch
-              onSearch={(queryParams) => {
-                setSelecteddivision(queryParams.division);
-                setSelectedDepartment(queryParams.Department);
-                setSelectedCostCenter(queryParams.Cost_center);
-              }}
-            />
-          </div>
-
           {/* Table for Computer in Process */}
           <div
             className="shadow-xl animate-delay"
             style={{
-              height: "55vh",
+              height: "65vh",
               width: isNavbarOpen ? "calc(95vw - 10vw)" : "90vw",
-              marginTop: "16px",
-              marginBottom: "16px",
+              // marginTop: "8px",
+              // marginBottom: "16px",
             }}
           >
-            {rows.length === 0 ? (
-              <div className="flex justify-center items-center h-full font-bold flex-col gap-4 text-blue-400">
-                Please select new option
-                <CircularProgress />
-              </div>
-            ) : (
-              <StyledDataGrid
-                rows={rows}
-                columns={columns}
-                pageSize={5}
-                slots={{ toolbar: GridToolbar }}
-                onFilterModelChange={(newModel) => setFilterModel(newModel)}
-                filterModel={filterModel}
-                slotProps={{ toolbar: { showQuickFilter: true } }}
-              />
-            )}
+            <StyledDataGrid
+              rows={rows}
+              columns={columns}
+              pageSize={5}
+              slots={{ toolbar: GridToolbar }}
+              onFilterModelChange={(newModel) => setFilterModel(newModel)}
+              filterModel={filterModel}
+              slotProps={{ toolbar: { showQuickFilter: true } }}
+            />
           </div>
-
-          {selectedData && (
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              maxWidth="100vw"
-              className="animate-fade"
-            >
-              <DialogContent></DialogContent>
-            </Dialog>
-          )}
         </Box>
       </div>
     </>
   );
 }
 
-export default RasberyPi;
+export default Home;

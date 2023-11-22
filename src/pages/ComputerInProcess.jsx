@@ -21,6 +21,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { Dialog, DialogContent, DialogActions, TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
+import LinearProgress from "@mui/material/LinearProgress";
 
 //*Set style for page *//
 const theme = createTheme({
@@ -1101,19 +1102,31 @@ export default function ComputerInProcess() {
                 marginBottom: "16px",
               }}
             >
-              <StyledDataGrid
-                rows={rows}
-                columns={columns}
-                pageSize={5}
-                slots={{ toolbar: GridToolbar }}
-                onFilterModelChange={(newModel) => setFilterModel(newModel)}
-                filterModel={filterModel}
-                slotProps={{ toolbar: { showQuickFilter: true } }}
-              />
+              {rows.length === 0 ? (
+                <div className="flex justify-center items-center h-full font-bold flex-col gap-4 text-blue-400">
+                  Please select new option
+                  <CircularProgress />
+                </div>
+              ) : (
+                <StyledDataGrid
+                  rows={rows}
+                  columns={columns}
+                  pageSize={5}
+                  slots={{ toolbar: GridToolbar }}
+                  onFilterModelChange={(newModel) => setFilterModel(newModel)}
+                  filterModel={filterModel}
+                  slotProps={{ toolbar: { showQuickFilter: true } }}
+                />
+              )}
             </div>
 
             {selectedData && (
-              <Dialog open={open} onClose={handleClose} maxWidth="100vw">
+              <Dialog
+                open={open}
+                onClose={handleClose}
+                maxWidth="100vw"
+                className="animate-fade"
+              >
                 <DialogContent>
                   <div className="grid grid-flow-row gap-2 lg:grid-flow-col lg:gap-0">
                     <div className="computer-data">

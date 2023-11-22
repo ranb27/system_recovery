@@ -5,14 +5,14 @@ export default {
     extend: {
       // that is animation class
       animation: {
-        fade: "fadeOut 1s ease-in-out",
+        fade: "fadeIn 1s ease-in-out",
         delay: "delay 1.2s ease-in-out",
         rtl: "rtl 1s ease-in-out",
       },
 
       // that is actual animation
       keyframes: () => ({
-        fadeOut: {
+        fadeIn: {
           "0%": { opacity: 0, transform: "translateY(32px)" },
           "100%": { opacity: 1, transform: "translateY(0px)" },
         },

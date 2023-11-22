@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ReactApexChart from "react-apexcharts";
 import Chart from "react-apexcharts";
-import CircularProgress from "@mui/material/CircularProgress";
+
 import Swal from "sweetalert2";
 
 //* Components
@@ -25,8 +25,10 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import dayjs from "dayjs";
+import { set } from "date-fns";
 
 //* Styled Data Grid
 const StyledDataGrid = styled(DataGrid)({
@@ -359,7 +361,7 @@ function JoinDomain() {
     { field: "join_domain_time", sort: "asc" },
     { field: "building", sort: "asc" },
     { field: "process", sort: "asc" },
-  ];
+  ].filter((item) => item.sort !== null);
 
   //* Data Grid
   const columns = [
@@ -386,14 +388,14 @@ function JoinDomain() {
     {
       field: "join_domain_time",
       headerName: "Time",
-      width: 100,
+      width: 110,
       align: "center",
       headerAlign: "center",
     },
     {
       field: "join_domain_status",
       headerName: "Join Domain Status",
-      width: 160,
+      width: 180,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => (
@@ -456,23 +458,23 @@ function JoinDomain() {
     {
       field: "cost_center_code2",
       headerName: "Cost Center",
-      width: 100,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "user_email",
-      headerName: "E-mail",
-      width: 260,
-      headerAlign: "center",
-    },
-    {
-      field: "new_ip",
-      headerName: "New IP",
       width: 110,
       align: "center",
       headerAlign: "center",
     },
+    // {
+    //   field: "user_email",
+    //   headerName: "E-mail",
+    //   width: 260,
+    //   headerAlign: "center",
+    // },
+    // {
+    //   field: "new_ip",
+    //   headerName: "New IP",
+    //   width: 110,
+    //   align: "center",
+    //   headerAlign: "center",
+    // },
     {
       field: "connect_status",
       headerName: "Network Status",
@@ -483,7 +485,7 @@ function JoinDomain() {
     {
       field: "os",
       headerName: "OS",
-      width: 100,
+      width: 110,
       align: "center",
       headerAlign: "center",
     },
@@ -504,17 +506,17 @@ function JoinDomain() {
     {
       field: "area",
       headerName: "Area",
-      width: 80,
+      width: 90,
       align: "center",
       headerAlign: "center",
     },
-    {
-      field: "person_in_chart",
-      headerName: "Person In Chart",
-      width: 140,
-      align: "center",
-      headerAlign: "center",
-    },
+    // {
+    //   field: "person_in_chart",
+    //   headerName: "Person In Chart",
+    //   width: 140,
+    //   align: "center",
+    //   headerAlign: "center",
+    // },
     {
       field: "edit",
       headerName: "Edit",
@@ -608,6 +610,10 @@ function JoinDomain() {
           Center: 0,
           Personal: 0,
           Resign: 0,
+          Machine: 0,
+          Scan: 0,
+          Cctv: 0,
+          Scrap: 0,
         };
 
         data.forEach((item) => {
@@ -881,9 +887,12 @@ function JoinDomain() {
 
   //*Table
   const [rows, setRows] = useState([]);
+  const [dateFilterRows, setDateFilterRows] = useState([]); // Rows filtered by date range
+
   useEffect(() => {
     const getRows = async () => {
       try {
+        setRows([]);
         const response = await axios.get(
           `http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
         );
@@ -902,7 +911,7 @@ function JoinDomain() {
 
           // Filter out null dates
           const validDates = convertJoinDomainDate.filter(
-            (date) => date !== null
+            (date) => date !== null && joinDomainStatus !== "Waiting"
           );
 
           const filterJoinDomainDateRange = validDates.filter(
@@ -927,6 +936,7 @@ function JoinDomain() {
 
           // Set filtered rows
           setRows(filteredRows);
+          setDateFilterRows(filteredRows);
         } else {
           // If both fromDateFilter and toDateFilter are null, set rows to the original data
           setRows(response.data);
@@ -967,6 +977,14 @@ function JoinDomain() {
     fromDateFilter,
     toDateFilter,
   ]);
+
+  // console.log("Rows:", dateFilterRows);
+
+  useEffect(() => {
+    if (fromDateFilter === null || toDateFilter === null) {
+      setDateFilterRows(null);
+    }
+  }, [fromDateFilter, toDateFilter]);
 
   //*Edit *//
   //?state for edit data
@@ -1177,6 +1195,7 @@ function JoinDomain() {
           </div>
 
           {/* Table for Computer in Process */}
+
           <div
             className="shadow-xl animate-delay"
             style={{
@@ -1186,20 +1205,32 @@ function JoinDomain() {
               marginBottom: "16px",
             }}
           >
-            <StyledDataGrid
-              rows={rows}
-              columns={columns}
-              pageSize={5}
-              slots={{ toolbar: GridToolbar }}
-              onFilterModelChange={(newModel) => setFilterModel(newModel)}
-              filterModel={filterModel}
-              slotProps={{ toolbar: { showQuickFilter: true } }}
-              sortModel={sortModel}
-            />
+            {rows.length === 0 ? (
+              <div className="flex justify-center items-center h-full font-bold flex-col gap-4 text-blue-400">
+                Please select new option
+                <CircularProgress />
+              </div>
+            ) : (
+              <StyledDataGrid
+                rows={rows}
+                columns={columns}
+                pageSize={5}
+                slots={{ toolbar: GridToolbar }}
+                onFilterModelChange={(newModel) => setFilterModel(newModel)}
+                filterModel={filterModel}
+                slotProps={{ toolbar: { showQuickFilter: true } }}
+                sortModel={sortModel}
+              />
+            )}
           </div>
 
           {selectedData && (
-            <Dialog open={open} onClose={handleClose} maxWidth="100vw">
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              maxWidth="100vw"
+              className="animate-fade"
+            >
               <DialogContent>
                 <div className="grid grid-flow-row gap-2 2xl:grid-flow-col 2xl:gap-0">
                   {/* //*Computer Data  */}
