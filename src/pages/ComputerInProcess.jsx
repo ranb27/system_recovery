@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import * as React from "react";
 import { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
+import debounce from "lodash.debounce";
 
 //* Computer in process page component *//
 
@@ -21,130 +22,133 @@ import EditIcon from "@mui/icons-material/Edit";
 import { Dialog, DialogContent, DialogActions, TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import CircularProgress from "@mui/material/CircularProgress";
-import LinearProgress from "@mui/material/LinearProgress";
-
-//*Set style for page *//
-const theme = createTheme({
-  breakpoints: {
-    values: {
-      xs: 0, // breakpoint xs
-      sm: 600, // breakpoint sm
-      md: 960, // breakpoint md
-      lg: 1280, // breakpoint lg
-      xl: 1900, // breakpoint xl
-    },
-    palette: {
-      primary: {
-        light: "#757ce8",
-        main: "#3f50b5",
-        dark: "#002884",
-        contrastText: "#fff",
-      },
-      secondary: {
-        light: "#ff7961",
-        main: "#f44336",
-        dark: "#ba000d",
-        contrastText: "#000",
-      },
-    },
-  },
-});
-
-//*Set style for table *//
-
-const StyledDataGrid = styled(DataGrid)({
-  "& .MuiDataGrid-columnHeaderTitle": {
-    fontWeight: "bold",
-    color: "#3371ff",
-    fontSize: "15px",
-    textAlign: "center",
-    FontFace: "Poppins",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  "& ::-webkit-scrollbar": {
-    width: "8px",
-    height: "8px",
-  },
-  "& ::-webkit-scrollbar-track": {
-    backgroundColor: "#ffffff",
-  },
-  "& ::-webkit-scrollbar-thumb": {
-    borderRadius: "4px",
-
-    backgroundColor: "#3b82f6",
-  },
-});
-
-//*Set style for dialog *//
-const StatusInput = ({ label, options, value, onChange }) => {
-  return (
-    <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
-      {label}
-      <Autocomplete
-        size="small"
-        options={options}
-        getOptionLabel={(option) => option}
-        value={value}
-        onChange={onChange}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label=""
-            InputProps={{
-              ...params.InputProps,
-              style: {
-                backgroundColor:
-                  value === "Yes" ||
-                  value === "Normal" ||
-                  value === "Kastersky" ||
-                  value === "Symantec" ||
-                  value === "Trend Micro"
-                    ? "#bbf7d0"
-                    : "#fef08a",
-              },
-            }}
-          />
-        )}
-        sx={{
-          width: 220,
-          mt: 1,
-          mb: 1,
-          marginLeft: "auto",
-        }}
-        renderOption={(props, option) => {
-          const backgroundColor =
-            option === "Yes" ||
-            option === "Normal" ||
-            option === "Kastersky" ||
-            option === "Symantec" ||
-            option === "Trend Micro"
-              ? "#bbf7d0"
-              : "#fef08a";
-
-          return (
-            <li {...props} style={{ backgroundColor }}>
-              {option}
-            </li>
-          );
-        }}
-      />
-    </label>
-  );
-};
 
 //* Main component *//
 export default function ComputerInProcess() {
   const [selecteddivision, setSelecteddivision] = useState({
-    division: "Division",
+    division: "ALL",
   });
   const [selectedDepartment, setSelectedDepartment] = useState({
-    dep_unit: "Department",
+    dep_unit: "ALL",
   });
   const [selectedCostCenter, setSelectedCostCenter] = useState({
-    cost_center_name: "Cost Center",
+    cost_center_name: "ALL",
   });
+
+  //*Set style for page *//
+  const theme = createTheme({
+    breakpoints: {
+      values: {
+        xs: 0, // breakpoint xs
+        sm: 600, // breakpoint sm
+        md: 960, // breakpoint md
+        lg: 1280, // breakpoint lg
+        xl: 1900, // breakpoint xl
+      },
+      palette: {
+        primary: {
+          light: "#757ce8",
+          main: "#3f50b5",
+          dark: "#002884",
+          contrastText: "#fff",
+        },
+        secondary: {
+          light: "#ff7961",
+          main: "#f44336",
+          dark: "#ba000d",
+          contrastText: "#000",
+        },
+      },
+    },
+  });
+
+  //*Set style for table *//
+
+  const StyledDataGrid = styled(DataGrid)({
+    "& .MuiDataGrid-columnHeaderTitle": {
+      fontWeight: "bold",
+      color: "#3371ff",
+      fontSize: "15px",
+      textAlign: "center",
+      FontFace: "Poppins",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    "& ::-webkit-scrollbar": {
+      width: "8px",
+      height: "8px",
+    },
+    "& ::-webkit-scrollbar-track": {
+      backgroundColor: "#ffffff",
+    },
+    "& ::-webkit-scrollbar-thumb": {
+      borderRadius: "4px",
+
+      backgroundColor: "#3b82f6",
+    },
+  });
+  const debouncedFilterChange = debounce(
+    (newModel) => setFilterModel(newModel),
+    1500
+  );
+
+  //*Set style for dialog *//
+  const StatusInput = ({ label, options, value, onChange }) => {
+    return (
+      <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
+        {label}
+        <Autocomplete
+          size="small"
+          options={options}
+          getOptionLabel={(option) => option}
+          value={value}
+          onChange={onChange}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label=""
+              InputProps={{
+                ...params.InputProps,
+                style: {
+                  backgroundColor:
+                    value === "Yes" ||
+                    value === "Normal" ||
+                    value === "Kastersky" ||
+                    value === "Symantec" ||
+                    value === "Trend Micro"
+                      ? "#bbf7d0"
+                      : "#fef08a",
+                },
+              }}
+            />
+          )}
+          sx={{
+            width: 220,
+            mt: 1,
+            mb: 1,
+            marginLeft: "auto",
+          }}
+          renderOption={(props, option) => {
+            const backgroundColor =
+              option === "Yes" ||
+              option === "Normal" ||
+              option === "Kastersky" ||
+              option === "Symantec" ||
+              option === "Trend Micro"
+                ? "#bbf7d0"
+                : "#fef08a";
+
+            return (
+              <li {...props} style={{ backgroundColor }}>
+                {option}
+              </li>
+            );
+          }}
+        />
+      </label>
+    );
+  };
 
   //*Table *//
 
@@ -365,7 +369,7 @@ export default function ComputerInProcess() {
   ];
 
   //*Filter *//
-  const [filterModel, setFilterModel] = React.useState({
+  const [filterModel, setFilterModel] = useState({
     items: [],
     quickFilterExcludeHiddenColumns: true,
     quickFilterValues: [""],
@@ -988,7 +992,7 @@ export default function ComputerInProcess() {
       };
 
       fetchData();
-    }, []);
+    }, [selecteddivision, selectedDepartment, selectedCostCenter]);
 
     return (
       <div>
@@ -1113,7 +1117,9 @@ export default function ComputerInProcess() {
                   columns={columns}
                   pageSize={5}
                   slots={{ toolbar: GridToolbar }}
-                  onFilterModelChange={(newModel) => setFilterModel(newModel)}
+                  onFilterModelChange={(newModel) =>
+                    debouncedFilterChange(newModel)
+                  }
                   filterModel={filterModel}
                   slotProps={{ toolbar: { showQuickFilter: true } }}
                 />

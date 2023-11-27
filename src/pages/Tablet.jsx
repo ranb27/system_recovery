@@ -11,6 +11,8 @@ import ComputerInProcessSearchGroup from "../components/searchgroup/ComputerInPr
 
 //* MUI
 import Box from "@mui/material/Box";
+import { DataGrid } from "@mui/x-data-grid";
+import { styled } from "@mui/material/styles";
 
 function Tablet() {
   useState(() => {
@@ -21,6 +23,31 @@ function Tablet() {
       confirmButtonText: "OK",
     });
   }, []);
+
+  const StyledDataGrid = styled(DataGrid)({
+    "& .MuiDataGrid-columnHeaderTitle": {
+      fontWeight: "bold",
+      color: "#3371ff",
+      fontSize: "15px",
+      textAlign: "center",
+      FontFace: "Poppins",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    "& ::-webkit-scrollbar": {
+      width: "8px",
+      height: "8px",
+    },
+    "& ::-webkit-scrollbar-track": {
+      backgroundColor: "#ffffff",
+    },
+    "& ::-webkit-scrollbar-thumb": {
+      borderRadius: "4px",
+
+      backgroundColor: "#3b82f6",
+    },
+  });
 
   //* Responsive Navbar
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);

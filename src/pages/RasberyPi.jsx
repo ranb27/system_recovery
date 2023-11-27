@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import debounce from "lodash.debounce";
 
 import axios from "axios";
 import ReactApexChart from "react-apexcharts";
@@ -17,34 +18,37 @@ import styled from "@mui/material/styles/styled";
 import EditIcon from "@mui/icons-material/Edit";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import LinearProgress from "@mui/material/LinearProgress";
-
-const StyledDataGrid = styled(DataGrid)({
-  "& .MuiDataGrid-columnHeaderTitle": {
-    fontWeight: "bold",
-    color: "#3371ff",
-    fontSize: "15px",
-    textAlign: "center",
-    FontFace: "Poppins",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  "& ::-webkit-scrollbar": {
-    width: "8px",
-    height: "8px",
-  },
-  "& ::-webkit-scrollbar-track": {
-    backgroundColor: "#ffffff",
-  },
-  "& ::-webkit-scrollbar-thumb": {
-    borderRadius: "4px",
-
-    backgroundColor: "#3b82f6",
-  },
-});
 
 function RasberyPi() {
+  const StyledDataGrid = styled(DataGrid)({
+    "& .MuiDataGrid-columnHeaderTitle": {
+      fontWeight: "bold",
+      color: "#3371ff",
+      fontSize: "15px",
+      textAlign: "center",
+      FontFace: "Poppins",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    "& ::-webkit-scrollbar": {
+      width: "8px",
+      height: "8px",
+    },
+    "& ::-webkit-scrollbar-track": {
+      backgroundColor: "#ffffff",
+    },
+    "& ::-webkit-scrollbar-thumb": {
+      borderRadius: "4px",
+
+      backgroundColor: "#3b82f6",
+    },
+  });
+  const debouncedFilterChange = debounce(
+    (newModel) => setFilterModel(newModel),
+    1000
+  );
+
   //* Responsive Navbar
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
@@ -681,7 +685,9 @@ function RasberyPi() {
                 columns={columns}
                 pageSize={5}
                 slots={{ toolbar: GridToolbar }}
-                onFilterModelChange={(newModel) => setFilterModel(newModel)}
+                onFilterModelChange={(newModel) =>
+                  debouncedFilterChange(newModel)
+                }
                 filterModel={filterModel}
                 slotProps={{ toolbar: { showQuickFilter: true } }}
               />

@@ -12,34 +12,33 @@ import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { GridToolbar } from "@mui/x-data-grid";
 import styled from "@mui/material/styles/styled";
-import LinearProgress from "@mui/material/LinearProgress";
-
-const StyledDataGrid = styled(DataGrid)({
-  "& .MuiDataGrid-columnHeaderTitle": {
-    fontWeight: "bold",
-    color: "#3371ff",
-    fontSize: "15px",
-    textAlign: "center",
-    FontFace: "Poppins",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  "& ::-webkit-scrollbar": {
-    width: "8px",
-    height: "8px",
-  },
-  "& ::-webkit-scrollbar-track": {
-    backgroundColor: "#ffffff",
-  },
-  "& ::-webkit-scrollbar-thumb": {
-    borderRadius: "4px",
-
-    backgroundColor: "#3b82f6",
-  },
-});
 
 function Home() {
+  const StyledDataGrid = styled(DataGrid)({
+    "& .MuiDataGrid-columnHeaderTitle": {
+      fontWeight: "bold",
+      color: "#3371ff",
+      fontSize: "15px",
+      textAlign: "center",
+      FontFace: "Poppins",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    "& ::-webkit-scrollbar": {
+      width: "8px",
+      height: "8px",
+    },
+    "& ::-webkit-scrollbar-track": {
+      backgroundColor: "#ffffff",
+    },
+    "& ::-webkit-scrollbar-thumb": {
+      borderRadius: "4px",
+
+      backgroundColor: "#3b82f6",
+    },
+  });
+
   //* Responsive Navbar
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
@@ -60,42 +59,38 @@ function Home() {
 
   //*Rows and Columns
   //?rows
-  const rows = [
-    {
-      id: 1,
-      join_domain_by: "SE Support",
-      join_domain_date: "2021-09-01",
-      total_pc: 10,
-      type_notebook: 5,
-      type_desktop: 5,
-      type_nas: 0,
-      connect_status: 10,
-      not_connect_network: 0,
-      join_domain_status: 10,
-      not_join_domain: 0,
-      edr_status: 10,
-      edr_off: 0,
-      building_A: 0,
-      building_B: 0,
-      building_C1: 0,
-      building_C2: 0,
-      building_C3: 0,
-      building_D: 0,
-    },
-  ];
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(
+        `http://10.17.66.242:3001/api/smart_recovery/filter-sum-data-computer-list-home`
+      );
+      const data = response.data.map((row, index) => ({
+        id: index + 1,
+        ...row,
+      }));
+
+      // console.log("Data:", data);
+
+      setRows(data);
+    };
+
+    fetchData();
+  }, []);
 
   //?columns
   const columns = [
     {
-      field: "join_domain_by",
-      headerName: "SE Support By",
-      width: 120,
+      field: "division",
+      headerName: "Division",
+      width: 240,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "join_domain_date",
-      headerName: "Plan Date",
+      field: "dep_unit",
+      headerName: "Department",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -103,61 +98,75 @@ function Home() {
     {
       field: "total_pc",
       headerName: "Total PC",
-      width: 120,
+      width: 80,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "type_notebook",
-      headerName: "Type Notebook",
-      width: 140,
+      field: "total_notebook",
+      headerName: "Notebook",
+      width: 100,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "type_desktop",
-      headerName: "Type Desktop",
-      width: 140,
+      field: "total_desktop",
+      headerName: "Desktop",
+      width: 80,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "type_nas",
-      headerName: "Type NAS",
+      field: "total_nas",
+      headerName: "NAS",
+      width: 50,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "total_raspberry",
+      headerName: "RaspberryPi",
       width: 110,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "connect_status",
+      field: "total_other",
+      headerName: "Type Other",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "connect_network",
       headerName: "Connect Network",
       width: 150,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "not_connect_network",
+      field: "not_connect",
       headerName: "Not Connect Network",
       width: 180,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "join_domain_status",
+      field: "join_domain",
       headerName: "Join Domain",
       width: 120,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "not_join_domain",
+      field: "waiting",
       headerName: "Not Join Domain",
       width: 150,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "edr_status",
+      field: "edr_on",
       headerName: "EDR On",
       width: 80,
       align: "center",
@@ -171,42 +180,42 @@ function Home() {
       headerAlign: "center",
     },
     {
-      field: "building_A",
+      field: "building_a",
       headerName: "Building A",
       width: 100,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "building_B",
+      field: "building_b",
       headerName: "Building B",
       width: 100,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "building_C1",
+      field: "building_c1",
       headerName: "Building C1",
       width: 100,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "building_C2",
+      field: "building_c2",
       headerName: "Building C2",
       width: 100,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "building_C3",
+      field: "building_c3",
       headerName: "Building C3",
       width: 100,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "building_D",
+      field: "building_d",
       headerName: "Building D",
       width: 100,
       align: "center",
@@ -247,70 +256,60 @@ function Home() {
   //*Charts *//
 
   //*Use For Chart *//
-  const BarChartUseFor = () => {
-    const [useForData, setUseForData] = useState({});
+  const PCType = () => {
+    const [pcTypeData, setPcTypeData] = useState({});
 
     useEffect(() => {
-      const fetchDataUseForChart = async () => {
+      const fetchDataPcType = async () => {
         const response = await axios.get(
-          `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-pc-use-for?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
+          `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-pc-type`
         );
 
         let data = response.data;
 
-        // console.log("Data:", data);
+        // console.log("PC Type Data:", data);
 
-        const useForData = {
-          Center: 0,
-          Personal: 0,
-          Resign: 0,
+        const pcTypeData = {
+          Notebook: 0,
+          Desktop: 0,
+          NAS: 0,
+          Server: 0,
+          RaspberryPi: 0,
         };
 
         data.forEach((item) => {
-          useForData[item.pc_use_for] = item.count_pc_use_for;
+          pcTypeData[item.pc_type] = item.count_pc_type;
         });
 
-        // console.log("Use For Data:", useForData);
+        console.log("PC Type Data:", pcTypeData);
 
-        setUseForData(useForData);
+        setPcTypeData(pcTypeData);
       };
 
-      fetchDataUseForChart();
+      fetchDataPcType();
     }, [selecteddivision, selectedDepartment, selectedCostCenter]);
 
     const state = {
       series: [
         {
-          name: "Center",
-          data: [useForData.Center],
+          name: "Notebook",
+          data: [pcTypeData.Notebook],
         },
         {
-          name: "Personal",
-          data: [useForData.Personal],
+          name: "Desktop",
+          data: [pcTypeData.Desktop],
         },
         {
-          name: "Resign",
-          data: [useForData.Resign],
-        },
-        {
-          name: "Machine",
-          data: [useForData.Machine],
-        },
-        {
-          name: "Scan WIP",
-          data: [useForData.Scan],
-        },
-        {
-          name: "CCTV",
-          data: [useForData.Cctv],
-        },
-        {
-          name: "Scrap",
-          data: [useForData.Scrap],
+          name: "NAS",
+          data: [pcTypeData.NAS],
         },
         {
           name: "Server",
-          data: [useForData.Server],
+          data: [pcTypeData.Server],
+        },
+        {
+          name: "RaspberryPi",
+          data: [pcTypeData.RaspberryPi],
         },
       ],
       options: {
@@ -589,7 +588,7 @@ function Home() {
             <div className="flex flex-col w-screen lg:w-1/3 lg:flex-row animate-fade">
               <div className="container flex h-48">
                 <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full overflow-hidden lg:overflow-visible">
-                  <BarChartUseFor />
+                  <PCType />
                 </div>
                 <div className="bg-white rounded-lg mb-8 mr-4 shadow-lg text-left w-52 lg:w-full overflow-hidden lg:overflow-visible">
                   <BarChartBuilding />

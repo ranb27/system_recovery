@@ -26,105 +26,103 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import debounce from "lodash.debounce";
 import dayjs from "dayjs";
-import { set } from "date-fns";
-
-//* Styled Data Grid
-const StyledDataGrid = styled(DataGrid)({
-  "& .MuiDataGrid-columnHeaderTitle": {
-    fontWeight: "bold",
-    color: "#3371ff",
-    fontSize: "15px",
-    textAlign: "center",
-    FontFace: "Poppins",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  "& ::-webkit-scrollbar": {
-    width: "8px",
-    height: "8px",
-  },
-  "& ::-webkit-scrollbar-track": {
-    backgroundColor: "#ffffff",
-  },
-  "& ::-webkit-scrollbar-thumb": {
-    borderRadius: "4px",
-
-    backgroundColor: "#3b82f6",
-  },
-});
-
-//*Set style for dialog
-const StatusInput = ({ label, options, value, onChange }) => {
-  return (
-    <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
-      {label}
-      <Autocomplete
-        size="small"
-        options={options}
-        getOptionLabel={(option) => option}
-        value={value}
-        onChange={onChange}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label=""
-            InputProps={{
-              ...params.InputProps,
-              style: {
-                backgroundColor:
-                  value === "Yes" ||
-                  value === "Normal" ||
-                  value === "Kastersky" ||
-                  value === "Symantec" ||
-                  value === "Trend Micro" ||
-                  value === "Finished" ||
-                  value === "Joined"
-                    ? "#bbf7d0"
-                    : value === "Problem"
-                    ? "#e84548"
-                    : "#fef08a",
-
-                color: value === "Problem" ? "white" : "black",
-              },
-            }}
-          />
-        )}
-        sx={{
-          width: 220,
-          mt: 1,
-          mb: 1,
-          marginLeft: "auto",
-        }}
-        renderOption={(props, option) => {
-          const backgroundColor =
-            option === "Yes" ||
-            option === "Normal" ||
-            option === "Kastersky" ||
-            option === "Symantec" ||
-            option === "Trend Micro" ||
-            option === "Finished" ||
-            option === "Joined"
-              ? "#bbf7d0"
-              : option === "Problem"
-              ? "#e84548"
-              : "#fef08a";
-
-          const color = option === "Problem" ? "white" : "black";
-          return (
-            <li {...props} style={{ backgroundColor, color }}>
-              {option}
-            </li>
-          );
-        }}
-      />
-    </label>
-  );
-};
 
 function JoinDomain() {
+  //* Styled Data Grid
+  const StyledDataGrid = styled(DataGrid)({
+    "& .MuiDataGrid-columnHeaderTitle": {
+      fontWeight: "bold",
+      color: "#3371ff",
+      fontSize: "15px",
+    },
+    "& ::-webkit-scrollbar": {
+      width: "8px",
+      height: "8px",
+    },
+    "& ::-webkit-scrollbar-track": {
+      backgroundColor: "#ffffff",
+    },
+    "& ::-webkit-scrollbar-thumb": {
+      borderRadius: "4px",
+
+      backgroundColor: "#3b82f6",
+    },
+  });
+  const debouncedFilterChange = debounce(
+    (newModel) => setFilterModel(newModel),
+    1500
+  );
+
+  //*Set style for dialog
+  const StatusInput = ({ label, options, value, onChange }) => {
+    return (
+      <label className="font-bold text-blue-400 drop-shadow-md flex items-center gap-2">
+        {label}
+        <Autocomplete
+          size="small"
+          options={options}
+          getOptionLabel={(option) => option}
+          value={value}
+          onChange={onChange}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label=""
+              InputProps={{
+                ...params.InputProps,
+                style: {
+                  backgroundColor:
+                    value === "Yes" ||
+                    value === "Normal" ||
+                    value === "Kastersky" ||
+                    value === "Symantec" ||
+                    value === "Trend Micro" ||
+                    value === "Finished" ||
+                    value === "Joined"
+                      ? "#bbf7d0"
+                      : value === "Problem"
+                      ? "#e84548"
+                      : "#fef08a",
+
+                  color: value === "Problem" ? "white" : "black",
+                },
+              }}
+            />
+          )}
+          sx={{
+            width: 220,
+            mt: 1,
+            mb: 1,
+            marginLeft: "auto",
+          }}
+          renderOption={(props, option) => {
+            const backgroundColor =
+              option === "Yes" ||
+              option === "Normal" ||
+              option === "Kastersky" ||
+              option === "Symantec" ||
+              option === "Trend Micro" ||
+              option === "Finished" ||
+              option === "Joined"
+                ? "#bbf7d0"
+                : option === "Problem"
+                ? "#e84548"
+                : "#fef08a";
+
+            const color = option === "Problem" ? "white" : "black";
+            return (
+              <li {...props} style={{ backgroundColor, color }}>
+                {option}
+              </li>
+            );
+          }}
+        />
+      </label>
+    );
+  };
+
   //* Responsive Navbar
   const [isNavbarOpen, setIsNavbarOpen] = React.useState(false);
 
@@ -148,6 +146,119 @@ function JoinDomain() {
 
   console.log("From Date Filter:", fromDateFilter);
   console.log("To Date Filter:", toDateFilter);
+
+  //*Table
+  const [rows, setRows] = useState([]);
+  const [dateFilterRows, setDateFilterRows] = useState([]); // Rows filtered by date range
+
+  useEffect(() => {
+    const getRows = async () => {
+      try {
+        setRows([]);
+        const response = await axios.get(
+          `http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
+        );
+
+        // Check if either fromDateFilter or toDateFilter is not null
+        if (fromDateFilter !== null || toDateFilter !== null) {
+          const getJoinDomainDate = response.data.map(
+            (item) => item.join_domain_date
+          );
+          console.log("Join Domain Date:", getJoinDomainDate);
+
+          const convertJoinDomainDate = getJoinDomainDate.map((item) =>
+            dayjs(item).format("YYYY-MM-DD")
+          );
+          console.log("Convert Join Domain Date:", convertJoinDomainDate);
+
+          // Filter out null dates
+          const validDates = convertJoinDomainDate.filter(
+            (date) => date !== null && joinDomainStatus !== "Waiting"
+          );
+
+          const filterJoinDomainDateRange = validDates.filter((item) => {
+            const itemDate = dayjs(item);
+            const isAfterFrom = fromDateFilter
+              ? itemDate.isAfter(fromDateFilter, "day") ||
+                itemDate.isSame(fromDateFilter, "day")
+              : true;
+            const isBeforeTo = toDateFilter
+              ? itemDate.isBefore(toDateFilter, "day") ||
+                itemDate.isSame(toDateFilter, "day")
+              : true;
+
+            console.log(
+              `Item: ${item}, isAfterFrom: ${isAfterFrom}, isBeforeTo: ${isBeforeTo}`
+            );
+
+            return item && isAfterFrom && isBeforeTo;
+          });
+
+          console.log(
+            "Filter Join Domain Date Range:",
+            filterJoinDomainDateRange
+          );
+
+          // Filter rows based on date range
+          const filteredRows = response.data.filter((item) =>
+            item.join_domain_date
+              ? filterJoinDomainDateRange.includes(
+                  dayjs(item.join_domain_date).format("YYYY-MM-DD")
+                )
+              : false
+          );
+
+          // Set filtered rows
+          setRows(filteredRows);
+          setDateFilterRows(filteredRows);
+        } else {
+          // If both fromDateFilter and toDateFilter are null, set rows to the original data
+          setRows(response.data);
+        }
+
+        console.log("res", response.data);
+
+        // Set other state variables
+        const pcNames = Array.from(
+          new Set(response.data.map((item) => item.pc_name))
+        );
+        setPcNameOption(pcNames);
+
+        const osVersions = Array.from(
+          new Set(response.data.map((item) => item.os_version))
+        );
+        setOsVersionOption(osVersions);
+
+        const idCodes = Array.from(
+          new Set(response.data.map((item) => item.employee_id))
+        );
+        setIdCodeOption(idCodes);
+
+        const costCenters = Array.from(
+          new Set(response.data.map((item) => item.cost_center_code))
+        );
+        setCostCenterOption(costCenters);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getRows();
+  }, [
+    selecteddivision,
+    selectedDepartment,
+    selectedCostCenter,
+    fromDateFilter,
+    toDateFilter,
+  ]);
+
+  // console.log("Rows:", dateFilterRows);
+
+  useEffect(() => {
+    if (fromDateFilter === null || toDateFilter === null) {
+      setDateFilterRows(null);
+    }
+  }, [fromDateFilter, toDateFilter]);
 
   //*Monitor selected ID after handleOpen *//
 
@@ -337,19 +448,17 @@ function JoinDomain() {
   };
 
   const fetchData = () => {
-    // Fetch data from your API
     axios
       .get(
         `http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
       )
       .then((res) => {
-        // Update your component's state with the new data
         setRows(res.data);
       });
   };
 
   //*Filter Model
-  const [filterModel, setFilterModel] = React.useState({
+  const [filterModel, setFilterModel] = useState({
     items: [],
     quickFilterExcludeHiddenColumns: true,
     quickFilterValues: [""],
@@ -565,30 +674,60 @@ function JoinDomain() {
 
   useEffect(() => {
     const fetchDataPC = async () => {
-      const response = await axios.get(
-        `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-status?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
-      );
-      const data = response.data;
+      if (fromDateFilter === null && toDateFilter === null) {
+        const response = await axios.get(
+          `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-status?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
+        );
+        const data = response.data;
 
-      const statusData = {
-        total_pc: 0,
-        pc_connect: 0,
-        wait_connect: 0,
-      };
+        const statusData = {
+          total_pc: 0,
+          pc_connect: 0,
+          wait_connect: 0,
+        };
 
-      data.map((item) => {
-        statusData.total_pc = item.total_pc;
-        statusData.pc_connect = item.pc_connect;
-        statusData.wait_connect = item.wait_connect;
-      });
+        data.map((item) => {
+          statusData.total_pc = item.total_pc;
+          statusData.pc_connect = item.pc_connect;
+          statusData.wait_connect = item.wait_connect;
+        });
 
-      // console.log("Status Data:", statusData);
+        // console.log("Status Data:", statusData);
 
-      setPcStatus(statusData);
+        setPcStatus(statusData);
+      } else {
+        const response = await axios.get(
+          `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-status-join-domain?from_date=${fromDateFilter}&to_date=${toDateFilter}`
+        );
+
+        const data = response.data;
+
+        const statusData = {
+          total_pc: 0,
+          pc_connect: 0,
+          wait_connect: 0,
+        };
+
+        data.map((item) => {
+          statusData.total_pc = item.total_pc;
+          statusData.pc_connect = item.pc_connect;
+          statusData.wait_connect = item.wait_connect;
+        });
+
+        // console.log("Status Data:", statusData);
+
+        setPcStatus(statusData);
+      }
     };
 
     fetchDataPC();
-  }, [selecteddivision, selectedDepartment, selectedCostCenter]);
+  }, [
+    selecteddivision,
+    selectedDepartment,
+    selectedCostCenter,
+    fromDateFilter,
+    toDateFilter,
+  ]);
 
   //*Charts
 
@@ -598,35 +737,68 @@ function JoinDomain() {
 
     useEffect(() => {
       const fetchDataUseForChart = async () => {
-        const response = await axios.get(
-          `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-pc-use-for?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
-        );
+        if (fromDateFilter === null && toDateFilter === null) {
+          const response = await axios.get(
+            `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-pc-use-for?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
+          );
 
-        let data = response.data;
+          let data = response.data;
 
-        // console.log("Data:", data);
+          // console.log("Data:", data);
 
-        const useForData = {
-          Center: 0,
-          Personal: 0,
-          Resign: 0,
-          Machine: 0,
-          Scan: 0,
-          Cctv: 0,
-          Scrap: 0,
-        };
+          const useForData = {
+            Center: 0,
+            Personal: 0,
+            Resign: 0,
+            Machine: 0,
+            Scan: 0,
+            Cctv: 0,
+            Scrap: 0,
+          };
 
-        data.forEach((item) => {
-          useForData[item.pc_use_for] = item.count_pc_use_for;
-        });
+          data.forEach((item) => {
+            useForData[item.pc_use_for] = item.count_pc_use_for;
+          });
 
-        // console.log("Use For Data:", useForData);
+          // console.log("Use For Data:", useForData);
 
-        setUseForData(useForData);
+          setUseForData(useForData);
+        } else {
+          const response = await axios.get(
+            `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-pc-use-for-join-domain?from_date=${fromDateFilter}&to_date=${toDateFilter}`
+          );
+          let data = response.data;
+
+          // console.log("Data:", data);
+
+          const useForData = {
+            Center: 0,
+            Personal: 0,
+            Resign: 0,
+            Machine: 0,
+            Scan: 0,
+            Cctv: 0,
+            Scrap: 0,
+          };
+
+          data.forEach((item) => {
+            useForData[item.pc_use_for] = item.count_pc_use_for;
+          });
+
+          // console.log("Use For Data:", useForData);
+
+          setUseForData(useForData);
+        }
       };
 
       fetchDataUseForChart();
-    }, [selecteddivision, selectedDepartment, selectedCostCenter]);
+    }, [
+      selecteddivision,
+      selectedDepartment,
+      selectedCostCenter,
+      fromDateFilter,
+      toDateFilter,
+    ]);
 
     const state = {
       series: [
@@ -705,36 +877,69 @@ function JoinDomain() {
 
     useEffect(() => {
       const fetchDataBuildingChart = async () => {
-        const response = await axios.get(
-          `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-building?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
-        );
+        if (fromDateFilter === null && toDateFilter === null) {
+          const response = await axios.get(
+            `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-building?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
+          );
 
-        let data = response.data;
+          let data = response.data;
 
-        // console.log("Building Data:", data);
+          // console.log("Building Data:", data);
 
-        const buildingData = {
-          A: 0,
-          B: 0,
-          C: 0,
-          C1: 0,
-          C2: 0,
-          C2_2F: 0,
-          C3: 0,
-          D: 0,
-        };
+          const buildingData = {
+            A: 0,
+            B: 0,
+            C: 0,
+            C1: 0,
+            C2: 0,
+            C2_2F: 0,
+            C3: 0,
+            D: 0,
+          };
 
-        data.map((item) => {
-          buildingData[item.building] = item.count_building;
-        });
+          data.map((item) => {
+            buildingData[item.building] = item.count_building;
+          });
 
-        // console.log("Building Data:", buildingData);
+          // console.log("Building Data:", buildingData);
 
-        setBuildingData(buildingData);
+          setBuildingData(buildingData);
+        } else {
+          const response = await axios.get(
+            `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-building-join-domain?from_date=${fromDateFilter}&to_date=${toDateFilter}`
+          );
+          let data = response.data;
+
+          // console.log("Building Data:", data);
+
+          const buildingData = {
+            A: 0,
+            B: 0,
+            C: 0,
+            C1: 0,
+            C2: 0,
+            C2_2F: 0,
+            C3: 0,
+            D: 0,
+          };
+
+          data.map((item) => {
+            buildingData[item.building] = item.count_building;
+          });
+
+          // console.log("Building Data:", buildingData);
+
+          setBuildingData(buildingData);
+        }
       };
-
       fetchDataBuildingChart();
-    }, [selecteddivision, selectedDepartment, selectedCostCenter]);
+    }, [
+      selecteddivision,
+      selectedDepartment,
+      selectedCostCenter,
+      fromDateFilter,
+      toDateFilter,
+    ]);
 
     const state = {
       series: [
@@ -815,48 +1020,94 @@ function JoinDomain() {
 
     useEffect(() => {
       const fetchData = async () => {
-        try {
-          const response = await axios.get(
-            `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-join-domain?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
-          );
-          const data = response.data;
-
-          if (data && data.length > 0) {
-            // Data is available, prepare chart options and series
-            const sortedData = [...data].sort(
-              (a, b) => a.count_join_domain - b.count_join_domain
+        if (fromDateFilter === null && toDateFilter === null) {
+          try {
+            const response = await axios.get(
+              `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-join-domain?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
             );
-            const labels = sortedData.map((item) => item.join_domain_status);
-            const values = sortedData.map((item) =>
-              parseInt(item.count_join_domain)
-            );
+            const data = response.data;
 
-            setChartOptions({
-              chart: {
-                id: "donut-chart",
-                toolbar: {
-                  show: true,
+            if (data && data.length > 0) {
+              // Data is available, prepare chart options and series
+              const sortedData = [...data].sort(
+                (a, b) => a.count_join_domain - b.count_join_domain
+              );
+              const labels = sortedData.map((item) => item.join_domain_status);
+              const values = sortedData.map((item) =>
+                parseInt(item.count_join_domain)
+              );
+
+              setChartOptions({
+                chart: {
+                  id: "donut-chart",
+                  toolbar: {
+                    show: true,
+                  },
                 },
-              },
-              labels,
-              legend: {
-                position: "right",
-              },
-              dataLabels: {
-                enabled: true,
-              },
+                labels,
+                legend: {
+                  position: "right",
+                },
+                dataLabels: {
+                  enabled: true,
+                },
 
-              colors: [" #eab308 ", " #22c55e "],
-            });
+                colors: [" #eab308 ", " #22c55e "],
+              });
 
-            setChartSeries(values);
-            setDataFetched(true); // Set dataFetched to true when data is fetched
-          } else {
-            setChartOptions({});
-            setChartSeries([]);
+              setChartSeries(values);
+              setDataFetched(true); // Set dataFetched to true when data is fetched
+            } else {
+              setChartOptions({});
+              setChartSeries([]);
+            }
+          } catch (error) {
+            console.error("Error fetching data:", error);
           }
-        } catch (error) {
-          console.error("Error fetching data:", error);
+        } else {
+          try {
+            const response = await axios.get(
+              `http://10.17.66.242:3001/api/smart_recovery/filter-data-count-chart-join-domain-join-domain?from_date=${fromDateFilter}&to_date=${toDateFilter}`
+            );
+            const data = response.data;
+
+            if (data && data.length > 0) {
+              // Data is available, prepare chart options and series
+              const sortedData = [...data].sort(
+                (a, b) => a.count_join_domain - b.count_join_domain
+              );
+              const labels = sortedData.map((item) => item.join_domain_status);
+              const values = sortedData.map((item) =>
+                parseInt(item.count_join_domain)
+              );
+
+              setChartOptions({
+                chart: {
+                  id: "donut-chart",
+                  toolbar: {
+                    show: true,
+                  },
+                },
+                labels,
+                legend: {
+                  position: "right",
+                },
+                dataLabels: {
+                  enabled: true,
+                },
+
+                colors: [" #eab308 ", " #22c55e "],
+              });
+
+              setChartSeries(values);
+              setDataFetched(true); // Set dataFetched to true when data is fetched
+            } else {
+              setChartOptions({});
+              setChartSeries([]);
+            }
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          }
         }
       };
 
@@ -884,107 +1135,6 @@ function JoinDomain() {
       </div>
     );
   };
-
-  //*Table
-  const [rows, setRows] = useState([]);
-  const [dateFilterRows, setDateFilterRows] = useState([]); // Rows filtered by date range
-
-  useEffect(() => {
-    const getRows = async () => {
-      try {
-        setRows([]);
-        const response = await axios.get(
-          `http://10.17.66.242:3001/api/smart_recovery/filter-data-computer-list?division=${selecteddivision}&department=${selectedDepartment}&cost_center=${selectedCostCenter}`
-        );
-
-        // Check if either fromDateFilter or toDateFilter is not null
-        if (fromDateFilter !== null || toDateFilter !== null) {
-          const getJoinDomainDate = response.data.map(
-            (item) => item.join_domain_date
-          );
-          console.log("Join Domain Date:", getJoinDomainDate);
-
-          const convertJoinDomainDate = getJoinDomainDate.map((item) =>
-            dayjs(item).format("YYYY-MM-DD")
-          );
-          console.log("Convert Join Domain Date:", convertJoinDomainDate);
-
-          // Filter out null dates
-          const validDates = convertJoinDomainDate.filter(
-            (date) => date !== null && joinDomainStatus !== "Waiting"
-          );
-
-          const filterJoinDomainDateRange = validDates.filter(
-            (item) =>
-              item &&
-              dayjs(item).isAfter(fromDateFilter) &&
-              dayjs(item).isBefore(toDateFilter)
-          );
-          console.log(
-            "Filter Join Domain Date Range:",
-            filterJoinDomainDateRange
-          );
-
-          // Filter rows based on date range
-          const filteredRows = response.data.filter((item) =>
-            item.join_domain_date
-              ? filterJoinDomainDateRange.includes(
-                  dayjs(item.join_domain_date).format("YYYY-MM-DD")
-                )
-              : false
-          );
-
-          // Set filtered rows
-          setRows(filteredRows);
-          setDateFilterRows(filteredRows);
-        } else {
-          // If both fromDateFilter and toDateFilter are null, set rows to the original data
-          setRows(response.data);
-        }
-
-        console.log("res", response.data);
-
-        // Set other state variables
-        const pcNames = Array.from(
-          new Set(response.data.map((item) => item.pc_name))
-        );
-        setPcNameOption(pcNames);
-
-        const osVersions = Array.from(
-          new Set(response.data.map((item) => item.os_version))
-        );
-        setOsVersionOption(osVersions);
-
-        const idCodes = Array.from(
-          new Set(response.data.map((item) => item.employee_id))
-        );
-        setIdCodeOption(idCodes);
-
-        const costCenters = Array.from(
-          new Set(response.data.map((item) => item.cost_center_code))
-        );
-        setCostCenterOption(costCenters);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    getRows();
-  }, [
-    selecteddivision,
-    selectedDepartment,
-    selectedCostCenter,
-    fromDateFilter,
-    toDateFilter,
-  ]);
-
-  // console.log("Rows:", dateFilterRows);
-
-  useEffect(() => {
-    if (fromDateFilter === null || toDateFilter === null) {
-      setDateFilterRows(null);
-    }
-  }, [fromDateFilter, toDateFilter]);
 
   //*Edit *//
   //?state for edit data
@@ -1216,7 +1366,9 @@ function JoinDomain() {
                 columns={columns}
                 pageSize={5}
                 slots={{ toolbar: GridToolbar }}
-                onFilterModelChange={(newModel) => setFilterModel(newModel)}
+                onFilterModelChange={(newModel) =>
+                  debouncedFilterChange(newModel)
+                }
                 filterModel={filterModel}
                 slotProps={{ toolbar: { showQuickFilter: true } }}
                 sortModel={sortModel}
